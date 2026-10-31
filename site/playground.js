@@ -185,8 +185,11 @@ export function playground(style) {
         for (const s of entry.set.querySelectorAll('.section')) s.hidden = !s.querySelector('input');
         entry.set.querySelector('[data-count]').textContent = `(${entry.items.length - featured.size})`;
       }
-      // A picked choice in the fold opens it: the pick stays in view, and Tab can reach the group.
-      if (picked && !featured.has(picked.value)) entry.set.querySelector('.others').open = true;
+      // A new pick in the fold opens it, so it stays in view and Tab can reach the group; closing
+      // the fold afterwards sticks until the pick changes.
+      const outside = picked && !featured.has(picked.value) ? picked.value : '';
+      if (outside && outside !== entry.opened) entry.set.querySelector('.others').open = true;
+      entry.opened = outside;
     }
   }
   // Swatch colours go in through the CSSOM, which the CSP allows, rather than style attributes.
@@ -199,7 +202,8 @@ export function playground(style) {
   $('options').addEventListener('change', pick);
   $('colours').addEventListener('change', pick);
   $('reset').addEventListener('click', () => {
-    Object.assign(state, DEFAULTS);
+    // Motion is the Animate button, not an option in the panel, so Reset leaves it be.
+    for (const g of groups) if (!g.button) state[g.name] = DEFAULTS[g.name];
     draw();
     gallery();
     say('Options reset to what the seed picks');
@@ -243,12 +247,16 @@ export function playground(style) {
   $('random').addEventListener('click', () => {
     state.seed = $('seed').value = randomSeed();
     for (const key of ['shape', 'palette']) {
-      // A group that names choices for this avatar picks from those, so the pick suits it.
-      const values = groups
+      // Each group (everyday or holiday) is as likely as its share of all the choices; a group
+      // that names choices for this avatar then picks from those, so the pick suits it.
+      const pool = groups
         .filter((g) => g.name === key)
-        .flatMap((g) => (g.featured ? g.featured(state.seed, options()) : g.choices.map(([v]) => v)));
-      const picks = values.filter((v) => v !== 'auto');
-      if (picks.length) state[key] = pickOne(picks);
+        .flatMap((g) => {
+          const all = g.choices.map(([v]) => v).filter((v) => v !== 'auto');
+          const from = g.featured ? g.featured(state.seed, options()) : all;
+          return all.map(() => from);
+        });
+      if (pool.length) state[key] = pickOne(pickOne(pool));
     }
     draw();
     gallery();

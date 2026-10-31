@@ -933,6 +933,10 @@ ol.features > li::before {
   .side {
     display: contents;
   }
+  /* Focused options scroll clear of the pinned avatar card, not under it. */
+  html:has(.play) {
+    scroll-padding-top: 230px;
+  }
   /* Pinned a little below the header, not against it. */
   .stage {
     position: sticky;
