@@ -1,10 +1,13 @@
 // The Sprite playground, drawn from the package build at /lib; site/playground.js does the rest.
 import {
   ELEMENTS,
+  FORMS,
   FRAMES,
   HOLIDAY_PALETTES,
   LOOKS,
+  PALETTE_GROUPS,
   PALETTES,
+  palettesFor,
   randomSeed,
   resolveTraits,
   SHAPES,
@@ -40,6 +43,15 @@ const MARKS = {
   twin: 'two dots on its forehead',
 };
 const title = (s) => s[0].toUpperCase() + s.slice(1);
+// The names the site uses for forms whose code names read oddly.
+const FORM_NAMES = { puff: 'cloud', tornado: 'whirlwind', crystal: 'gem', jelly: 'jellyfish' };
+const formName = (f) => FORM_NAMES[f] ?? f;
+
+/** A palette group's heading: its element, and its forms if it isn't the whole element's. */
+function groupLabel({ element, forms }) {
+  if (forms.length === FORMS[element].length) return title(element);
+  return `${title(element)} · ${forms.map(formName).join(' and ')}`;
+}
 
 /** Names the big Sprite for screen readers, so a change of seed or option is heard. */
 function describe(seed, options) {
@@ -48,7 +60,7 @@ function describe(seed, options) {
   const parts = [`${t.shape} cells`, `${palette.name} colours`, EYES[t.eyes], MOUTHS[t.mouth]];
   if (t.hasBlush) parts.push('rosy cheeks');
   if (MARKS[t.mark]) parts.push(MARKS[t.mark]);
-  return `Sprite for "${seed}": a ${t.element} ${t.form}, ${parts.join(', ')}`;
+  return `Sprite for "${seed}": ${/^[aeiou]/.test(t.element) ? 'an' : 'a'} ${t.element} ${formName(t.form)}, ${parts.join(', ')}`;
 }
 
 const shared = sharedGroups({ SHAPES, FRAMES, LOOKS });
@@ -78,6 +90,13 @@ playground({
       name: 'palette',
       legend: 'Colours',
       choices: [['auto', 'Seed picks'], ...PALETTES.map((p, i) => [String(i), p.name, p])],
+      // The nine palettes drawn for this sprite's form are named; the rest fold away by group.
+      sections: PALETTE_GROUPS.map((g) => ({ label: groupLabel(g), values: g.palettes.map(String) })),
+      othersLabel: 'Other colours',
+      featured: (seed, options) => {
+        const { element, form } = resolveTraits(seed, options);
+        return palettesFor(element, form).map(String);
+      },
     },
     {
       name: 'palette',

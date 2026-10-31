@@ -831,12 +831,54 @@ ol.features > li::before {
   display: grid;
   gap: 16px;
 }
-/* The avatar and its code stay in view while the options scroll, where the screen is tall
-   enough to hold them. */
-@media (min-width: 901px) and (min-height: 860px) {
+.side {
+  display: grid;
+  gap: 16px;
+}
+/* On a wide screen the avatar card sticks a little below the header as the page scrolls,
+   while the options, colours and download cards scroll by beside it, until the last of them
+   is in view. */
+@media (min-width: 901px) {
   .preview {
     position: sticky;
-    top: 80px;
+    top: 88px;
+  }
+}
+/* The titles of the playground's cards (Seed, Download) match the Options heading. */
+.play .panel-title {
+  display: block;
+  font: 600 1.5rem / 1.1 var(--display);
+  letter-spacing: 0.01em;
+  margin: 0 0 12px;
+}
+/* Seed's title row holds Random and Animate, as Options' holds Reset; the box is full width. */
+.seed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  container-type: inline-size;
+}
+.play .seed-head .panel-title {
+  margin: 0;
+}
+.seed-actions {
+  display: flex;
+  gap: 8px;
+}
+.stage .seed input {
+  width: 100%;
+}
+/* Random and Animate drop their words for icons when the row is too narrow for both. */
+@container (max-width: 229px) {
+  .seed-actions .btn-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 .stage {
@@ -887,12 +929,18 @@ ol.features > li::before {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
   }
-  .preview {
+  .preview,
+  .side {
     display: contents;
   }
+  /* Focused options scroll clear of the pinned avatar card, not under it. */
+  html:has(.play) {
+    scroll-padding-top: 230px;
+  }
+  /* Pinned a little below the header, not against it. */
   .stage {
     position: sticky;
-    top: 62px;
+    top: 74px;
     z-index: 5;
     grid-template-columns: 88px minmax(0, 1fr);
     align-items: center;
@@ -924,6 +972,14 @@ ol.features > li::before {
   }
   .options {
     order: 1;
+  }
+  .seed-actions {
+    flex: 1;
+  }
+  .seed-actions .btn {
+    flex: 1;
+    justify-content: center;
+    padding-inline: 10px;
   }
   .output {
     order: 2;
