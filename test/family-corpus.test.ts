@@ -3,8 +3,9 @@ import { describe, expect, it } from 'vitest';
 import * as beastie from '../src/styles/beastie/index.js';
 import * as noggin from '../src/styles/noggin/index.js';
 import * as snoot from '../src/styles/snoot/index.js';
+import * as sprite from '../src/styles/sprite/index.js';
 
-// The Stable freeze for Snoot, Noggin and Beastie (ADR 0011), as Botling's
+// The Stable freeze for Snoot, Noggin and Beastie (ADR 0011) and Sprite (ADR 0014), as Botling's
 // corpus does it (ADR 0006). A change to a picture digest below means a seed
 // draws a different avatar: a major version. Markup digests pin the SVG too,
 // so SVG that draws the same picture moves only those: look at the preview
@@ -63,6 +64,18 @@ const STYLES: Record<string, Style> = {
     draw: beastie.beastie,
     colours: beastie.PALETTES,
     parts: { body: beastie.BODIES, eyes: beastie.EYES, mouth: beastie.MOUTHS, top: beastie.TOPS, sides: beastie.SIDES },
+  },
+  sprite: {
+    ...sprite,
+    draw: sprite.sprite,
+    colours: [sprite.PALETTES, sprite.PALETTE_GROUPS],
+    parts: {
+      element: sprite.ELEMENTS,
+      form: Object.values(sprite.FORMS).flat(),
+      eyes: sprite.EYES,
+      mouth: sprite.MOUTHS,
+      mark: sprite.MARKS,
+    },
   },
 };
 

@@ -32,7 +32,7 @@ describe('sprite', () => {
   });
 
   it.each(ELEMENTS)('draws a known %s seed', (element) => {
-    // Sprite is a Preview style: these may change in a minor, but only on purpose.
+    // Sprite is Stable (ADR 0014): a change here is a major version.
     expect(sprite('sprite', { element })).toMatchSnapshot();
   });
 

@@ -9,17 +9,17 @@ any change to the robot a seed draws is a major version.
 
 ### Site
 
-- Each style's docs page shows its status next to its name: Stable for Botling, Snoot, Noggin and Beastie, Preview for Sprite.
+- Each style's docs page shows its status next to its name: Stable for every style.
 
 ## [2.5.0] - 2026-10-31
 
 ### Added
 
-- `seedkin/sprite`, the Sprites: seeded avatars of little elemental spirits. A seed picks one of five elements (fire, water, earth, wind and space), one of its forms (flame, wisp or ember; drop, bubble or jellyfish; boulder, gem, mushroom or tree; cloud, whirlwind or leaf; planet, star or comet), one of nine palettes kept to that form, one of eight eye styles, one of seven mouths, sometimes cheeks, one of five forehead marks or none, and which way it faces. `sprite()` and `spriteDataUri()` take the same options as `snoot()` plus `element`, which picks the element and leaves the rest to the seed. Below 40px it draws a simpler 9x9 Sprite. With `animate: true` it flips through four frames: flames sway, drops wobble, clouds hover, and embers, bubbles and stars drift, at every size, still for anyone who prefers reduced motion. Sprite is a Preview style (ADR 0013): the Sprite a seed draws can change in a minor version until it's marked Stable. No other style changes.
+- `seedkin/sprite`, the Sprites: seeded avatars of little elemental spirits. A seed picks one of five elements (fire, water, earth, wind and space), one of its forms (flame, wisp or ember; drop, bubble or jellyfish; boulder, gem, mushroom or tree; cloud, whirlwind or leaf; planet, star or comet), one of nine palettes kept to that form, one of eight eye styles, one of seven mouths, sometimes cheeks, one of five forehead marks or none, and which way it faces. `sprite()` and `spriteDataUri()` take the same options as `snoot()` plus `element`, which picks the element and leaves the rest to the seed. Below 40px it draws a simpler 9x9 Sprite. With `animate: true` it flips through four frames: flames sway, drops wobble, clouds hover, and embers, bubbles and stars drift, at every size, still for anyone who prefers reduced motion. Sprite is Stable from this first release (ADR 0014): like the other styles, a change to the Sprite a seed draws is a major version. No other style changes.
 
 ### Site
 
-- A Sprite playground at `/styles/sprite/`, with an Element picker, and a Sprite page in the docs. The home page shows your seed in all five styles, three over two, and the family cards sit three over two, with Sprite marked Preview.
+- A Sprite playground at `/styles/sprite/`, with an Element picker, and a Sprite page in the docs. The home page shows your seed in all five styles, three over two, and the family cards sit three over two, with Sprite marked Stable.
 - The About page has room between its last cards and the footer.
 
 - seedkin.dev has a `sitemap.xml`, a `robots.txt` and an `llms.txt` for AI assistants, all built from the pages themselves; JSON-LD on the home page; and its own link preview image for each style page.

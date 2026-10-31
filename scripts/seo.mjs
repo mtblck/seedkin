@@ -64,7 +64,7 @@ export function llms({ version, sections }) {
     .join('\n\n');
   return `# Seedkin
 
-> Seedkin turns any string, such as a user id, into a small pixel avatar as an SVG string: robots (Botling), animals (Snoot), people (Noggin), monsters (Beastie) and elemental spirits (Sprite, in Preview). The same seed always draws the same avatar within a major version. Zero runtime dependencies, no network requests, ESM with TypeScript types, MIT licensed with the art included. Current version: ${version}.
+> Seedkin turns any string, such as a user id, into a small pixel avatar as an SVG string: robots (Botling), animals (Snoot), people (Noggin), monsters (Beastie) and elemental spirits (Sprite). The same seed always draws the same avatar within a major version. Zero runtime dependencies, no network requests, ESM with TypeScript types, MIT licensed with the art included. Current version: ${version}.
 
 Install with \`npm install seedkin\`. Each style has its own entry point, and each exports a function that returns an SVG string and one that returns a data: URI:
 

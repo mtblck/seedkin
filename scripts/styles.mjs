@@ -101,7 +101,7 @@ export const STYLES = [
   {
     name: 'sprite',
     title: 'Sprite',
-    status: 'preview',
+    status: 'stable',
     label: 'Sprite',
     kind: 'sprite',
     moves:

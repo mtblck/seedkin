@@ -47,7 +47,7 @@ describe('style pages', () => {
     expect(styleGuide('snoot', snoot, '1.0')).not.toContain('<code>skin</code>');
     expect(styleGuide('beastie', beastie, '1.0')).toContain("'Monster avatar'");
     expect(styleGuide('sprite', sprite, '1.0')).toContain('<code>element</code>');
-    expect(styleGuide('sprite', sprite, '1.0')).toContain('<span class="badge">Preview</span>');
+    expect(styleGuide('sprite', sprite, '1.0')).toContain('<span class="badge stable">Stable</span>');
   });
 
   it('lists animate for every style, with what it does', () => {
