@@ -8,14 +8,19 @@ export type Element = 'fire' | 'water' | 'earth' | 'wind' | 'space';
 export type Form =
   | 'flame'
   | 'wisp'
+  | 'ember'
   | 'drop'
   | 'bubble'
+  | 'jelly'
   | 'boulder'
   | 'crystal'
+  | 'mushroom'
   | 'puff'
   | 'tornado'
+  | 'leaf'
   | 'planet'
-  | 'star';
+  | 'star'
+  | 'comet';
 export type Eyes = 'dots' | 'tiny' | 'round' | 'happy' | 'sleepy' | 'wink';
 export type Mouth = 'none' | 'dot' | 'smile' | 'grin';
 

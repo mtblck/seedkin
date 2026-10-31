@@ -1,4 +1,4 @@
-import { type Canvas, canvas, type Draw, dots, type Form, frames, pick, Role, rows, span } from './draw.js';
+import { art, type Canvas, canvas, type Draw, dots, type Form, frames, pick, Role, rows, span } from './draw.js';
 
 const STARS = frames('2,2 12,12 | 12,1 2,12 | 12,2 1,13 | 2,12 13,1');
 const SMALL_STARS = frames('0,0 8,7 | 8,1 1,8 | 7,0 0,7 | 1,8 8,0');
@@ -69,8 +69,50 @@ const starSmall: Draw = (f) => {
   return { c, at: { x: 4, dx: 1, y: 3 } };
 };
 
-/** A ringed planet and a four-point star, with stars twinkling in the corners. */
-export const SPACE: Record<'planet' | 'star', Form> = {
+const HEAD = `
+  .......sssss...
+  ......s#####s..
+  .....s##o####s.
+  .....s#######s.
+  .....s#######s.
+  .....s#######s.
+  .....s#######s.
+  ......s#####s..
+  .......sssss...
+`;
+const SMALL_HEAD = `
+  ....sss..
+  ...s#o#s.
+  ...s###s.
+  ...s###s.
+  ...s###s.
+  ....sss..
+`;
+/** The tail streams back from the head; its far end breaks into flecks that come and go. */
+const TAIL = frames('5,6 4,5 3,4 6,5 5,4 4,3 3,2 7,4 6,3 5,2')[0] ?? [];
+const TAIL_ENDS = frames('2,3 1,1 | 2,1 0,2 | 1,2 3,0 | 0,1 2,0');
+const SMALL_TAIL = frames('3,2 2,1')[0] ?? [];
+const SMALL_TAIL_ENDS = frames('1,0 | 0,1 | 0,0 | 1,1');
+
+const comet: Draw = (f) => {
+  const c = canvas(15);
+  dots(c, TAIL, Role.Shade);
+  dots(c, pick(TAIL_ENDS, f), Role.Accent);
+  art(c, HEAD, 4);
+  return { c, at: { x: 9, dx: 2, y: 7 } };
+};
+
+const cometSmall: Draw = (f) => {
+  const c = canvas(9);
+  dots(c, SMALL_TAIL, Role.Shade);
+  dots(c, pick(SMALL_TAIL_ENDS, f), Role.Accent);
+  art(c, SMALL_HEAD, 2);
+  return { c, at: { x: 5, dx: 1, y: 4 } };
+};
+
+/** A ringed planet and a four-point star, with stars twinkling in the corners, and a comet. */
+export const SPACE: Record<'planet' | 'star' | 'comet', Form> = {
+  comet: { full: comet, small: cometSmall },
   planet: { full: planet, small: planetSmall },
   star: { full: star, small: starSmall },
 };

@@ -36,10 +36,16 @@ export const PALETTES: readonly Palette[] = Object.freeze([
   p('Saturn', '#14101e', '#221b31', '#f2b56b', '#c9853b', '#fff1c9', '#2a1806', '#c3a6ff'),
   p('Comet', '#071a1f', '#0f2a31', '#5fd4e8', '#2fa3b8', '#e8fdff', '#03161b', '#fff3a3'),
   p('Mars', '#1a0e0c', '#2a1714', '#e0663f', '#a8442a', '#ffd6c4', '#1a0805', '#ffcf8a'),
+  p('Toadstool', '#f3efe6', '#e6e0d2', '#e0453a', '#a82a24', '#fff6e6', '#2a0f0a', '#ff9e8a'),
+  p('Chanterelle', '#1c1a12', '#2a271c', '#f2a93b', '#c47a1c', '#fff1cf', '#2a1a05', '#ffd27a'),
+  p('Porcini', '#eef0e6', '#dfe2d3', '#9a6a43', '#6e4628', '#f6e9d2', '#24150a', '#7fbf5a'),
+  p('Maple', '#fbeee2', '#f1ddca', '#e8573a', '#b23a22', '#ffd9c2', '#2a0d05', '#d9a441'),
+  p('Sycamore', '#e8f2df', '#d7e6ca', '#6dbb4a', '#478a2e', '#e4f7d4', '#122408', '#e0b84a'),
+  p('Ginkgo', '#1b1d14', '#292c1f', '#f4cf3b', '#c9a21c', '#fff6c6', '#2a2205', '#9ad16a'),
 ]);
 
-/** The element each palette belongs to, and the one form it's kept for, if any; indexed like `PALETTES`. */
-const SUITS: readonly (readonly [Element, Form?])[] = [
+/** The element each palette belongs to, and the forms it's kept for, if any; indexed like `PALETTES`. */
+const SUITS: readonly (readonly [Element, ...Form[]])[] = [
   ['fire'],
   ['fire'],
   ['fire'],
@@ -56,16 +62,22 @@ const SUITS: readonly (readonly [Element, Form?])[] = [
   ['earth', 'crystal'],
   ['earth', 'crystal'],
   ['earth', 'crystal'],
-  ['wind'],
-  ['wind'],
-  ['wind'],
-  ['wind'],
-  ['wind'],
+  ['wind', 'puff', 'tornado'],
+  ['wind', 'puff', 'tornado'],
+  ['wind', 'puff', 'tornado'],
+  ['wind', 'puff', 'tornado'],
+  ['wind', 'puff', 'tornado'],
   ['space'],
   ['space'],
   ['space'],
   ['space'],
   ['space'],
+  ['earth', 'mushroom'],
+  ['earth', 'mushroom'],
+  ['earth', 'mushroom'],
+  ['wind', 'leaf'],
+  ['wind', 'leaf'],
+  ['wind', 'leaf'],
 ];
 
 /**
@@ -77,5 +89,5 @@ const SUITS: readonly (readonly [Element, Form?])[] = [
  * @returns Indexes into `PALETTES`
  */
 export function palettesFor(element: Element, form: Form): number[] {
-  return SUITS.flatMap(([e, only], i) => (e === element && (!only || only === form) ? [i] : []));
+  return SUITS.flatMap(([e, ...only], i) => (e === element && (only.length === 0 || only.includes(form)) ? [i] : []));
 }

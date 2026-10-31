@@ -82,5 +82,28 @@ export const pick = <T>(list: readonly T[], f: number): T => list[f % list.lengt
 /** An empty canvas of the given size. */
 export const canvas = (size: number): Canvas => createCanvas(size);
 
+const ROLES: Readonly<Record<string, Role>> = { '#': Role.Body, s: Role.Shade, o: Role.Screen, a: Role.Accent };
+
+/**
+ * Paints a picture drawn in text, one row per line: `#` body, `s` edge,
+ * `o` screen, `a` accent, anything else left alone; shifted `dy` down and
+ * `dx` across, which can differ row by row to lean the picture.
+ */
+export function art(c: Canvas, picture: string, dy = 0, dx: number | ((y: number) => number) = 0): void {
+  picture
+    .trim()
+    .split(/\s+/)
+    .forEach((row, y) => {
+      const shift = typeof dx === 'number' ? dx : dx(y);
+      [...row].forEach((ch, x) => {
+        const role = ROLES[ch];
+        if (role !== undefined) c.paint(x + shift, y + dy, role);
+      });
+    });
+}
+
+/** Moves a list of cells `dy` rows down (up when negative). */
+export const lift = (cells: Cells, dy: number): Cells => cells.map(([x, y]) => [x, y + dy] as const);
+
 export type { Canvas };
 export { Role };

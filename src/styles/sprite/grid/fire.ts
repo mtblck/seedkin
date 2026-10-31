@@ -1,4 +1,4 @@
-import { canvas, type Draw, dots, type Form, frames, pick, Role, rows, sway } from './draw.js';
+import { art, canvas, type Draw, dots, type Form, frames, pick, Role, rows, sway } from './draw.js';
 
 const tip = (s: number, n: number) => (i: number) => (i < n ? Math.trunc((s * (n - i)) / 2) : 0);
 const EMBERS = frames('2,6 12,3 | 2,4 12,9 | 3,2 11,7 | 1,9 12,5');
@@ -41,8 +41,77 @@ const wispSmall: Draw = (f) => {
   return { c, at: { x: 4, dx: 1, y: 5 } };
 };
 
-/** A flame with a swaying tip, and a round wisp with a tail of fire. */
-export const FIRE: Record<'flame' | 'wisp', Form> = {
+/** A glowing coal with bright cracks; its little flame is drawn separately so it can sway. */
+const COAL = `
+  ....sssssss....
+  ...s###o###s...
+  ..s#########s..
+  .s#########o#s.
+  .so#########os.
+  .s#o#########s.
+  .s###########s.
+  ..sssssssssss..
+`;
+const SMALL_COAL = `
+  ..sssss..
+  .s#####s.
+  .s#####s.
+  .so####s.
+  .s####os.
+  ..sssss..
+`;
+/** Sparks rising off a coal, clear of its flame. */
+const SPARKS = frames('3,4 11,3 | 3,3 11,2 | 2,2 12,4 | 2,1 12,3');
+
+const ember: Draw = (f) => {
+  const c = canvas(15);
+  const s = sway(f);
+  art(c, COAL, 6);
+  dots(
+    c,
+    [
+      [7 + s, 3],
+      [6 + Math.trunc(s / 2), 4],
+      [8 + Math.trunc(s / 2), 4],
+      [5, 5],
+      [9, 5],
+    ],
+    Role.Body,
+  );
+  dots(
+    c,
+    [
+      [7, 4],
+      [6, 5],
+      [7, 5],
+      [8, 5],
+    ],
+    Role.Screen,
+  );
+  dots(c, pick(SPARKS, f), Role.Accent);
+  return { c, at: { x: 7, dx: 2, y: 8 } };
+};
+
+const emberSmall: Draw = (f) => {
+  const c = canvas(9);
+  art(c, SMALL_COAL, 3);
+  dots(
+    c,
+    [
+      [4 + sway(f), 1],
+      [3, 2],
+      [5, 2],
+    ],
+    Role.Body,
+  );
+  c.paint(4, 2, Role.Screen);
+  dots(c, pick(SMALL_EMBERS, f + 2), Role.Accent);
+  return { c, at: { x: 4, dx: 1, y: 5 } };
+};
+
+/** A flame with a swaying tip, a round wisp with a tail of fire, and a glowing ember. */
+export const FIRE: Record<'flame' | 'wisp' | 'ember', Form> = {
+  ember: { full: ember, small: emberSmall },
   flame: { full: flame, small: flameSmall },
   wisp: { full: wisp, small: wispSmall },
 };

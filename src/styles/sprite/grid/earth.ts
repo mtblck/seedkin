@@ -1,4 +1,4 @@
-import { canvas, type Draw, dots, type Form, frames, pick, Role, rows, span, sway } from './draw.js';
+import { art, canvas, type Draw, dots, type Form, frames, pick, Role, rows, span, sway } from './draw.js';
 
 const PEBBLES = frames('1,8 | 2,4 | 13,7 | 12,3');
 
@@ -65,8 +65,59 @@ const crystalSmall: Draw = (f) => {
   return { c, at: { x: 4, dx: 1, y: 3 } };
 };
 
+/** A toadstool's cap, spotted; its stem is drawn in screen so the face sits on it. */
+const CAP = `
+  ......sss......
+  ....ss###ss....
+  ...s##oo###s...
+  ..s##oo####os..
+  .s#########oos.
+  .s##o#######os.
+  .sssssssssssss.
+`;
+const STEM = `
+  ...sooooooos...
+  ...sooooooos...
+  ...sooooooos...
+  ...sooooooos...
+  ...sooooooos...
+  ...sssssssss...
+`;
+const SMALL_CAP = `
+  ...sss...
+  .ss#o#ss.
+  s##o###os
+  sssssssss
+`;
+const SMALL_STEM = `
+  ..sooos..
+  ..sooos..
+  ..sooos..
+  ..sssss..
+`;
+/** Spores drifting down past the stem. */
+const SPORES = frames('1,9 13,11 | 1,10 13,12 | 1,11 13,9 | 1,12 13,10');
+/** The cap bobs on its stem. */
+const BOB = [0, 0, 1, 1] as const;
+
+const mushroom: Draw = (f) => {
+  const c = canvas(15);
+  art(c, STEM, 8);
+  art(c, CAP, 1 + pick(BOB, f));
+  dots(c, pick(SPORES, f), Role.Accent);
+  return { c, at: { x: 7, dx: 2, y: 9 } };
+};
+
+const mushroomSmall: Draw = (f) => {
+  const c = canvas(9);
+  art(c, SMALL_STEM, 5);
+  art(c, SMALL_CAP, 1 + pick(BOB, f));
+  return { c, at: { x: 4, dx: 1, y: 5 } };
+};
+
 /** A boulder with a sprout, and a cut gem. */
-export const EARTH: Record<'boulder' | 'crystal', Form> = {
+export const EARTH: Record<'boulder' | 'crystal' | 'mushroom', Form> = {
+  mushroom: { full: mushroom, small: mushroomSmall },
   boulder: { full: boulder, small: boulderSmall },
   crystal: { full: crystal, small: crystalSmall },
 };
