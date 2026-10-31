@@ -34,6 +34,6 @@ No new secret, and the trusted publisher on npm keeps naming `release.yml`.
 A tag made with `GITHUB_TOKEN` starts no workflow, so there is never a second
 release run. Any merge that changes the version releases it, so a version bump
 belongs only in a release PR. The tag points at the merge commit and is made
-after the publish succeeds, so a failed check leaves no tag and the run can be
-re-run. If Matt wants a gate inside GitHub too, a `release` environment with
+after the publish succeeds, so a failed check leaves no tag; a re-run of a
+half-finished release skips what is done and finishes it. If Matt wants a gate inside GitHub too, a `release` environment with
 him as required reviewer can be added to the job (and to the trusted publisher).

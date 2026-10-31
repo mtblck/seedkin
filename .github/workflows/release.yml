@@ -71,10 +71,14 @@ jobs:
             echo "::notice::package.json changed but its version is still $version; nothing to release."
             exit 0
           fi
-          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null; then
-            echo "::notice::v$version is already tagged; nothing to release."
+          # Already tagged: a re-run finishing this release (the later steps skip
+          # what's done) if the tag is on this commit, otherwise nothing to do.
+          tagged=$(git ls-remote --tags origin "refs/tags/v$version" | cut -f1)
+          if [ -n "$tagged" ] && [ "$tagged" != "$GITHUB_SHA" ]; then
+            echo "::notice::v$version is already tagged on another commit; nothing to release."
             exit 0
           fi
+          [ -n "$tagged" ] && echo "tagged=true" >> "$GITHUB_OUTPUT"
           if ! grep -q "^## \[$version\] - " CHANGELOG.md; then
             echo "::error::package.json is $version but CHANGELOG.md has no '## [$version] - date' section."
             exit 1
@@ -98,7 +102,7 @@ jobs:
       - if: steps.version.outputs.release == 'true' && steps.npm.outputs.published != 'true'
         run: npm publish --access public
       - name: Tag the release commit
-        if: steps.version.outputs.release == 'true' && github.ref_type != 'tag'
+        if: steps.version.outputs.release == 'true' && github.ref_type != 'tag' && steps.version.outputs.tagged != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
