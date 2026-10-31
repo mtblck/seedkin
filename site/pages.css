@@ -959,8 +959,8 @@ ol.features > li::before {
     height: var(--r);
     pointer-events: none;
     background-image:
-      radial-gradient(circle at 100% 100%, transparent calc(var(--r) - 1px), var(--paper) var(--r)),
-      radial-gradient(circle at 0 100%, transparent calc(var(--r) - 1px), var(--paper) var(--r));
+      radial-gradient(circle at 100% 100%, transparent var(--r), var(--paper) calc(var(--r) + 0.75px)),
+      radial-gradient(circle at 0 100%, transparent var(--r), var(--paper) calc(var(--r) + 0.75px));
     background-position:
       left top,
       right top;
