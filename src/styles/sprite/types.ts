@@ -47,6 +47,6 @@ export interface SpriteOptions extends CommonOptions {
   element?: Element;
   /** Cell shape. Default `'square'`. */
   shape?: Shape;
-  /** Index into `PALETTES`, or a palette object with hex colours. Default: picked by the seed. */
+  /** Index into `PALETTES`, or a palette object with hex colours. Default: picked by the seed, from its element's. */
   palette?: number | Palette;
 }

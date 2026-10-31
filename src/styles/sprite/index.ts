@@ -10,7 +10,7 @@ export { FRAMES } from '../../core/render/frame.js';
 export { LOOKS } from '../../core/render/look.js';
 export { randomSeed } from '../../core/seed.js';
 export { CENTER, FRAME_COUNT, GRID_SIZE, grid, SMALL_GRID_SIZE, smallGrid } from './grid/index.js';
-export { PALETTES } from './palettes.js';
+export { PALETTE_GROUPS, PALETTES, type PaletteGroup, palettesFor } from './palettes.js';
 export { ELEMENTS, EYES, FORMS, MOUTHS, SHAPES } from './parts.js';
 export { resolveTraits, sprite, spriteDataUri } from './svg.js';
 export { traits } from './traits.js';

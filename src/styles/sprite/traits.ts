@@ -1,5 +1,5 @@
 import { createRng, pick } from '../../core/random.js';
-import { PALETTES } from './palettes.js';
+import { palettesFor } from './palettes.js';
 import { ELEMENTS, EYES, FORMS, MOUTHS } from './parts.js';
 import type { Element, SpriteTraits } from './types.js';
 
@@ -18,7 +18,7 @@ export function traits(seed: string, element?: Element): SpriteTraits {
   const picked = pick(rng, ELEMENTS);
   const el = element ?? picked;
   const form = pick(rng, FORMS[el]);
-  const palette = Math.floor(rng() * PALETTES.length);
+  const palette = pick(rng, palettesFor(el, form));
   const eyes = pick(rng, EYES);
   const mouth = pick(rng, MOUTHS);
   const hasBlush = rng() < 0.5;
