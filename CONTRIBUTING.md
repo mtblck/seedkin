@@ -17,6 +17,7 @@ npm run build       # the package, into dist/
 npm run preview     # preview.html: every shape at 24, 32, 48 and 96px
 npm run site        # the playground, into dist-site/
 npm run serve       # serves it on localhost:4173 with the production headers
+npm run banners     # redraws the README banners in docs/banners/
 ```
 
 ## The one rule: the picture is the API

@@ -66,7 +66,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "tsx scripts/preview.ts",
-    "hero": "tsx scripts/hero.ts",
+    "banners": "tsx scripts/banners.ts",
     "prepublishOnly": "npm run lint && npm run typecheck && npm test && npm run build",
     "site": "npm run build && node scripts/site.mjs",
     "hosting:check": "node scripts/check-hosting.mjs",
