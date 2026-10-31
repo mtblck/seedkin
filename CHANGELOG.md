@@ -7,6 +7,8 @@ any change to the robot a seed draws is a major version.
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-10-31
+
 ### Added
 
 - `HOLIDAY_PALETTES` for Snoot, Noggin, Beastie and Sprite, with the same six holidays and keys as Botling's (New Year's, Valentine's, St Patrick's, Fourth of July, Halloween and Christmas), each painted for that style. Noggin's are outfits: its `palette` option now lays a palette object over the seed's colours, so an outfit (`bg`, `grid`, `screen` and `accent`) keeps the seed's own skin and hair, and any colour left out comes from the seed. A seed never picks a holiday palette, so no seed's avatar changes (ADR 0015).
@@ -15,14 +17,12 @@ any change to the robot a seed draws is a major version.
 ### Site
 
 - Every style's playground has a holiday picker beside its everyday colours.
-- Each style's docs page shows its status next to its name: Stable for every style.
 - The Sprite playground's Colours names the nine palettes drawn for the Sprite's form, and folds the other 72 away under "Other colours" as small swatches, grouped by the form they were drawn for. It was a list of all 81.
 - Every playground has Random and Animate in the Seed card's title row, with the seed box full width below. Animate replaces the Motion row in the options, so it's always in view. On a narrow phone, Random and Animate show just their icons.
 - On a wide screen the playground's avatar card sticks a little below the header as the page scrolls, while the options, colours and download cards scroll by beside it.
 - Each style's palettes have their own card under the options.
 - The playground's Seed title and a new Download title over the code and download buttons match the Options heading.
 - On a phone the header's Menu button sits at the right, after search and theme, and shows only its icon on the narrowest screens.
-- The display font is now Silkscreen, a capitals-only pixel font that stays readable at small sizes, in place of Pixelify Sans, whose lowercase e was hard to read. The font file drops from 12 kB to 8 kB.
 
 ## [2.5.0] - 2026-10-31
 
@@ -34,7 +34,8 @@ any change to the robot a seed draws is a major version.
 
 - A Sprite playground at `/styles/sprite/`, with an Element picker, and a Sprite page in the docs. The home page shows your seed in all five styles, three over two, and the family cards sit three over two, with Sprite marked Stable.
 - The About page has room between its last cards and the footer.
-
+- Each style's docs page shows its status next to its name: Stable for every style.
+- The display font is now Silkscreen, a capitals-only pixel font that stays readable at small sizes, in place of Pixelify Sans, whose lowercase e was hard to read. The font file drops from 12 kB to 8 kB.
 - seedkin.dev has a `sitemap.xml`, a `robots.txt` and an `llms.txt` for AI assistants, all built from the pages themselves; JSON-LD on the home page; and its own link preview image for each style page.
 - The home page has an Animate button again, next to Random, which sets every style moving, and a shorter seed box. Each style card shows its Stable badge in its top right corner.
 - Every playground has a Motion toggle, and its GIF download moves for every style. Snoot, Noggin and Beastie are marked Stable across the site, and each style's options table lists `animate`.
@@ -193,7 +194,8 @@ First release.
 
 The playground site (`site/`, not part of the npm package) lets you try seeds, shapes and palettes and copy the code.
 
-[Unreleased]: https://github.com/mtblck/seedkin/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/mtblck/seedkin/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/mtblck/seedkin/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/mtblck/seedkin/compare/v2.4.3...v2.5.0
 [2.4.3]: https://github.com/mtblck/seedkin/compare/v2.4.2...v2.4.3
 [2.4.2]: https://github.com/mtblck/seedkin/compare/v2.4.1...v2.4.2
