@@ -2,7 +2,8 @@
  * Writes the README banners into docs/banners/: one row of avatars for the
  * whole family (seedkin.svg) and one per style. Each avatar draws its own
  * background inside a rounded frame and the rest is transparent, so the
- * banners read on GitHub's light and dark themes alike.
+ * banners read on GitHub's light and dark themes alike. They animate, and
+ * hold still for anyone who prefers reduced motion.
  * Usage: npm run banners
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -12,7 +13,7 @@ import { noggin } from '../src/styles/noggin/index.js';
 import { snoot } from '../src/styles/snoot/index.js';
 import { sprite } from '../src/styles/sprite/index.js';
 
-type Draw = (seed: string, opts: { size: number; frame: 'rounded'; title: null }) => string;
+type Draw = (seed: string, opts: { size: number; frame: 'rounded'; title: null; animate: true }) => string;
 
 interface Style {
   draw: Draw;
@@ -66,7 +67,7 @@ const family: [Draw, string][] = [0, 1].flatMap((i) =>
 function row(avatars: readonly [Draw, string][], label: string): string {
   const width = avatars.length * SIZE + (avatars.length - 1) * GAP;
   const cells = avatars.map(([draw, seed], i) =>
-    draw(seed, { size: SIZE, frame: 'rounded', title: null }).replace('<svg ', `<svg x="${i * (SIZE + GAP)}" y="0" `),
+    draw(seed, { size: SIZE, frame: 'rounded', title: null, animate: true }).replace('<svg ', `<svg x="${i * (SIZE + GAP)}" y="0" `),
   );
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${SIZE}" width="${width}" height="${SIZE}" role="img" aria-label="${label}">${cells.join('')}</svg>\n`;
 }
