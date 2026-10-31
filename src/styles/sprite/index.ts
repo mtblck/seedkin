@@ -1,7 +1,6 @@
 /**
  * seedkin/sprite: the Sprites, seeded avatars of little elemental spirits.
- * Sprite is a Preview style: a seed's Sprite may change in a minor release
- * until it's marked Stable.
+ * A seed draws the same Sprite in every 2.x release from 2.5.0.
  *
  * @packageDocumentation
  */
