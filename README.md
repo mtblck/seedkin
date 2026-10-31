@@ -248,7 +248,7 @@ The seed is salted, so one id's Botling, Snoot and Beastie are unrelated. `trait
 
 # Sprite
 
-Seeded avatars of little elemental spirits: flames and wisps, drops and blobs, boulders and gems, puffs and funnels, planets and stars, each with a face. Try them at **[seedkin.dev](https://seedkin.dev/styles/sprite/)**. Sprite is a Preview style.
+Seeded avatars of little elemental spirits: flames, wisps and embers, drops, bubbles and jellyfish, boulders, gems, mushrooms and trees, clouds, whirlwinds and leaves, planets, stars and comets, each with a face. Try them at **[seedkin.dev](https://seedkin.dev/styles/sprite/)**. Sprite is a Preview style.
 
 ```ts
 import { sprite, spriteDataUri } from 'seedkin/sprite';
@@ -258,7 +258,7 @@ const src = spriteDataUri(user.id, { size: 40 });
 const team = sprite(user.id, { element: 'fire' }); // the seed still picks the rest
 ```
 
-A seed picks one of five `ELEMENTS` (fire, water, earth, wind, space), one of that element's two `FORMS`, one of its palettes, `EYES`, a mouth from `MOUTHS`, sometimes cheeks, and which way it faces. `sprite()` takes the same options as `snoot()` plus `element`; `shape` defaults to `'square'` rather than being picked by the seed, and `title` defaults to `'Sprite avatar'`. Below 40px it draws a simpler 9x9 Sprite from the same traits.
+A seed picks one of five `ELEMENTS` (fire, water, earth, wind, space), one of that element's `FORMS` (three each, four for earth), one of its palettes, `EYES`, a mouth from `MOUTHS`, sometimes cheeks, and which way it faces. `sprite()` takes the same options as `snoot()` plus `element`; `shape` defaults to `'square'` rather than being picked by the seed, and `title` defaults to `'Sprite avatar'`. Below 40px it draws a simpler 9x9 Sprite from the same traits.
 
 With `animate: true` a Sprite flips through four frames: a flame's tip sways, a drop wobbles, a gem glints and the motes around it drift, at every size. The seed is salted after it (`user-1:sprite`), so ids that differ only in their last character still draw different Sprites. `traits`, `resolveTraits`, `grid` and `smallGrid` (both take a frame, 0 to 3), `FRAME_COUNT`, `PALETTES` and `palettesFor(element, form)` are exported too.
 

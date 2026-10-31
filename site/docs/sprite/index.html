@@ -21,7 +21,7 @@
     {{docsnav}}
     <article id="doc" class="prose" tabindex="-1">
 <h1>Sprite <span class="badge">Preview</span></h1>
-<p class="lede">Seeded avatars of little elemental spirits: flames and wisps, drops and blobs, boulders and gems, puffs and funnels, planets and stars, each with a face. <a href="/styles/sprite/">Try them in the playground</a>.</p>
+<p class="lede">Seeded avatars of little elemental spirits: flames, wisps and embers, drops, bubbles and jellyfish, boulders, gems, mushrooms and trees, clouds, whirlwinds and leaves, planets, stars and comets, each with a face. <a href="/styles/sprite/">Try them in the playground</a>.</p>
 <p>Sprite is a <a href="/docs/versioning/#preview-styles">Preview style</a>: until it's marked Stable, a seed's Sprite can change in a minor version.</p>
 <h2 id="use">Use</h2>
 <pre><code class="language-ts">import { sprite, spriteDataUri } from 'seedkin/sprite';
@@ -32,7 +32,7 @@ const src = spriteDataUri(user.id, { size: 40 });
 // Pick the element yourself: the seed still picks the rest.
 const team = sprite(user.id, { element: 'fire' });
 </code></pre>
-<p>A seed picks one of five elements (<code>ELEMENTS</code>), one of that element's two forms (<code>FORMS</code>), one of its palettes, eyes, a mouth, and sometimes cheeks. The seed is salted, so one id's Botling and Sprite are unrelated. Unlike the other styles, the salt goes after the seed, so ids that differ only in their last character, like <code>user-1</code> and <code>user-2</code>, still draw different Sprites.</p>
+<p>A seed picks one of five elements (<code>ELEMENTS</code>), one of that element's forms (<code>FORMS</code>: three each, four for earth), one of its palettes, eyes, a mouth, and sometimes cheeks. The seed is salted, so one id's Botling and Sprite are unrelated. Unlike the other styles, the salt goes after the seed, so ids that differ only in their last character, like <code>user-1</code> and <code>user-2</code>, still draw different Sprites.</p>
 <h2 id="options">Options</h2>
 <p><code>sprite()</code> takes the same options as <a href="/docs/snoot/#options"><code>snoot()</code></a>, plus <code>element</code>: <code>shape</code> (default <code>'square'</code>; the seed doesn't pick it), <code>palette</code> (an index into Sprite's <code>PALETTES</code>, or a palette object), <code>size</code>, <code>detail</code>, <code>showGrid</code>, <code>look</code>, <code>frame</code>, <code>background</code>, <code>animate</code> and <code>title</code> (default <code>'Sprite avatar'</code>). Below 40px it draws a simpler 9x9 Sprite from the same traits.</p>
 <h2 id="animation">Animation</h2>
