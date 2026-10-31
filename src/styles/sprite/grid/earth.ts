@@ -100,6 +100,57 @@ const SPORES = frames('1,9 13,11 | 1,10 13,12 | 1,11 13,9 | 1,12 13,10');
 /** The cap bobs on its stem. */
 const BOB = [0, 0, 1, 1] as const;
 
+/** A round, leafy crown; the trunk below is drawn in screen. */
+const CROWN = `
+  .....sssss.....
+  ...ss#####ss...
+  ..s##s######s..
+  .s###########s.
+  .s###########s.
+  .s###########s.
+  .s###########s.
+  .s#########s#s.
+  ..s#########s..
+  ...sss###sss...
+`;
+const TRUNK = `
+  ......ooo......
+  ......ooo......
+  .....oo.oo.....
+`;
+const SMALL_CROWN = `
+  ..sssss..
+  .s#####s.
+  s#######s
+  s#######s
+  .s#####s.
+  ..sssss..
+`;
+const SMALL_TRUNK = `
+  ....o....
+  ....o....
+  ...o.o...
+`;
+/** Fruit in the crown, and a leaf falling past the trunk. */
+const FRUIT = frames('3,4 12,6 10,2')[0] ?? [];
+const FALLING = frames('2,10 | 3,11 | 2,12 | 3,13');
+
+const tree: Draw = (f) => {
+  const c = canvas(15);
+  art(c, TRUNK, 11);
+  art(c, CROWN, 1, (y) => (y < 4 ? sway(f) : 0));
+  dots(c, FRUIT, Role.Accent);
+  dots(c, pick(FALLING, f), Role.Accent);
+  return { c, at: { x: 7, dx: 2, y: 5 } };
+};
+
+const treeSmall: Draw = (f) => {
+  const c = canvas(9);
+  art(c, SMALL_TRUNK, 6);
+  art(c, SMALL_CROWN, 0, (y) => (y < 2 ? sway(f) : 0));
+  return { c, at: { x: 4, dx: 1, y: 2 } };
+};
+
 const mushroom: Draw = (f) => {
   const c = canvas(15);
   art(c, STEM, 8);
@@ -116,8 +167,9 @@ const mushroomSmall: Draw = (f) => {
 };
 
 /** A boulder with a sprout, and a cut gem. */
-export const EARTH: Record<'boulder' | 'crystal' | 'mushroom', Form> = {
+export const EARTH: Record<'boulder' | 'crystal' | 'mushroom' | 'tree', Form> = {
   mushroom: { full: mushroom, small: mushroomSmall },
+  tree: { full: tree, small: treeSmall },
   boulder: { full: boulder, small: boulderSmall },
   crystal: { full: crystal, small: crystalSmall },
 };

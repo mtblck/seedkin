@@ -15,6 +15,7 @@ export type Form =
   | 'boulder'
   | 'crystal'
   | 'mushroom'
+  | 'tree'
   | 'puff'
   | 'tornado'
   | 'leaf'

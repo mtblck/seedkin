@@ -2,11 +2,11 @@ import type { Element, Eyes, Form, Mouth, Shape } from './types.js';
 
 /** Every list a seed picks from. While Sprite is a Preview style, these may change in a minor. */
 export const ELEMENTS: readonly Element[] = Object.freeze(['fire', 'water', 'earth', 'wind', 'space']);
-/** Each element's three forms. */
+/** Each element's forms: three each, and four for earth. */
 export const FORMS: Readonly<Record<Element, readonly Form[]>> = Object.freeze({
   fire: ['flame', 'wisp', 'ember'],
   water: ['drop', 'bubble', 'jelly'],
-  earth: ['boulder', 'crystal', 'mushroom'],
+  earth: ['boulder', 'crystal', 'mushroom', 'tree'],
   wind: ['puff', 'tornado', 'leaf'],
   space: ['planet', 'star', 'comet'],
 });
