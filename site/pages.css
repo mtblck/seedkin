@@ -836,8 +836,8 @@ ol.features > li::before {
   gap: 16px;
 }
 /* On a wide screen the avatar and its code stick a little below the header as the page
-   scrolls (playground.js lowers top for a column taller than the screen); the options and
-   colours scroll by beside them. */
+   scrolls, and the options and colours scroll by beside them. On a short screen the code's
+   card comes into view as the end of the options passes. */
 @media (min-width: 901px) {
   .preview {
     position: sticky;

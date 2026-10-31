@@ -198,12 +198,6 @@ export function playground(style) {
   };
   $('options').addEventListener('change', pick);
   $('colours').addEventListener('change', pick);
-  // The avatar and code stick under the header (CSS, on a wide screen). Taller than the screen,
-  // they stick by their bottom edge instead, so every part of them can still be scrolled to.
-  const preview = document.querySelector('.preview');
-  const stick = () => (preview.style.top = `${Math.min(88, innerHeight - preview.offsetHeight - 16)}px`);
-  new ResizeObserver(stick).observe(preview);
-  addEventListener('resize', stick);
   $('reset').addEventListener('click', () => {
     Object.assign(state, DEFAULTS);
     draw();
