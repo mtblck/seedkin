@@ -93,7 +93,7 @@ const SMALL_HEAD = `
  * runs outward a cell a frame, so every cell of it moves; its far end breaks
  * into flecks that come and go.
  */
-const STREAKS = [frames('5,6 4,5 3,4')[0] ?? [], frames('6,5 5,4 4,3 3,2')[0] ?? [], frames('7,4 6,3 5,2')[0] ?? []];
+const STREAKS = [frames('5,6 4,5 3,4')[0] ?? [], frames('6,5 5,4 4,3 3,2')[0] ?? [], frames('7,4 6,3 4,1')[0] ?? []];
 /** Tail cells drawn in the accent colour, so the streaks aren't all one tone. */
 const SPARKS = new Set(['3,4', '4,3']);
 const tail = (f: number) => STREAKS.flatMap((cells, i) => cells.filter((_, k) => (k + i * 2 + 4 - f) % 4 !== 0));
