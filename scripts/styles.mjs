@@ -49,7 +49,8 @@ export const STYLES = [
       ['MARKINGS', 'markings'],
       ['EXTRAS', 'extras'],
     ],
-    palette: "Index into Snoot's <code>PALETTES</code> (its coats), or a palette object.",
+    palette:
+      "Index into Snoot's <code>PALETTES</code> (its coats), or a palette object: one of <code>HOLIDAY_PALETTES</code>, or your own.",
     options: [],
   },
   {
@@ -70,7 +71,8 @@ export const STYLES = [
       ['EYEWEAR', 'kinds of eyewear'],
       ['HEADWEAR', 'kinds of headwear and earrings'],
     ],
-    palette: "Index into Noggin's <code>PALETTES</code> (its outfits), or a palette object.",
+    palette:
+      "Index into Noggin's <code>PALETTES</code> (its outfits); or a palette object laid over the seed's colours, such as an outfit from <code>HOLIDAY_PALETTES</code>, which keeps the seed's skin and hair.",
     options: [
       [
         'skin',
@@ -95,7 +97,8 @@ export const STYLES = [
       ['TOPS', 'tops'],
       ['SIDES', 'side pieces'],
     ],
-    palette: "Index into Beastie's <code>PALETTES</code> (its hides), or a palette object.",
+    palette:
+      "Index into Beastie's <code>PALETTES</code> (its hides), or a palette object: one of <code>HOLIDAY_PALETTES</code>, or your own.",
     options: [],
   },
   {
@@ -114,7 +117,8 @@ export const STYLES = [
       ['EYES', 'eyes'],
       ['MOUTHS', 'mouths'],
     ],
-    palette: "Index into Sprite's <code>PALETTES</code>, or a palette object. The seed picks from its element's.",
+    palette:
+      "Index into Sprite's <code>PALETTES</code>, or a palette object: one of <code>HOLIDAY_PALETTES</code>, or your own. The seed picks from its element's.",
     options: [
       [
         'element',

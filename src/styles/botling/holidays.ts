@@ -1,7 +1,7 @@
+import type { Holiday } from '../../core/types.js';
 import type { Palette } from './types.js';
 
-/** The holidays with a palette in {@link HOLIDAY_PALETTES}. */
-export type Holiday = 'newYear' | 'valentines' | 'stPatricks' | 'fourthOfJuly' | 'halloween' | 'christmas';
+export type { Holiday } from '../../core/types.js';
 
 /**
  * Holiday palettes, in calendar order. A seed never picks one: pass it as the

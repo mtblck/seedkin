@@ -47,3 +47,6 @@ export interface Palette {
   /** Antenna tips, bolts, cheeks and other details. */
   accent: string;
 }
+
+/** The holidays every style has a palette for, in calendar order. */
+export type Holiday = 'newYear' | 'valentines' | 'stPatricks' | 'fourthOfJuly' | 'halloween' | 'christmas';

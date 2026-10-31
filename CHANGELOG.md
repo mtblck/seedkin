@@ -7,8 +7,14 @@ any change to the robot a seed draws is a major version.
 
 ## [Unreleased]
 
+### Added
+
+- `HOLIDAY_PALETTES` for Snoot, Noggin, Beastie and Sprite, with the same six holidays and keys as Botling's (New Year's, Valentine's, St Patrick's, Fourth of July, Halloween and Christmas), each painted for that style. Noggin's are outfits: its `palette` option now lays a palette object over the seed's colours, so an outfit (`bg`, `grid`, `screen` and `accent`) keeps the seed's own skin and hair, and any colour left out comes from the seed. A seed never picks a holiday palette, so no seed's avatar changes (ADR 0015).
+- `Holiday`, the holiday keys, is exported from every style.
+
 ### Site
 
+- Every style's playground has a holiday picker beside its everyday colours.
 - Each style's docs page shows its status next to its name: Stable for every style.
 - The Sprite playground's Colours names the nine palettes drawn for the Sprite's form, and folds the other 72 away under "Other colours" as small swatches, grouped by the form they were drawn for. It was a list of all 81.
 - Every playground has an Animate button beside Random, in place of the Motion row in the options, so it's always in view. On a narrow phone, Random and Animate show just their icons.

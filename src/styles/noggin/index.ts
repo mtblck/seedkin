@@ -9,6 +9,7 @@ export { FRAMES } from '../../core/render/frame.js';
 export { LOOKS } from '../../core/render/look.js';
 export { randomSeed } from '../../core/seed.js';
 export { CENTER, GRID_SIZE, grid, SMALL_GRID_SIZE, smallGrid } from './grid/index.js';
+export { HOLIDAY_PALETTES, type Holiday } from './holidays.js';
 export { HAIR_COLOURS, PALETTES, paletteFor, SKIN_TONES } from './palettes.js';
 export { EYES, EYEWEAR, FACIAL, HAIRS, HEADWEAR, MOUTHS, SHAPES } from './parts.js';
 export { noggin, nogginDataUri, resolveTraits } from './svg.js';

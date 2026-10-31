@@ -3,6 +3,7 @@ import {
   ELEMENTS,
   FORMS,
   FRAMES,
+  HOLIDAY_PALETTES,
   LOOKS,
   PALETTE_GROUPS,
   PALETTES,
@@ -55,7 +56,8 @@ function groupLabel({ element, forms }) {
 /** Names the big Sprite for screen readers, so a change of seed or option is heard. */
 function describe(seed, options) {
   const t = resolveTraits(seed, options);
-  const parts = [`${t.shape} cells`, `${PALETTES[t.palette].name} colours`, EYES[t.eyes], MOUTHS[t.mouth]];
+  const palette = typeof options.palette === 'object' ? options.palette : PALETTES[t.palette];
+  const parts = [`${t.shape} cells`, `${palette.name} colours`, EYES[t.eyes], MOUTHS[t.mouth]];
   if (t.hasBlush) parts.push('rosy cheeks');
   if (MARKS[t.mark]) parts.push(MARKS[t.mark]);
   return `Sprite for "${seed}": ${/^[aeiou]/.test(t.element) ? 'an' : 'a'} ${t.element} ${formName(t.form)}, ${parts.join(', ')}`;
@@ -68,6 +70,7 @@ playground({
   draw: sprite,
   dataUri: spriteDataUri,
   randomSeed,
+  holidays: HOLIDAY_PALETTES,
   describe,
   swatch: (p) => [p.bg, p.body, p.screen, p.accent],
   groups: [
@@ -94,6 +97,11 @@ playground({
         const { element, form } = resolveTraits(seed, options);
         return palettesFor(element, form).map(String);
       },
+    },
+    {
+      name: 'palette',
+      legend: 'Holiday colours',
+      choices: Object.entries(HOLIDAY_PALETTES).map(([key, p]) => [key, p.name, p]),
     },
     shared.grid,
     shared.motion,

@@ -151,11 +151,14 @@ const svg = botling(seed);
 <li><strong>Cost.</strong> About 2.4 KB more per robot at full size (up to 4.5 KB with a big screen to scan), half a kilobyte below 40px. Each animated robot keeps its image repainting, so animate the few that matter (a profile, a hero, the current speaker) rather than a list of 50.</li>
 </ul>
 <h2 id="holiday-palettes">Holiday palettes</h2>
-<p><code>HOLIDAY_PALETTES</code> has New Year&#39;s, Valentine&#39;s, St Patrick&#39;s, Fourth of July, Halloween and Christmas. A seed never picks one, so everyday robots don&#39;t change; pass one in to dress the same robot up for the day:</p>
+<p><code>HOLIDAY_PALETTES</code> has New Year&#39;s, Valentine&#39;s, St Patrick&#39;s, Fourth of July, Halloween and Christmas. A seed never picks one, so everyday robots don&#39;t change; pass one in to dress the same robot up for the day. Every style exports its own <code>HOLIDAY_PALETTES</code> with the same six keys, so one switch can dress a whole page of mixed avatars:</p>
 <pre><code class="language-ts">import { botling, HOLIDAY_PALETTES } from &#39;seedkin/botling&#39;;
+import { HOLIDAY_PALETTES as SNOOT_HOLIDAYS, snoot } from &#39;seedkin/snoot&#39;;
 
 botling(user.id, { palette: HOLIDAY_PALETTES.halloween });
+snoot(user.id, { palette: SNOOT_HOLIDAYS.halloween });
 </code></pre>
+<p>Noggin&#39;s holidays are outfits: the person keeps their own skin and hair.</p>
 <h2 id="building-a-picker">Building a picker</h2>
 <p>Everything that goes into a robot is exported, so you can offer users a choice:</p>
 <pre><code class="language-ts">import { botling, PALETTES, SHAPES, traits } from &#39;seedkin/botling&#39;;
