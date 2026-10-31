@@ -42,6 +42,17 @@ export function resolveTraits(seed: string, opts: NogginOptions = {}): NogginTra
 }
 
 /**
+ * The palette to draw with: the seed's, or a palette object laid over it. An
+ * outfit (no skin or hair colours) is worn with the seed's own skin and hair.
+ */
+function paletteOf(t: NogginTraits, given: NogginOptions['palette']): Palette {
+  const seeded = paletteFor(t.palette, t.skin, t.hairColour);
+  if (typeof given !== 'object') return seeded;
+  if (given === null || Array.isArray(given)) return checkPalette('noggin', given);
+  return checkPalette('noggin', { ...seeded, ...given });
+}
+
+/**
  * Renders the Noggin for a seed as an SVG string. A seed draws
  * the same Noggin in every 2.x release.
  *
@@ -51,10 +62,7 @@ export function resolveTraits(seed: string, opts: NogginOptions = {}): NogginTra
  */
 export function noggin(seed: string, opts: NogginOptions = {}): string {
   const t = resolveTraits(seed, opts);
-  const palette: Palette =
-    typeof opts.palette === 'object'
-      ? checkPalette('noggin', opts.palette)
-      : paletteFor(t.palette, t.skin, t.hairColour);
+  const palette = paletteOf(t, opts.palette);
   const s = settle('noggin', opts as CommonOptions);
   const c = s.isSmall ? drawSmallGrid(t) : drawGrid(t);
   const title = opts.title === undefined ? 'Person avatar' : opts.title;

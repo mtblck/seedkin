@@ -135,13 +135,17 @@ Below 40px the robot only blinks and hovers, since anything busier reads as flic
 
 ### Holiday palettes
 
-`HOLIDAY_PALETTES` has New Year's, Valentine's, St Patrick's, Fourth of July, Halloween and Christmas. A seed never picks one, so everyday robots don't change; pass one in to dress the same robot up for the day:
+`HOLIDAY_PALETTES` has New Year's, Valentine's, St Patrick's, Fourth of July, Halloween and Christmas. A seed never picks one, so everyday robots don't change; pass one in to dress the same robot up for the day. Every style exports its own `HOLIDAY_PALETTES` with the same six keys, so one switch can dress a whole page of mixed avatars:
 
 ```ts
 import { botling, HOLIDAY_PALETTES } from 'seedkin/botling';
+import { HOLIDAY_PALETTES as SNOOT_HOLIDAYS, snoot } from 'seedkin/snoot';
 
 botling(user.id, { palette: HOLIDAY_PALETTES.halloween });
+snoot(user.id, { palette: SNOOT_HOLIDAYS.halloween });
 ```
+
+Noggin's holidays are outfits: the person keeps their own skin and hair.
 
 ### Building a picker
 
@@ -206,7 +210,7 @@ const svg = snoot(user.id);
 const src = snootDataUri(user.id, { size: 40 });
 ```
 
-`snoot()` takes the same options as `botling()`: `shape`, `palette` (an index into Snoot's own twelve `PALETTES`, or a palette object), `size`, `detail`, `showGrid`, `look`, `frame`, `background`, `animate` and `title` (default `'Animal avatar'`). Below 40px it draws a simpler 9x9 Snoot from the same traits, keeping the species' ears, the eyes, muzzle, markings and cheeks.
+`snoot()` takes the same options as `botling()`: `shape`, `palette` (an index into Snoot's own twelve `PALETTES`, or a palette object such as one of its `HOLIDAY_PALETTES`), `size`, `detail`, `showGrid`, `look`, `frame`, `background`, `animate` and `title` (default `'Animal avatar'`). Below 40px it draws a simpler 9x9 Snoot from the same traits, keeping the species' ears, the eyes, muzzle, markings and cheeks.
 
 With `animate: true` a Snoot hovers, blinks and twitches its ears (sleepy Snoots keep their eyes shut). Below 40px it only blinks and hovers. It works as Botling's [animation](#animation) does: CSS inside the SVG, still for anyone who prefers reduced motion, and still at rest.
 
@@ -223,7 +227,7 @@ const svg = noggin(user.id);
 const src = nogginDataUri(user.id, { size: 40, skin: 4 });
 ```
 
-`noggin()` takes the same options as `snoot()`, plus `skin`, an index into `SKIN_TONES` (lightest first), so people can pick their own. `palette` picks one of the six outfits in `PALETTES`, or takes a whole palette object; `title` defaults to `'Person avatar'`. A seed's hair colour and outfit always stand out from its skin; pick another skin tone and they move to the next colours that do. Below 40px it draws a simpler 9x9 Noggin from the same traits.
+`noggin()` takes the same options as `snoot()`, plus `skin`, an index into `SKIN_TONES` (lightest first), so people can pick their own. `palette` picks one of the six outfits in `PALETTES`, or takes a palette object laid over the seed's colours: an outfit such as one of `HOLIDAY_PALETTES` keeps the seed's own skin and hair; `title` defaults to `'Person avatar'`. A seed's hair colour and outfit always stand out from its skin; pick another skin tone and they move to the next colours that do. Below 40px it draws a simpler 9x9 Noggin from the same traits.
 
 With `animate: true` a Noggin hovers, blinks and talks. Closed eyes and shades don't blink and beards don't talk. Below 40px it only blinks and hovers.
 
@@ -240,7 +244,7 @@ const svg = beastie(user.id);
 const src = beastieDataUri(user.id, { size: 40 });
 ```
 
-`beastie()` takes the same options as `snoot()`, `animate` included: `shape`, `palette` (an index into Beastie's own eight `PALETTES`, or a palette object), `size`, `detail`, `showGrid`, `look`, `frame`, `background` and `title` (default `'Monster avatar'`). Below 40px it draws a simpler 9x9 Beastie from the same traits, keeping the body, eyes, mouth, top and sides.
+`beastie()` takes the same options as `snoot()`, `animate` included: `shape`, `palette` (an index into Beastie's own eight `PALETTES`, or a palette object such as one of its `HOLIDAY_PALETTES`), `size`, `detail`, `showGrid`, `look`, `frame`, `background` and `title` (default `'Monster avatar'`). Below 40px it draws a simpler 9x9 Beastie from the same traits, keeping the body, eyes, mouth, top and sides.
 
 With `animate: true` a Beastie hovers, blinks and talks, its horns or antennae wobble and its arms or wings twitch. Below 40px it only blinks and hovers.
 
@@ -260,7 +264,7 @@ const team = sprite(user.id, { element: 'fire' }); // the seed still picks the r
 
 A seed picks one of five `ELEMENTS` (fire, water, earth, wind, space), one of that element's `FORMS` (three each, four for earth), one of its palettes, `EYES`, a mouth from `MOUTHS`, sometimes cheeks, a forehead mark from `MARKS` (none, dot, bar, chevron, plus or twin dots; it's left off where it wouldn't fit), and which way it faces. `sprite()` takes the same options as `snoot()` plus `element`; `shape` defaults to `'square'` rather than being picked by the seed, and `title` defaults to `'Sprite avatar'`. Below 40px it draws a simpler 9x9 Sprite from the same traits.
 
-With `animate: true` a Sprite flips through four frames: a flame's tip sways, a drop wobbles, a gem glints and the motes around it drift, at every size. The seed is salted after it (`user-1:sprite`), so ids that differ only in their last character still draw different Sprites. `traits`, `resolveTraits`, `grid` and `smallGrid` (both take a frame, 0 to 3), `FRAME_COUNT`, `PALETTES`, `PALETTE_GROUPS` (which forms wear which palettes, as `{ element, forms, palettes }`) and `palettesFor(element, form)` are exported too.
+With `animate: true` a Sprite flips through four frames: a flame's tip sways, a drop wobbles, a gem glints and the motes around it drift, at every size. The seed is salted after it (`user-1:sprite`), so ids that differ only in their last character still draw different Sprites. `traits`, `resolveTraits`, `grid` and `smallGrid` (both take a frame, 0 to 3), `FRAME_COUNT`, `PALETTES`, `HOLIDAY_PALETTES` (any form can wear one), `PALETTE_GROUPS` (which forms wear which palettes, as `{ element, forms, palettes }`) and `palettesFor(element, form)` are exported too.
 
 # Developing
 
