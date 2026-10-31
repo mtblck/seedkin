@@ -88,15 +88,21 @@ const SMALL_HEAD = `
   ...s###s.
   ....sss..
 `;
-/** The tail streams back from the head; its far end breaks into flecks that come and go. */
-const TAIL = frames('5,6 4,5 3,4 6,5 5,4 4,3 3,2 7,4 6,3 5,2')[0] ?? [];
+/**
+ * The tail streams back from the head in three streaks, each with a gap that
+ * runs outward a cell a frame, so every cell of it moves; its far end breaks
+ * into flecks that come and go.
+ */
+const STREAKS = [frames('5,6 4,5 3,4')[0] ?? [], frames('6,5 5,4 4,3 3,2')[0] ?? [], frames('7,4 6,3 5,2')[0] ?? []];
+const tail = (f: number) => STREAKS.flatMap((cells, i) => cells.filter((_, k) => (k + i * 2 + 4 - f) % 4 !== 0));
 const TAIL_ENDS = frames('2,3 1,1 | 2,1 0,2 | 1,2 3,0 | 0,1 2,0');
 const SMALL_TAIL = frames('3,2 2,1')[0] ?? [];
+const smallTail = (f: number) => SMALL_TAIL.filter((_, k) => (k + 4 - f) % 4 !== 0);
 const SMALL_TAIL_ENDS = frames('1,0 | 0,1 | 0,0 | 1,1');
 
 const comet: Draw = (f) => {
   const c = canvas(15);
-  dots(c, TAIL, Role.Shade);
+  dots(c, tail(f), Role.Shade);
   dots(c, pick(TAIL_ENDS, f), Role.Accent);
   art(c, HEAD, 4);
   return { c, at: { x: 9, dx: 2, y: 7 } };
@@ -104,7 +110,7 @@ const comet: Draw = (f) => {
 
 const cometSmall: Draw = (f) => {
   const c = canvas(9);
-  dots(c, SMALL_TAIL, Role.Shade);
+  dots(c, smallTail(f), Role.Shade);
   dots(c, pick(SMALL_TAIL_ENDS, f), Role.Accent);
   art(c, SMALL_HEAD, 2);
   return { c, at: { x: 5, dx: 1, y: 4 } };
