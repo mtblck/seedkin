@@ -294,16 +294,34 @@ input[type="text"]:focus-visible {
   outline-offset: 1px;
 }
 
+/* ---- page heads ---- */
+/* Every page opens the same way, so moving between them nothing jumps: the heading area starts
+   at the same height, under a kicker line (a tagline or a breadcrumb), and hero headings share
+   one size. */
+:root {
+  --head-top: 48px;
+  --head-h1: clamp(2.2rem, 5vw, 3.4rem);
+}
+@media (max-width: 820px) {
+  :root {
+    --head-top: 32px;
+  }
+}
+
 /* ---- hero ---- */
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 48px;
   align-items: center;
-  padding: 56px 0 32px;
+  padding: var(--head-top) 0 32px;
+}
+/* The words hold the top of the row, so the art beside them never moves the heading. */
+.hero > :first-child {
+  align-self: start;
 }
 .hero h1 {
-  font-size: clamp(2.3rem, 5.5vw, 3.6rem);
+  font-size: var(--head-h1);
   margin: 0 0 16px;
 }
 .lede {
@@ -678,7 +696,6 @@ legend {
   .hero {
     grid-template-columns: minmax(0, 1fr);
     gap: 32px;
-    padding-top: 32px;
   }
   .cols {
     grid-template-columns: minmax(0, 1fr);

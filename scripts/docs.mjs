@@ -108,3 +108,14 @@ export function pager(slug) {
   const file = slug ? `site/docs/${slug}/index.html` : 'site/docs/index.html';
   return `<footer class="docs-foot"><nav class="pager" aria-label="Previous and next">${link(PAGES[i - 1], 'prev', 'Previous')}${link(PAGES[i + 1], 'next', 'Next')}</nav><p class="edit"><a href="${REPO}/edit/main/${file}">Edit this page on GitHub</a></p></footer>`;
 }
+
+/**
+ * The breadcrumb over a page's heading: Docs, then its group.
+ *
+ * @param {string} slug - The current page
+ * @returns {string} HTML
+ */
+export function crumb(slug) {
+  const { group } = DOCS.find((g) => g.pages.some(([s]) => s === slug));
+  return `<p class="kicker"><a href="/docs/">Docs</a> / ${group}</p>`;
+}
