@@ -1,6 +1,6 @@
 import { createRng, pick } from '../../core/random.js';
 import { palettesFor } from './palettes.js';
-import { ELEMENTS, EYES, FORMS, MOUTHS } from './parts.js';
+import { ELEMENTS, EYES, FORMS, MARKS, MOUTHS } from './parts.js';
 import type { Element, SpriteTraits } from './types.js';
 
 /**
@@ -25,5 +25,6 @@ export function traits(seed: string, element?: Element): SpriteTraits {
   const base = 150 + Math.floor(rng() * 90);
   const beats = [0, 1, 2, 3].map(() => base + Math.floor(rng() * 80));
   const isMirrored = rng() < 0.5;
-  return { element: el, form, palette, eyes, mouth, hasBlush, isMirrored, beats, shape: 'square' };
+  const mark = pick(rng, MARKS);
+  return { element: el, form, palette, eyes, mouth, hasBlush, mark, isMirrored, beats, shape: 'square' };
 }

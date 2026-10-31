@@ -3,6 +3,7 @@ import type { Canvas, Form } from './draw.js';
 import { EARTH } from './earth.js';
 import { paintFace } from './face.js';
 import { FIRE } from './fire.js';
+import { paintMark } from './mark.js';
 import { SPACE } from './space.js';
 import { WATER } from './water.js';
 import { WIND } from './wind.js';
@@ -24,8 +25,10 @@ const DRAWERS: Readonly<Record<FormName, Form>> = { ...FIRE, ...WATER, ...EARTH,
  */
 export function drawFrame(t: SpriteTraits, frame: number, small: boolean): Canvas {
   const form = DRAWERS[t.form];
-  const { c, at } = (small ? form.small : form.full)(frame);
+  const draw = small ? form.small : form.full;
+  const { c, at } = draw(frame);
   paintFace(c, at, t, small);
+  paintMark(c, at, t.mark, [0, 1, 2, 3].map(draw), small);
   if (t.isMirrored) for (const row of c.cells) row.reverse();
   return c;
 }

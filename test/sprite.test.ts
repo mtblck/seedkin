@@ -9,6 +9,7 @@ import {
   FRAMES,
   GRID_SIZE,
   grid,
+  MARKS,
   MOUTHS,
   PALETTE_GROUPS,
   PALETTES,
@@ -53,6 +54,7 @@ describe('sprite', () => {
     expect(new Set(all.map((t) => t.form)).size).toBe(Object.values(FORMS).flat().length);
     expect(new Set(all.map((t) => t.eyes)).size).toBe(EYES.length);
     expect(new Set(all.map((t) => t.mouth)).size).toBe(MOUTHS.length);
+    expect(new Set(all.map((t) => t.mark)).size).toBe(MARKS.length);
   });
 
   it('gives every palette to some form, and keeps gems for crystals and stones for boulders', () => {

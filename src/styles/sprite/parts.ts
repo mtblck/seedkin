@@ -1,4 +1,4 @@
-import type { Element, Eyes, Form, Mouth, Shape } from './types.js';
+import type { Element, Eyes, Form, Mark, Mouth, Shape } from './types.js';
 
 /** Every list a seed picks from. While Sprite is a Preview style, these may change in a minor. */
 export const ELEMENTS: readonly Element[] = Object.freeze(['fire', 'water', 'earth', 'wind', 'space']);
@@ -21,5 +21,6 @@ export const EYES: readonly Eyes[] = Object.freeze([
   'close',
 ]);
 export const MOUTHS: readonly Mouth[] = Object.freeze(['none', 'dot', 'smile', 'grin', 'open', 'smirk', 'oh']);
+export const MARKS: readonly Mark[] = Object.freeze(['none', 'dot', 'bar', 'chevron', 'plus', 'twin']);
 /** Every cell shape. Sprites are drawn in squares unless asked otherwise. */
 export const SHAPES: readonly Shape[] = Object.freeze(['square', 'circle', 'triangle', 'diamond']);

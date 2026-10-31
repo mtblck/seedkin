@@ -31,6 +31,13 @@ const MOUTHS = {
   smirk: 'a smirk',
   oh: 'an open mouth',
 };
+const MARKS = {
+  dot: 'a dot on its forehead',
+  bar: 'a bar on its forehead',
+  chevron: 'a chevron on its forehead',
+  plus: 'a plus on its forehead',
+  twin: 'two dots on its forehead',
+};
 const title = (s) => s[0].toUpperCase() + s.slice(1);
 
 /** Names the big Sprite for screen readers, so a change of seed or option is heard. */
@@ -38,6 +45,7 @@ function describe(seed, options) {
   const t = resolveTraits(seed, options);
   const parts = [`${t.shape} cells`, `${PALETTES[t.palette].name} colours`, EYES[t.eyes], MOUTHS[t.mouth]];
   if (t.hasBlush) parts.push('rosy cheeks');
+  if (MARKS[t.mark]) parts.push(MARKS[t.mark]);
   return `Sprite for "${seed}": a ${t.element} ${t.form}, ${parts.join(', ')}`;
 }
 
