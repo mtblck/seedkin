@@ -32,9 +32,11 @@ export function sharedGroups({ SHAPES, FRAMES, LOOKS }) {
         ['off', 'Off'],
       ],
     },
+    // Motion is the Animate button beside Random rather than a row in the options panel.
     motion: {
       name: 'motion',
       legend: 'Motion',
+      button: true,
       choices: [
         ['off', 'Still'],
         ['on', 'Animated'],
@@ -55,6 +57,7 @@ export function sharedGroups({ SHAPES, FRAMES, LOOKS }) {
  *   Two groups may share a name (everyday and holiday palettes): picking in one clears the other.
  *   A group with many choices can add sections ([{ label, values }]), othersLabel and
  *   featured(seed, options) giving the values to name for this avatar; the rest fold away as tiles.
+ *   A group with button: true (Motion) isn't drawn in the panel: a button stands for it.
  */
 export function playground(style) {
   const { name, noun, draw: drawStyle, dataUri, randomSeed, holidays = {}, groups } = style;
@@ -96,6 +99,7 @@ export function playground(style) {
     $('sizes').innerHTML = [96, 48, 32, 24].map((size) => `<li>${avatar(size)}<span>${size}px</span></li>`).join('');
     $('code').innerHTML = highlight(snippet(), 'js');
     arrange();
+    $('animate').setAttribute('aria-pressed', String(state.motion === 'on'));
     for (const input of document.querySelectorAll('.choices input')) input.checked = state[input.name] === input.value;
     for (const link of document.querySelectorAll('[data-to]')) {
       link.href = `/styles/${link.dataset.to}/#${new URLSearchParams({ seed: state.seed })}`;
@@ -130,6 +134,7 @@ export function playground(style) {
     'beforeend',
     groups
       .map((g, i) => {
+        if (g.button) return '';
         const kind = g.choices.some(([, , p]) => p) ? 'swatches' : 'segments';
         const body = g.sections
           ? sectioned(i, g)
@@ -236,6 +241,12 @@ export function playground(style) {
     draw();
     gallery();
   });
+  // The Animate button beside Random is the Motion option (a group with button: true).
+  $('animate').addEventListener('click', () => {
+    state.motion = state.motion === 'on' ? 'off' : 'on';
+    draw();
+    gallery();
+  });
   $('shuffle').addEventListener('click', () => {
     shuffle();
     gallery();
@@ -305,7 +316,8 @@ export function playground(style) {
     state.seed = fromHash.get('seed')?.replace(/[\r\n]+/g, '') ?? randomSeed();
     for (const k of KEYS) {
       const v = fromHash.get(k);
-      state[k] = v && document.querySelector(`.choices input[name="${k}"][value="${CSS.escape(v)}"]`) ? v : DEFAULTS[k];
+      const known = groups.some((g) => g.name === k && g.choices.some(([value]) => value === v));
+      state[k] = known ? v : DEFAULTS[k];
     }
     $('seed').value = state.seed;
     draw();

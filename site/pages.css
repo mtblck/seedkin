@@ -831,12 +831,53 @@ ol.features > li::before {
   display: grid;
   gap: 16px;
 }
-/* The avatar and its code stay in view while the options scroll, where the screen is tall
-   enough to hold them. */
-@media (min-width: 901px) and (min-height: 860px) {
-  .preview {
+/* On a wide screen the avatar and the options each stick under the header as the page
+   scrolls, and the options scroll inside their card, so every option stays in reach. */
+@media (min-width: 901px) {
+  .preview,
+  .options {
     position: sticky;
     top: 80px;
+  }
+  /* The options take the height of the avatar and code beside them (contain: size keeps
+     their own length out of the row), and no more than the screen below the header. */
+  .play {
+    align-items: stretch;
+  }
+  .preview {
+    align-self: start;
+  }
+  .options {
+    contain: size;
+    max-height: calc(100dvh - 96px);
+    overflow-y: auto;
+  }
+}
+/* The titles of the playground's cards (Seed, Download) match the Options heading. */
+.play .panel-title {
+  display: block;
+  font: 600 1.5rem / 1.1 var(--display);
+  letter-spacing: 0.01em;
+  margin: 0 0 12px;
+}
+/* Above phone width the seed box shares its row with Random and Animate. */
+@media (min-width: 481px) {
+  .stage .seed-row input {
+    flex-basis: 8rem;
+  }
+}
+/* Random and Animate drop their words for icons when the row is too narrow for both. */
+.seed-row {
+  container-type: inline-size;
+}
+@container (max-width: 229px) {
+  .seed-row .btn-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 .stage {

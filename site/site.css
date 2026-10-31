@@ -192,17 +192,36 @@ li {
   width: 18px;
   height: 18px;
 }
+/* On the narrowest phones Menu is its icon, so the bar holds one row. */
+@media (max-width: 400px) {
+  .menu-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 /* On a phone the nav folds behind Menu (once scripts run; without them it wraps). */
 @media (max-width: 640px) {
   .top .wrap {
     flex-wrap: wrap;
+    gap: 12px;
   }
   .top nav {
     flex-wrap: wrap;
     gap: 4px 16px;
   }
+  /* Search and theme first, Menu last at the right edge; Menu stays first in the tab
+     order, right before the links it opens beneath the bar. */
   .js .menu-btn {
     display: inline-flex;
+    order: 2;
+    margin-left: 0;
+  }
+  .js .search-btn {
+    margin-left: auto;
   }
   .js .top nav {
     display: none;
@@ -510,18 +529,6 @@ legend {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-}
-/* Floated, the legend lays out as a flex item, in line with its buttons. */
-.downloads legend {
-  float: left;
-  margin: 0 4px 0 0;
-}
-/* On a phone the four formats fit on a line only without the legend beside them. */
-@media (max-width: 480px) {
-  .downloads legend {
-    width: 100%;
-    margin: 0 0 2px;
-  }
 }
 .downloads[aria-busy="true"] .btn {
   cursor: progress;

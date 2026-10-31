@@ -2,11 +2,12 @@
       <div class="preview">
         <div class="stage card">
           <form class="seed" id="seed-form">
-            <label for="seed">Seed</label>
+            <label class="panel-title" for="seed">Seed</label>
             <div class="seed-row">
               <input id="seed" name="seed" type="text" autocomplete="off" spellcheck="false" maxlength="200" placeholder="Try your name…" />
               <!-- Icon: Lucide (ISC licence), lucide.dev -->
-              <button class="btn" type="button" id="random"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg>Random</button>
+              <button class="btn" type="button" id="random"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg><span class="btn-text">Random</span></button>
+              <button class="btn" type="button" id="animate" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg><span class="btn-text">Animate</span></button>
             </div>
           </form>
           <div class="big" id="big" role="img" aria-label="Your {{label}}"></div>
@@ -14,12 +15,12 @@
           <p class="note">{{small-note}}</p>
         </div>
         <div class="output card">
+          <h2 class="panel-title" id="output-h">Download</h2>
           <pre class="code" data-nocopy><code id="code"></code></pre>
           <div class="actions">
             <button class="btn" type="button" id="copy-code">Copy code</button>
             <button class="btn" type="button" id="copy-svg">Copy SVG</button>
-            <fieldset class="downloads" id="downloads">
-              <legend>Download</legend>
+            <fieldset class="downloads" id="downloads" aria-label="Download as">
               <button class="btn" type="button" data-format="svg">SVG</button>
               <button class="btn" type="button" data-format="png">PNG</button>
               <button class="btn" type="button" data-format="jpeg">JPG</button>

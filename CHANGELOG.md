@@ -11,6 +11,10 @@ any change to the robot a seed draws is a major version.
 
 - Each style's docs page shows its status next to its name: Stable for every style.
 - The Sprite playground's Colours names the nine palettes drawn for the Sprite's form, and folds the other 72 away under "Other colours" as small swatches, grouped by the form they were drawn for. It was a list of all 81.
+- Every playground has an Animate button beside Random, in place of the Motion row in the options, so it's always in view. On a narrow phone, Random and Animate show just their icons.
+- On a wide screen the playground's avatar and options cards stick under the header as the page scrolls. The options card is as tall as the avatar and code beside it, or the screen, and scrolls inside.
+- The playground's Seed label and a new Download title over the code and download buttons match the Options heading.
+- On a phone the header's Menu button sits at the right, after search and theme, and shows only its icon on the narrowest screens.
 - The display font is now Silkscreen, a capitals-only pixel font that stays readable at small sizes, in place of Pixelify Sans, whose lowercase e was hard to read. The font file drops from 12 kB to 8 kB.
 
 ## [2.5.0] - 2026-10-31
