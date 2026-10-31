@@ -1,6 +1,6 @@
 {
   "name": "seedkin",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Seedkin: a family of seeded pixel avatars (robots first) drawn as SVG. Zero dependencies.",
   "keywords": [
     "avatar",
