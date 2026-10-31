@@ -67,7 +67,10 @@ const family: [Draw, string][] = [0, 1].flatMap((i) =>
 function row(avatars: readonly [Draw, string][], label: string): string {
   const width = avatars.length * SIZE + (avatars.length - 1) * GAP;
   const cells = avatars.map(([draw, seed], i) =>
-    draw(seed, { size: SIZE, frame: 'rounded', title: null, animate: true }).replace('<svg ', `<svg x="${i * (SIZE + GAP)}" y="0" `),
+    draw(seed, { size: SIZE, frame: 'rounded', title: null, animate: true }).replace(
+      '<svg ',
+      `<svg x="${i * (SIZE + GAP)}" y="0" `,
+    ),
   );
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${SIZE}" width="${width}" height="${SIZE}" role="img" aria-label="${label}">${cells.join('')}</svg>\n`;
 }
