@@ -928,6 +928,23 @@ ol.features > li::before {
   .side {
     display: contents;
   }
+  /* A strip of dotted paper under the header fills the gap above the pinned avatar card, so
+     the options scrolling up behind the card vanish at its top edge instead of showing in the
+     gap. The strip never moves, so its dots line up with the fixed grid behind the page. */
+  .top:has(~ main .play)::after {
+    content: "";
+    position: absolute;
+    /* Below the header's 1px border, which top: 100% alone would cover. */
+    top: calc(100% + 1px);
+    left: 0;
+    right: 0;
+    height: 11px;
+    pointer-events: none;
+    background-color: var(--paper);
+    background-image: radial-gradient(circle, var(--dot) 1.2px, transparent 1.6px);
+    background-size: var(--cell) var(--cell);
+    background-position: 0 calc(var(--top-h) * -1);
+  }
   /* Focused options scroll clear of the pinned avatar card, not under it. */
   html:has(.play) {
     scroll-padding-top: 230px;
@@ -935,7 +952,7 @@ ol.features > li::before {
   /* Pinned a little below the header, not against it. */
   .stage {
     position: sticky;
-    top: 74px;
+    top: calc(var(--top-h) + 11px);
     z-index: 5;
     grid-template-columns: 88px minmax(0, 1fr);
     align-items: center;
