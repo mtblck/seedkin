@@ -831,26 +831,17 @@ ol.features > li::before {
   display: grid;
   gap: 16px;
 }
-/* On a wide screen the avatar and the options each stick under the header as the page
-   scrolls, and the options scroll inside their card, so every option stays in reach. */
+.side {
+  display: grid;
+  gap: 16px;
+}
+/* On a wide screen the avatar and its code stick a little below the header as the page
+   scrolls (playground.js lowers top for a column taller than the screen); the options and
+   colours scroll by beside them. */
 @media (min-width: 901px) {
-  .preview,
-  .options {
-    position: sticky;
-    top: 80px;
-  }
-  /* The options take the height of the avatar and code beside them (contain: size keeps
-     their own length out of the row), and no more than the screen below the header. */
-  .play {
-    align-items: stretch;
-  }
   .preview {
-    align-self: start;
-  }
-  .options {
-    contain: size;
-    max-height: calc(100dvh - 96px);
-    overflow-y: auto;
+    position: sticky;
+    top: 88px;
   }
 }
 /* The titles of the playground's cards (Seed, Download) match the Options heading. */
@@ -860,18 +851,28 @@ ol.features > li::before {
   letter-spacing: 0.01em;
   margin: 0 0 12px;
 }
-/* Above phone width the seed box shares its row with Random and Animate. */
-@media (min-width: 481px) {
-  .stage .seed-row input {
-    flex-basis: 8rem;
-  }
-}
-/* Random and Animate drop their words for icons when the row is too narrow for both. */
-.seed-row {
+/* Seed's title row holds Random and Animate, as Options' holds Reset; the box is full width. */
+.seed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
   container-type: inline-size;
 }
+.play .seed-head .panel-title {
+  margin: 0;
+}
+.seed-actions {
+  display: flex;
+  gap: 8px;
+}
+.stage .seed input {
+  width: 100%;
+}
+/* Random and Animate drop their words for icons when the row is too narrow for both. */
 @container (max-width: 229px) {
-  .seed-row .btn-text {
+  .seed-actions .btn-text {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -928,12 +929,14 @@ ol.features > li::before {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
   }
-  .preview {
+  .preview,
+  .side {
     display: contents;
   }
+  /* Pinned a little below the header, not against it. */
   .stage {
     position: sticky;
-    top: 62px;
+    top: 74px;
     z-index: 5;
     grid-template-columns: 88px minmax(0, 1fr);
     align-items: center;
@@ -965,6 +968,14 @@ ol.features > li::before {
   }
   .options {
     order: 1;
+  }
+  .seed-actions {
+    flex: 1;
+  }
+  .seed-actions .btn {
+    flex: 1;
+    justify-content: center;
+    padding-inline: 10px;
   }
   .output {
     order: 2;

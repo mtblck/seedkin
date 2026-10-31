@@ -130,20 +130,30 @@ export function playground(style) {
       .join('');
     return `<div class="choices swatches" data-featured>${choice(i, g, first)}</div><details class="others"><summary>${g.othersLabel} <span data-count></span></summary>${sections}</details>`;
   }
-  $('options').insertAdjacentHTML(
-    'beforeend',
-    groups
-      .map((g, i) => {
-        if (g.button) return '';
-        const kind = g.choices.some(([, , p]) => p) ? 'swatches' : 'segments';
-        const body = g.sections
-          ? sectioned(i, g)
-          : `<div class="choices ${kind}">${g.choices.map((c) => choice(i, g, c)).join('')}</div>`;
-        const picked = g.sections ? '<span class="picked" aria-hidden="true"></span>' : '';
-        return `<fieldset class="group" data-group="${i}"><legend>${g.legend}${picked}</legend>${body}</fieldset>`;
-      })
-      .join(''),
-  );
+  // The palette groups get a card of their own under the options, titled by the first one;
+  // its legend still names the fieldset for screen readers.
+  const inCard = (g) => g.name === 'palette';
+  const cardGroups = groups.filter(inCard);
+  const picked = (g, i) => (g.sections ? `<span class="picked" id="picked-${i}" aria-hidden="true"></span>` : '');
+  function fieldset(g, i) {
+    const kind = g.choices.some(([, , p]) => p) ? 'swatches' : 'segments';
+    const body = g.sections
+      ? sectioned(i, g)
+      : `<div class="choices ${kind}">${g.choices.map((c) => choice(i, g, c)).join('')}</div>`;
+    const titled = g === cardGroups[0];
+    const legend = titled
+      ? `<legend class="sr-only">${g.legend}</legend>`
+      : `<legend>${g.legend}${picked(g, i)}</legend>`;
+    return `<fieldset class="group" data-group="${i}">${legend}${body}</fieldset>`;
+  }
+  const html = (want) => groups.map((g, i) => (!g.button && inCard(g) === want ? fieldset(g, i) : '')).join('');
+  $('options').insertAdjacentHTML('beforeend', html(false));
+  if (cardGroups.length) {
+    const first = groups.indexOf(cardGroups[0]);
+    $('colours-h').innerHTML = `${cardGroups[0].legend}${picked(cardGroups[0], first)}`;
+    $('colours').insertAdjacentHTML('beforeend', html(true));
+    $('colours').hidden = false;
+  }
   // Each sectioned group's choices, with the tile row each one goes back to.
   const placed = groups.flatMap((g, i) => {
     if (!g.sections) return [];
@@ -153,13 +163,13 @@ export function playground(style) {
       const input = set.querySelector(`input[value="${CSS.escape(value)}"]`);
       return input ? [{ value, label, input, tag: input.nextElementSibling, home: input.parentElement }] : [];
     });
-    return [{ g, set, items, key: '' }];
+    return [{ g, set, items, key: '', picked: $(`picked-${i}`) }];
   });
   /** Moves the choices a sectioned group names for this avatar out of the fold, and the rest back. */
   function arrange() {
     for (const entry of placed) {
       const picked = entry.items.find((it) => it.value === state[entry.g.name]);
-      entry.set.querySelector('.picked').textContent = picked ? `: ${picked.label}` : '';
+      entry.picked.textContent = picked ? `: ${picked.label}` : '';
       const featured = new Set(entry.g.featured(state.seed, options()));
       const key = [...featured].join();
       if (key !== entry.key) {
@@ -181,11 +191,19 @@ export function playground(style) {
   }
   // Swatch colours go in through the CSSOM, which the CSP allows, rather than style attributes.
   for (const b of document.querySelectorAll('.sw b')) b.style.background = b.dataset.c;
-  $('options').addEventListener('change', (e) => {
+  const pick = (e) => {
     state[e.target.name] = e.target.value;
     draw();
     gallery();
-  });
+  };
+  $('options').addEventListener('change', pick);
+  $('colours').addEventListener('change', pick);
+  // The avatar and code stick under the header (CSS, on a wide screen). Taller than the screen,
+  // they stick by their bottom edge instead, so every part of them can still be scrolled to.
+  const preview = document.querySelector('.preview');
+  const stick = () => (preview.style.top = `${Math.min(88, innerHeight - preview.offsetHeight - 16)}px`);
+  new ResizeObserver(stick).observe(preview);
+  addEventListener('resize', stick);
   $('reset').addEventListener('click', () => {
     Object.assign(state, DEFAULTS);
     draw();
