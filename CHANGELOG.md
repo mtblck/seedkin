@@ -10,6 +10,7 @@ any change to the robot a seed draws is a major version.
 ### Site
 
 - Each style's docs page shows its status next to its name: Stable for every style.
+- The Sprite playground's Colours names the nine palettes drawn for the Sprite's form, and folds the other 72 away under "Other colours" as small swatches, grouped by the form they were drawn for. It was a list of all 81.
 - The display font is now Silkscreen, a capitals-only pixel font that stays readable at small sizes, in place of Pixelify Sans, whose lowercase e was hard to read. The font file drops from 12 kB to 8 kB.
 
 ## [2.5.0] - 2026-10-31

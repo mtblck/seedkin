@@ -53,6 +53,8 @@ export function sharedGroups({ SHAPES, FRAMES, LOOKS }) {
  *   swatch is a palette or an array of colours. A style's own groups start with 'auto', which
  *   snippet.js leaves out of the code.
  *   Two groups may share a name (everyday and holiday palettes): picking in one clears the other.
+ *   A group with many choices can add sections ([{ label, values }]), othersLabel and
+ *   featured(seed, options) giving the values to name for this avatar; the rest fold away as tiles.
  */
 export function playground(style) {
   const { name, noun, draw: drawStyle, dataUri, randomSeed, holidays = {}, groups } = style;
@@ -93,6 +95,7 @@ export function playground(style) {
     $('big').setAttribute('aria-label', style.describe(state.seed, options()));
     $('sizes').innerHTML = [96, 48, 32, 24].map((size) => `<li>${avatar(size)}<span>${size}px</span></li>`).join('');
     $('code').innerHTML = highlight(snippet(), 'js');
+    arrange();
     for (const input of document.querySelectorAll('.choices input')) input.checked = state[input.name] === input.value;
     for (const link of document.querySelectorAll('[data-to]')) {
       link.href = `/styles/${link.dataset.to}/#${new URLSearchParams({ seed: state.seed })}`;
@@ -104,21 +107,64 @@ export function playground(style) {
   // A choice's swatch: a palette (through style.swatch) or a list of colours, such as a skin tone.
   const swatch = (p) =>
     `<i class="sw" aria-hidden="true">${(Array.isArray(p) ? p : style.swatch(p)).map((c) => `<b data-c="${c}"></b>`).join('')}</i>`;
+  const choice = (i, g, [value, label, p]) => {
+    const id = `opt-${i}-${value}`;
+    const tip = g.sections && p ? ` title="${label}"` : '';
+    return `<input type="radio" name="${g.name}" id="${id}" value="${value}"><label for="${id}"${tip}>${p ? swatch(p) : ''}<span>${label}</span></label>`;
+  };
+  // A group with sections (Sprite's 81 palettes) names a few choices and folds the rest
+  // away as small tiles, one row per section; draw() moves each choice to where it belongs.
+  function sectioned(i, g) {
+    const [first, ...rest] = g.choices;
+    const sections = g.sections
+      .map((s) => {
+        const tiles = rest
+          .filter(([v]) => s.values.includes(v))
+          .map((c) => choice(i, g, c))
+          .join('');
+        return `<div class="section"><p class="sub">${s.label}</p><div class="choices swatches tiles">${tiles}</div></div>`;
+      })
+      .join('');
+    return `<div class="choices swatches" data-featured>${choice(i, g, first)}</div><details class="others"><summary>${g.othersLabel} <span data-count></span></summary>${sections}</details>`;
+  }
   $('options').insertAdjacentHTML(
     'beforeend',
     groups
       .map((g, i) => {
         const kind = g.choices.some(([, , p]) => p) ? 'swatches' : 'segments';
-        const choices = g.choices
-          .map(([value, label, p]) => {
-            const id = `opt-${i}-${value}`;
-            return `<input type="radio" name="${g.name}" id="${id}" value="${value}"><label for="${id}">${p ? swatch(p) : ''}<span>${label}</span></label>`;
-          })
-          .join('');
-        return `<fieldset class="group"><legend>${g.legend}</legend><div class="choices ${kind}">${choices}</div></fieldset>`;
+        const body = g.sections
+          ? sectioned(i, g)
+          : `<div class="choices ${kind}">${g.choices.map((c) => choice(i, g, c)).join('')}</div>`;
+        const picked = g.sections ? '<span class="picked" aria-hidden="true"></span>' : '';
+        return `<fieldset class="group" data-group="${i}"><legend>${g.legend}${picked}</legend>${body}</fieldset>`;
       })
       .join(''),
   );
+  // Each sectioned group's choices, with the tile row each one goes back to.
+  const placed = groups.flatMap((g, i) => {
+    if (!g.sections) return [];
+    const set = document.querySelector(`[data-group="${i}"]`);
+    const items = g.choices.slice(1).map(([value, label]) => {
+      const input = set.querySelector(`input[value="${CSS.escape(value)}"]`);
+      return { value, label, input, tag: input.nextElementSibling, home: input.parentElement };
+    });
+    return [{ g, set, items, key: '' }];
+  });
+  /** Moves the choices a sectioned group names for this avatar out of the fold, and the rest back. */
+  function arrange() {
+    for (const entry of placed) {
+      const picked = entry.items.find((it) => it.value === state[entry.g.name]);
+      entry.set.querySelector('.picked').textContent = picked ? `: ${picked.label}` : '';
+      const featured = new Set(entry.g.featured(state.seed, options()));
+      const key = [...featured].join();
+      if (key === entry.key) continue;
+      entry.key = key;
+      const top = entry.set.querySelector('[data-featured]');
+      for (const it of entry.items) (featured.has(it.value) ? top : it.home).append(it.input, it.tag);
+      for (const s of entry.set.querySelectorAll('.section')) s.hidden = !s.querySelector('input');
+      entry.set.querySelector('[data-count]').textContent = `(${entry.items.length - featured.size})`;
+    }
+  }
   // Swatch colours go in through the CSSOM, which the CSP allows, rather than style attributes.
   for (const b of document.querySelectorAll('.sw b')) b.style.background = b.dataset.c;
   $('options').addEventListener('change', (e) => {
