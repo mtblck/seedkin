@@ -59,9 +59,9 @@ export interface NogginOptions extends CommonOptions {
   /** Cell shape. Default: picked by the seed. */
   shape?: Shape;
   /**
-   * Index into `PALETTES` (the outfits); an outfit object, such as one of
-   * `HOLIDAY_PALETTES`, worn over the seed's skin and hair; or a whole palette
-   * object. Colours are hex. Default: picked by the seed.
+   * Index into `PALETTES` (the outfits), or a palette object laid over the
+   * seed's colours: an outfit such as one of `HOLIDAY_PALETTES` keeps the
+   * seed's skin and hair. Colours are hex. Default: picked by the seed.
    */
   palette?: number | Outfit | Palette;
   /** Index into `SKIN_TONES`. Default: picked by the seed. */

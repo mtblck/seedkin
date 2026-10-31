@@ -227,7 +227,7 @@ const svg = noggin(user.id);
 const src = nogginDataUri(user.id, { size: 40, skin: 4 });
 ```
 
-`noggin()` takes the same options as `snoot()`, plus `skin`, an index into `SKIN_TONES` (lightest first), so people can pick their own. `palette` picks one of the six outfits in `PALETTES`, takes an outfit object such as one of `HOLIDAY_PALETTES` (worn with the seed's own skin and hair), or takes a whole palette object; `title` defaults to `'Person avatar'`. A seed's hair colour and outfit always stand out from its skin; pick another skin tone and they move to the next colours that do. Below 40px it draws a simpler 9x9 Noggin from the same traits.
+`noggin()` takes the same options as `snoot()`, plus `skin`, an index into `SKIN_TONES` (lightest first), so people can pick their own. `palette` picks one of the six outfits in `PALETTES`, or takes a palette object laid over the seed's colours: an outfit such as one of `HOLIDAY_PALETTES` keeps the seed's own skin and hair; `title` defaults to `'Person avatar'`. A seed's hair colour and outfit always stand out from its skin; pick another skin tone and they move to the next colours that do. Below 40px it draws a simpler 9x9 Noggin from the same traits.
 
 With `animate: true` a Noggin hovers, blinks and talks. Closed eyes and shades don't blink and beards don't talk. Below 40px it only blinks and hovers.
 

@@ -42,15 +42,14 @@ export function resolveTraits(seed: string, opts: NogginOptions = {}): NogginTra
 }
 
 /**
- * The palette to draw with: the seed's, a whole palette object, or an outfit
- * (one without skin or hair colours) worn over the seed's own skin and hair.
+ * The palette to draw with: the seed's, or a palette object laid over it. An
+ * outfit (no skin or hair colours) is worn with the seed's own skin and hair.
  */
 function paletteOf(t: NogginTraits, given: NogginOptions['palette']): Palette {
   const seeded = paletteFor(t.palette, t.skin, t.hairColour);
   if (typeof given !== 'object') return seeded;
-  const isOutfit = given !== null && !Array.isArray(given) && !['body', 'shade', 'glow'].some((k) => k in given);
-  if (!isOutfit) return checkPalette('noggin', given);
-  return checkPalette('noggin', { ...given, body: seeded.body, shade: seeded.shade, glow: seeded.glow });
+  if (given === null || Array.isArray(given)) return checkPalette('noggin', given);
+  return checkPalette('noggin', { ...seeded, ...given });
 }
 
 /**

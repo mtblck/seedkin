@@ -141,8 +141,32 @@ describe('noggin holiday outfits', () => {
   it('still takes a whole palette, and checks an outfit like one', () => {
     const custom = { ...noggin.paletteFor(0, 0, 0), body: '#123456' };
     expect(noggin.noggin('x', { palette: custom })).toContain('#123456');
+    const blue = noggin.noggin('x', { palette: { ...noggin.HOLIDAY_PALETTES.halloween, glow: '#0000ff' } });
+    expect(blue).toContain('#0000ff');
     const bad = { ...noggin.HOLIDAY_PALETTES.christmas, screen: '"/><script>' };
     expect(() => noggin.noggin('x', { palette: bad })).toThrow(RangeError);
     expect(() => noggin.noggin('x', { palette: { ...custom, glow: undefined } as never })).toThrow(RangeError);
+  });
+});
+
+describe('sprite holiday palettes on every form', () => {
+  it('paints every element and form in only its own colours', () => {
+    for (const element of sprite.ELEMENTS) {
+      const forms = new Set<string>();
+      for (let i = 0; forms.size < sprite.FORMS[element].length && i < 400; i++) {
+        const seed = `form-${i}`;
+        const t = sprite.resolveTraits(seed, { element });
+        if (forms.has(t.form)) continue;
+        forms.add(t.form);
+        for (const palette of Object.values(sprite.HOLIDAY_PALETTES)) {
+          const allowed = new Set(Object.values(palette));
+          for (const size of [24, 96]) {
+            for (const used of colours(sprite.sprite(seed, { element, palette, size })))
+              expect(allowed).toContain(used);
+          }
+        }
+      }
+      expect([...forms].sort(), element).toEqual([...sprite.FORMS[element]].sort());
+    }
   });
 });

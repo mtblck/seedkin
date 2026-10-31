@@ -6,7 +6,7 @@ public: true
 
 - **Status:** Accepted
 - **Date:** 2026-10-31
-- **PR:** to follow
+- **PR:** https://github.com/mtblck/seedkin/pull/86
 
 ## Context
 

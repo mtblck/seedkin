@@ -72,7 +72,7 @@ export const STYLES = [
       ['HEADWEAR', 'kinds of headwear and earrings'],
     ],
     palette:
-      "Index into Noggin's <code>PALETTES</code> (its outfits); an outfit object, such as one of <code>HOLIDAY_PALETTES</code>, worn with the seed's skin and hair; or a whole palette object.",
+      "Index into Noggin's <code>PALETTES</code> (its outfits); or a palette object laid over the seed's colours, such as an outfit from <code>HOLIDAY_PALETTES</code>, which keeps the seed's skin and hair.",
     options: [
       [
         'skin',
