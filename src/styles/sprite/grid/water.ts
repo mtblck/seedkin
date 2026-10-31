@@ -10,7 +10,7 @@ const drop: Draw = (f) => {
   else rows(c, 1, [0, 0, 1, 1, 2, 3, 4, 4, 5, 5, 5, 4, 3]);
   dots(c, frames(`5,${6 + s} 4,${7 + s} 4,${8 + s}`)[0] ?? [], Role.Screen);
   dots(c, pick(BUBBLES, f), Role.Accent);
-  return { c, at: { x: 7, dx: 2, y: 9 } };
+  return { c, at: { x: 7, dx: 2, y: 9 - s } };
 };
 
 const dropSmall: Draw = (f) => {
@@ -20,7 +20,7 @@ const dropSmall: Draw = (f) => {
   else rows(c, 1, [0, 0, 1, 2, 3, 3, 3, 2]);
   c.paint(2, 5 + s, Role.Screen);
   dots(c, pick(SMALL_BUBBLES, f), Role.Accent);
-  return { c, at: { x: 4, dx: 1, y: 6 } };
+  return { c, at: { x: 4, dx: 1, y: 6 - s } };
 };
 
 const bubble: Draw = (f) => {
@@ -30,7 +30,7 @@ const bubble: Draw = (f) => {
   else rows(c, 3, [2, 3, 4, 5, 5, 5, 5, 4, 3, 2]);
   dots(c, frames(`5,${4 + s} 4,${5 + s} 3,${6 + s}`)[0] ?? [], Role.Screen);
   dots(c, pick(BUBBLES, f + 2), Role.Accent);
-  return { c, at: { x: 7, dx: 2, y: 8 } };
+  return { c, at: { x: 7, dx: 2, y: 8 - s } };
 };
 
 const bubbleSmall: Draw = (f) => {
@@ -40,7 +40,7 @@ const bubbleSmall: Draw = (f) => {
   else rows(c, 1, [1, 2, 3, 3, 3, 2, 1]);
   dots(c, frames(`3,${2 + s} 2,${3 + s}`)[0] ?? [], Role.Screen);
   dots(c, pick(SMALL_BUBBLES, f + 2), Role.Accent);
-  return { c, at: { x: 4, dx: 1, y: 4 } };
+  return { c, at: { x: 4, dx: 1, y: 4 - s } };
 };
 
 const DOME = `
