@@ -1,45 +1,73 @@
-import { type Canvas, canvas, type Draw, dots, type Form, frames, pick, Role, rows, span, sway } from './draw.js';
+import {
+  art,
+  type Canvas,
+  canvas,
+  type Draw,
+  dots,
+  type Form,
+  frames,
+  lift,
+  pick,
+  Role,
+  rows,
+  span,
+  sway,
+} from './draw.js';
 
-/** Speed lines, each ending in a little curl, drifting one cell per frame. */
-const GUSTS = frames(
-  '0,6 1,6 2,6 3,5 1,10 2,10 3,10 | 1,6 2,6 3,6 4,5 0,10 1,10 2,10 3,9 | 0,8 1,8 2,8 3,7 | 1,8 2,8 3,8 2,11 3,11',
-);
-const SMALL_GUSTS = frames('0,3 1,3 2,2 | 1,3 2,3 | 0,6 1,6 2,5 | 1,6 2,6');
+/** How high a cloud hovers in each frame: it rises a row and settles. */
+const HOVER = [0, -1, -1, 0] as const;
+/** The little puffs around a cloud float half a beat behind it. */
+const TRAIL = [0, 0, -1, -1] as const;
+
+/** A round-topped cloud with a flat bottom, and a wisp bending back off its head. */
+const CLOUD = `
+  ...............
+  ...............
+  ...............
+  ...s...........
+  ....ss.........
+  .....sssss.....
+  ......s###s....
+  ...sss#####ss..
+  ...s#########s.
+  ..s##########s.
+  ..s##########s.
+  ..s##########s.
+  ..s##########s.
+  ..ssssssssssss.
+`;
+const SMALL_CLOUD = `
+  .........
+  .........
+  .ss......
+  ..sssss..
+  ..s####s.
+  .s#####s.
+  .s#####s.
+  .sssssss.
+`;
+
+/** Cells breaking off the end of the wisp, a few at a time. */
+const FLECKS = frames('2,2 1,3 | 1,2 | 2,1 0,3 | 1,1 3,2');
+const SMALL_FLECKS = frames('0,1 | 0,2 | 1,1 | 0,0');
+/** A puff ball floating behind the cloud and a speck ahead of it. */
+const PUFFS = frames('0,6 1,6 0,7 1,7 13,4')[0] ?? [];
 
 const puff: Draw = (f) => {
   const c = canvas(15);
-  const m = 8;
-  if (f % 2) span(c, 4, m, m + 1);
-  const shape = [
-    [1, 2],
-    [3, 3],
-    [4, 4],
-    [4, 5],
-    [4, 5],
-    [3, 4],
-    [1, 2],
-  ];
-  shape.forEach(([l = 0, r = 0], i) => {
-    span(c, 5 + i, m - l, m + r);
-  });
-  dots(c, pick(GUSTS, f), Role.Accent);
-  return { c, at: { x: m, dx: 2, y: 7 } };
+  const h = pick(HOVER, f);
+  art(c, CLOUD, h);
+  dots(c, lift(pick(FLECKS, f), h), Role.Body);
+  dots(c, lift(PUFFS, pick(TRAIL, f)), Role.Accent);
+  return { c, at: { x: 8, dx: 2, y: 8 + h } };
 };
 
 const puffSmall: Draw = (f) => {
   const c = canvas(9);
-  const m = 5;
-  const shape = [
-    [1, 1],
-    [2, 2],
-    [2, 3],
-    [1, 2],
-  ];
-  shape.forEach(([l = 0, r = 0], i) => {
-    span(c, 3 + i, m - l, m + r);
-  });
-  dots(c, pick(SMALL_GUSTS, f), Role.Accent);
-  return { c, at: { x: m, dx: 1, y: 4 } };
+  const h = pick(HOVER, f);
+  art(c, SMALL_CLOUD, h);
+  dots(c, lift(pick(SMALL_FLECKS, f), h), Role.Body);
+  return { c, at: { x: 4, dx: 1, y: 4 + h } };
 };
 
 /** Paints a funnel's spinning bands: short dashes that slide down a row each frame. */
@@ -82,8 +110,59 @@ const tornadoSmall: Draw = (f) => {
   return { c, at: { x: 4, dx: 1, y: 2 } };
 };
 
-/** A cloud puff trailing curled speed lines, and a spinning funnel. */
-export const WIND: Record<'puff' | 'tornado', Form> = {
+const LEAF = `
+  .......s.......
+  ......s#s......
+  .....s###s.....
+  ....s#####s....
+  ...s#######s...
+  ..s#########s..
+  ..s#########s..
+  .s###########s.
+  .s###########s.
+  ..s#########s..
+  ...s#######s...
+  ....ss#s#ss....
+  ......sss......
+  .......s.......
+  ........s......
+`;
+const SMALL_LEAF = `
+  ....s....
+  ...s#s...
+  ..s###s..
+  .s#####s.
+  .s#####s.
+  .s#####s.
+  ..s###s..
+  ...sss...
+  ....s....
+`;
+/** Breeze streaks blowing past a leaf. */
+const STREAKS = frames('0,4 1,4 12,11 13,11 | 1,4 2,4 13,11 14,11 | 0,10 1,10 12,3 13,3 | 1,10 2,10 13,3 14,3');
+const SMALL_STREAKS = frames('0,2 | 0,6 | 8,7 | 8,2');
+
+/** A leaf flutters: its top leans one way, then the other, about its middle. */
+const flutter = (f: number, mid: number) => (y: number) => Math.round((sway(f) * (mid - y)) / mid);
+
+const leaf: Draw = (f) => {
+  const c = canvas(15);
+  const h = pick(HOVER, f);
+  art(c, LEAF, h, flutter(f, 9));
+  dots(c, pick(STREAKS, f), Role.Accent);
+  return { c, at: { x: 7, dx: 2, y: 6 + h } };
+};
+
+const leafSmall: Draw = (f) => {
+  const c = canvas(9);
+  art(c, SMALL_LEAF, 0, flutter(f, 5));
+  dots(c, pick(SMALL_STREAKS, f), Role.Accent);
+  return { c, at: { x: 4, dx: 1, y: 3 } };
+};
+
+/** A hovering cloud trailing a wisp and little puffs, a spinning funnel, and a fluttering leaf. */
+export const WIND: Record<'puff' | 'tornado' | 'leaf', Form> = {
+  leaf: { full: leaf, small: leafSmall },
   puff: { full: puff, small: puffSmall },
   tornado: { full: tornado, small: tornadoSmall },
 };

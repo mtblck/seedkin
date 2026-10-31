@@ -4,7 +4,7 @@ public: true
 
 # 0013: Sprite ships as a Preview style
 
-- **Status:** Accepted
+- **Status:** Superseded by [0014](0014-sprite-stable.md)
 - **Date:** 2026-10-31
 - **PR:** https://github.com/mtblck/seedkin/pull/80
 

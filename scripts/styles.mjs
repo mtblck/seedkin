@@ -101,10 +101,11 @@ export const STYLES = [
   {
     name: 'sprite',
     title: 'Sprite',
-    status: 'preview',
+    status: 'stable',
     label: 'Sprite',
     kind: 'sprite',
-    moves: 'Flips through four frames: flames sway, drops wobble, and embers, bubbles and stars drift around it.',
+    moves:
+      'Flips through four frames: flames sway, drops wobble, clouds hover, and embers, bubbles and stars drift around it.',
     smallMoves: 'animated, it moves the same way',
     defaultTitle: 'Sprite avatar',
     shapeDefault: "<code>'square'</code>",

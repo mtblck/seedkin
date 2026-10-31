@@ -19,8 +19,25 @@ const EYES = {
   happy: 'happy eyes',
   sleepy: 'sleepy eyes',
   wink: 'a wink',
+  glance: 'a sideways glance',
+  close: 'close-set eyes',
 };
-const MOUTHS = { none: 'no mouth', dot: 'a little mouth', smile: 'a smile', grin: 'a grin' };
+const MOUTHS = {
+  none: 'no mouth',
+  dot: 'a little mouth',
+  smile: 'a smile',
+  grin: 'a grin',
+  open: 'an open smile',
+  smirk: 'a smirk',
+  oh: 'an open mouth',
+};
+const MARKS = {
+  dot: 'a dot on its forehead',
+  bar: 'a bar on its forehead',
+  chevron: 'a chevron on its forehead',
+  plus: 'a plus on its forehead',
+  twin: 'two dots on its forehead',
+};
 const title = (s) => s[0].toUpperCase() + s.slice(1);
 
 /** Names the big Sprite for screen readers, so a change of seed or option is heard. */
@@ -28,6 +45,7 @@ function describe(seed, options) {
   const t = resolveTraits(seed, options);
   const parts = [`${t.shape} cells`, `${PALETTES[t.palette].name} colours`, EYES[t.eyes], MOUTHS[t.mouth]];
   if (t.hasBlush) parts.push('rosy cheeks');
+  if (MARKS[t.mark]) parts.push(MARKS[t.mark]);
   return `Sprite for "${seed}": a ${t.element} ${t.form}, ${parts.join(', ')}`;
 }
 

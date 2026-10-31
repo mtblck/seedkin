@@ -8,16 +8,23 @@ export type Element = 'fire' | 'water' | 'earth' | 'wind' | 'space';
 export type Form =
   | 'flame'
   | 'wisp'
+  | 'ember'
   | 'drop'
   | 'bubble'
+  | 'jelly'
   | 'boulder'
   | 'crystal'
+  | 'mushroom'
+  | 'tree'
   | 'puff'
   | 'tornado'
+  | 'leaf'
   | 'planet'
-  | 'star';
-export type Eyes = 'dots' | 'tiny' | 'round' | 'happy' | 'sleepy' | 'wink';
-export type Mouth = 'none' | 'dot' | 'smile' | 'grin';
+  | 'star'
+  | 'comet';
+export type Eyes = 'dots' | 'tiny' | 'round' | 'happy' | 'sleepy' | 'wink' | 'glance' | 'close';
+export type Mark = 'none' | 'dot' | 'bar' | 'chevron' | 'plus' | 'twin';
+export type Mouth = 'none' | 'dot' | 'smile' | 'grin' | 'open' | 'smirk' | 'oh';
 
 /** Every choice that makes up one Sprite. */
 export interface SpriteTraits {
@@ -28,6 +35,8 @@ export interface SpriteTraits {
   eyes: Eyes;
   mouth: Mouth;
   hasBlush: boolean;
+  /** A mark on the forehead, in the accent colour. */
+  mark: Mark;
   /** Drawn facing the other way: flames lean, wind blows and highlights fall from the right. */
   isMirrored: boolean;
   /** Milliseconds each of the four animation frames holds. */

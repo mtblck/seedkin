@@ -1,4 +1,4 @@
-import { type Canvas, canvas, type Draw, dots, type Form, frames, pick, Role, rows, span } from './draw.js';
+import { art, type Canvas, canvas, type Draw, dots, type Form, frames, pick, Role, rows, span } from './draw.js';
 
 const STARS = frames('2,2 12,12 | 12,1 2,12 | 12,2 1,13 | 2,12 13,1');
 const SMALL_STARS = frames('0,0 8,7 | 8,1 1,8 | 7,0 0,7 | 1,8 8,0');
@@ -36,7 +36,8 @@ const planet: Draw = (f) => {
   });
   span(c, 7, 1, 13, Role.Accent, Role.Accent);
   twinkle(c, f, Role.Screen);
-  return { c, at: { x: 7, dx: 2, y: 5 } };
+  // The mouth sits a row lower, clear of the ring.
+  return { c, at: { x: 7, dx: 2, y: 5, mouthDy: 1 } };
 };
 
 const planetSmall: Draw = (f) => {
@@ -69,8 +70,64 @@ const starSmall: Draw = (f) => {
   return { c, at: { x: 4, dx: 1, y: 3 } };
 };
 
-/** A ringed planet and a four-point star, with stars twinkling in the corners. */
-export const SPACE: Record<'planet' | 'star', Form> = {
+const HEAD = `
+  .......sssss...
+  ......s#####s..
+  .....s##o####s.
+  .....s#######s.
+  .....s#######s.
+  .....s#######s.
+  .....s#######s.
+  ......s#####s..
+  .......sssss...
+`;
+const SMALL_HEAD = `
+  ....sss..
+  ...s#o#s.
+  ...s###s.
+  ...s###s.
+  ...s###s.
+  ....sss..
+`;
+/**
+ * The tail streams back from the head in five streaks, each with a gap that
+ * runs outward a cell a frame, so every cell of it moves; its far end breaks
+ * into flecks that come and go.
+ */
+const STREAKS = [
+  frames('5,6 4,5 3,4')[0] ?? [],
+  frames('6,5 5,4 4,3 3,2')[0] ?? [],
+  frames('7,4 6,3 4,1')[0] ?? [],
+  frames('3,6 2,5')[0] ?? [],
+  frames('8,3 7,2')[0] ?? [],
+];
+/** Tail cells drawn in the accent colour, so the streaks aren't all one tone. */
+const SPARKS = new Set(['3,4', '4,3']);
+const tail = (f: number) => STREAKS.flatMap((cells, i) => cells.filter((_, k) => (k + i * 2 + 4 - f) % 4 !== 0));
+const TAIL_ENDS = frames('2,3 1,1 | 2,1 0,2 | 1,2 3,0 | 0,1 2,0');
+const SMALL_TAIL = frames('3,2 2,1')[0] ?? [];
+const smallTail = (f: number) => SMALL_TAIL.filter((_, k) => (k + 4 - f) % 4 !== 0);
+const SMALL_TAIL_ENDS = frames('1,0 | 0,1 | 0,0 | 1,1');
+
+const comet: Draw = (f) => {
+  const c = canvas(15);
+  for (const [x, y] of tail(f)) c.paint(x, y, SPARKS.has(`${x},${y}`) ? Role.Accent : Role.Shade);
+  dots(c, pick(TAIL_ENDS, f), Role.Accent);
+  art(c, HEAD, 4);
+  return { c, at: { x: 9, dx: 2, y: 7 } };
+};
+
+const cometSmall: Draw = (f) => {
+  const c = canvas(9);
+  dots(c, smallTail(f), Role.Shade);
+  dots(c, pick(SMALL_TAIL_ENDS, f), Role.Accent);
+  art(c, SMALL_HEAD, 2);
+  return { c, at: { x: 5, dx: 1, y: 4 } };
+};
+
+/** A ringed planet and a four-point star, with stars twinkling in the corners, and a comet. */
+export const SPACE: Record<'planet' | 'star' | 'comet', Form> = {
+  comet: { full: comet, small: cometSmall },
   planet: { full: planet, small: planetSmall },
   star: { full: star, small: starSmall },
 };

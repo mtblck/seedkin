@@ -34,8 +34,8 @@ export function resolveTraits(seed: string, opts: SpriteOptions = {}): SpriteTra
 }
 
 /**
- * Renders the Sprite for a seed as an SVG string. Sprite is a Preview style:
- * a seed's Sprite may change in a minor release until it's marked Stable.
+ * Renders the Sprite for a seed as an SVG string. A seed draws
+ * the same Sprite in every 2.x release from 2.5.0.
  *
  * @param seed - Any string, such as a user id
  * @param opts - Rendering options

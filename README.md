@@ -2,7 +2,7 @@
 
 A family of seeded pixel avatars, drawn as SVG on a grid of squares, circles, triangles or diamonds. Plant a seed (a user id, any string) and the same avatar sprouts every time.
 
-There are five styles: **Botling** (robots), **Snoot** (animals), **Noggin** (people) and **Beastie** (monsters), all Stable, so a seed draws the same avatar in every 2.x release; and **Sprite** (elemental spirits), in Preview. Each style has its own entry point, such as `seedkin/botling`, so an app only ships the styles it uses.
+There are five styles: **Botling** (robots), **Snoot** (animals), **Noggin** (people), **Beastie** (monsters) and **Sprite** (elemental spirits), all Stable, so a seed draws the same avatar in every 2.x release. Each style has its own entry point, such as `seedkin/botling`, so an app only ships the styles it uses.
 
 > Coming from the `botling` package? Import from `'seedkin/botling'` instead of `'botling'`: every seed draws the same robot as `botling` 1.2.0.
 
@@ -193,7 +193,7 @@ Don't compare or cache robots by their SVG string across versions; the markup ca
 
 Snoot, Noggin and Beastie follow the same rules from 2.4.0, when they left Preview ([ADR 0011](docs/adr/0011-every-style-stable.md)): a change to the animal, person or monster a seed draws is a major version. Until an app depends on Seedkin, art that is plainly broken is fixed in a patch ([ADR 0012](docs/adr/0012-fixing-broken-art-before-adoption.md)).
 
-Sprite is a Preview style ([ADR 0013](docs/adr/0013-sprite.md)): until it's marked Stable, the Sprite a seed draws can change in a minor version.
+Sprite is Stable from its first release, 2.5.0 ([ADR 0014](docs/adr/0014-sprite-stable.md)), under the same rules.
 
 # Snoot
 
@@ -248,7 +248,7 @@ The seed is salted, so one id's Botling, Snoot and Beastie are unrelated. `trait
 
 # Sprite
 
-Seeded avatars of little elemental spirits: flames and wisps, drops and blobs, boulders and gems, puffs and funnels, planets and stars, each with a face. Try them at **[seedkin.dev](https://seedkin.dev/styles/sprite/)**. Sprite is a Preview style.
+Seeded avatars of little elemental spirits: flames, wisps and embers, drops, bubbles and jellyfish, boulders, gems, mushrooms and trees, clouds, whirlwinds and leaves, planets, stars and comets, each with a face. Try them at **[seedkin.dev](https://seedkin.dev/styles/sprite/)**.
 
 ```ts
 import { sprite, spriteDataUri } from 'seedkin/sprite';
@@ -258,9 +258,9 @@ const src = spriteDataUri(user.id, { size: 40 });
 const team = sprite(user.id, { element: 'fire' }); // the seed still picks the rest
 ```
 
-A seed picks one of five `ELEMENTS` (fire, water, earth, wind, space), one of that element's two `FORMS`, one of its palettes, `EYES`, a mouth from `MOUTHS`, sometimes cheeks, and which way it faces. `sprite()` takes the same options as `snoot()` plus `element`; `shape` defaults to `'square'` rather than being picked by the seed, and `title` defaults to `'Sprite avatar'`. Below 40px it draws a simpler 9x9 Sprite from the same traits.
+A seed picks one of five `ELEMENTS` (fire, water, earth, wind, space), one of that element's `FORMS` (three each, four for earth), one of its palettes, `EYES`, a mouth from `MOUTHS`, sometimes cheeks, a forehead mark from `MARKS` (none, dot, bar, chevron, plus or twin dots; it's left off where it wouldn't fit), and which way it faces. `sprite()` takes the same options as `snoot()` plus `element`; `shape` defaults to `'square'` rather than being picked by the seed, and `title` defaults to `'Sprite avatar'`. Below 40px it draws a simpler 9x9 Sprite from the same traits.
 
-With `animate: true` a Sprite flips through four frames: a flame's tip sways, a drop wobbles, a gem glints and the motes around it drift, at every size. The seed is salted after it (`user-1:sprite`), so ids that differ only in their last character still draw different Sprites. `traits`, `resolveTraits`, `grid` and `smallGrid` (both take a frame, 0 to 3), `FRAME_COUNT`, `PALETTES` and `palettesFor(element, form)` are exported too.
+With `animate: true` a Sprite flips through four frames: a flame's tip sways, a drop wobbles, a gem glints and the motes around it drift, at every size. The seed is salted after it (`user-1:sprite`), so ids that differ only in their last character still draw different Sprites. `traits`, `resolveTraits`, `grid` and `smallGrid` (both take a frame, 0 to 3), `FRAME_COUNT`, `PALETTES`, `PALETTE_GROUPS` (which forms wear which palettes, as `{ element, forms, palettes }`) and `palettesFor(element, form)` are exported too.
 
 # Developing
 

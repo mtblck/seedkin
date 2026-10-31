@@ -9,7 +9,9 @@ import {
   FRAMES,
   GRID_SIZE,
   grid,
+  MARKS,
   MOUTHS,
+  PALETTE_GROUPS,
   PALETTES,
   palettesFor,
   resolveTraits,
@@ -30,7 +32,7 @@ describe('sprite', () => {
   });
 
   it.each(ELEMENTS)('draws a known %s seed', (element) => {
-    // Sprite is a Preview style: these may change in a minor, but only on purpose.
+    // Sprite is Stable (ADR 0014): a change here is a major version.
     expect(sprite('sprite', { element })).toMatchSnapshot();
   });
 
@@ -52,6 +54,7 @@ describe('sprite', () => {
     expect(new Set(all.map((t) => t.form)).size).toBe(Object.values(FORMS).flat().length);
     expect(new Set(all.map((t) => t.eyes)).size).toBe(EYES.length);
     expect(new Set(all.map((t) => t.mouth)).size).toBe(MOUTHS.length);
+    expect(new Set(all.map((t) => t.mark)).size).toBe(MARKS.length);
   });
 
   it('gives every palette to some form, and keeps gems for crystals and stones for boulders', () => {
@@ -62,6 +65,11 @@ describe('sprite', () => {
     expect(names('earth', 'crystal')).toContain('Amethyst');
     expect(names('earth', 'crystal')).not.toContain('Clay');
     expect(names('earth', 'boulder')).toContain('Clay');
+  });
+
+  it('groups every palette once, nine for every form', () => {
+    expect(PALETTE_GROUPS.flatMap((g) => g.palettes)).toEqual(PALETTES.map((_, i) => i));
+    for (const e of ELEMENTS) for (const f of FORMS[e]) expect(palettesFor(e, f)).toHaveLength(9);
   });
 
   it('lets the caller pick the element without changing the rest of the seed', () => {
