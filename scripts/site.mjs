@@ -172,6 +172,6 @@ const font = (pkg, file, as) =>
     path.join(path.dirname(req.resolve(`${pkg}/package.json`)), 'files', file),
     path.join(out, 'fonts', as),
   );
-font('@fontsource-variable/pixelify-sans', 'pixelify-sans-latin-wght-normal.woff2', 'pixelify.woff2');
+font('@fontsource/silkscreen', 'silkscreen-latin-400-normal.woff2', 'silkscreen.woff2');
 
 console.log(`built ${path.relative(ROOT, out)}/`);
