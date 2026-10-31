@@ -15,7 +15,7 @@ const boulder: Draw = (f) => {
   if (f === 0) c.paint(5, 8, Role.Screen);
   if (f === 2) c.paint(4, 10, Role.Screen);
   dots(c, pick(PEBBLES, f), Role.Shade);
-  return { c, at: { x: 7, dx: 2, y: 9 } };
+  return { c, at: { x: 7, dx: 2, y: 8 } };
 };
 
 const boulderSmall: Draw = (f) => {
@@ -81,6 +81,7 @@ const STEM = `
   ...sooooooos...
   ...sooooooos...
   ...sooooooos...
+  ...sooooooos...
   ...sssssssss...
 `;
 const SMALL_CAP = `
@@ -132,14 +133,15 @@ const SMALL_TRUNK = `
   ...o.o...
 `;
 /** Fruit in the crown, and a leaf falling past the trunk. */
-const FRUIT = frames('3,4 12,6 10,2')[0] ?? [];
+const FRUIT = frames('3,4 12,6 9,2')[0] ?? [];
 const FALLING = frames('2,10 | 3,11 | 2,12 | 3,13');
 
 const tree: Draw = (f) => {
   const c = canvas(15);
   art(c, TRUNK, 11);
   art(c, CROWN, 1, (y) => (y < 4 ? sway(f) : 0));
-  dots(c, FRUIT, Role.Accent);
+  // Fruit in the swaying rows sways with them.
+  dots(c, FRUIT.map(([x, y]): [number, number] => [x + (y < 5 ? sway(f) : 0), y]), Role.Accent);
   dots(c, pick(FALLING, f), Role.Accent);
   return { c, at: { x: 7, dx: 2, y: 5 } };
 };

@@ -33,6 +33,7 @@ const CLOUD = `
   ..s##########s.
   ..s##########s.
   ..s##########s.
+  ..s##########s.
   ..ssssssssssss.
 `;
 const SMALL_CLOUD = `

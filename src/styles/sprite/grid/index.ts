@@ -28,7 +28,7 @@ export function drawFrame(t: SpriteTraits, frame: number, small: boolean): Canva
   const draw = small ? form.small : form.full;
   const { c, at } = draw(frame);
   paintFace(c, at, t, small);
-  paintMark(c, at, t.mark, [0, 1, 2, 3].map(draw), small);
+  if (t.mark !== 'none') paintMark(c, at, t.mark, [0, 1, 2, 3].map(draw), small);
   if (t.isMirrored) for (const row of c.cells) row.reverse();
   return c;
 }
