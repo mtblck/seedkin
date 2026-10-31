@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import * as beastie from '../src/styles/beastie/index.js';
 import * as botling from '../src/styles/botling/index.js';
 import * as noggin from '../src/styles/noggin/index.js';
-import { contrast } from '../src/styles/noggin/palettes.js';
+import { contrast, standOut } from '../src/styles/noggin/palettes.js';
 import * as snoot from '../src/styles/snoot/index.js';
 import * as sprite from '../src/styles/sprite/index.js';
 
@@ -117,7 +117,8 @@ describe('noggin holiday outfits', () => {
       const own = noggin.paletteFor(t.palette, t.skin, t.hairColour);
       for (const outfit of outfits) {
         const used = colours(noggin.noggin(seed, { palette: outfit }));
-        const allowed = new Set([outfit.bg, outfit.grid, outfit.screen, outfit.accent, own.body, own.shade, own.glow]);
+        const tile = standOut({ ...own, ...outfit });
+        const allowed = new Set([tile.bg, tile.grid, outfit.screen, outfit.accent, own.body, own.shade, own.glow]);
         for (const colour of used) expect(allowed).toContain(colour);
         expect(used).toContain(outfit.screen);
       }
@@ -132,10 +133,20 @@ describe('noggin holiday outfits', () => {
   });
 
   it('stands every face out from the background, whatever the skin tone', () => {
+    const tile = (svg: string): string => svg.match(/<rect [^>]*fill="(#[0-9a-f]{6})"/)?.[1] as string;
     for (const outfit of outfits) {
-      for (const tone of noggin.SKIN_TONES)
-        expect(contrast(tone.body, outfit.bg), outfit.name).toBeGreaterThanOrEqual(1.5);
+      for (let skin = 0; skin < noggin.SKIN_TONES.length; skin++) {
+        const bg = tile(noggin.noggin('x', { skin, palette: outfit }));
+        expect(contrast(noggin.SKIN_TONES[skin]?.body as string, bg), outfit.name).toBeGreaterThanOrEqual(1.5);
+      }
+      // Light by default: the darker skin tones keep the outfit's own background.
+      expect(tile(noggin.noggin('x', { skin: 6, palette: outfit }))).toBe(outfit.bg);
     }
+  });
+
+  it('keeps a background the caller drew a skin for', () => {
+    const p = { ...noggin.paletteFor(0, 0, 0), bg: '#ffe0cc' };
+    expect(noggin.noggin('x', { palette: p })).toContain('fill="#ffe0cc"');
   });
 
   it('still takes a whole palette, and checks an outfit like one', () => {

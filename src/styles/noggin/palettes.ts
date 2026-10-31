@@ -73,3 +73,28 @@ export function paletteFor(outfit: number, skin: number, hair: number): Palette 
   const s = SKIN_TONES[skin] as SkinTone;
   return { ...o, body: s.body, glow: s.glow, shade: HAIR_COLOURS[hair] as string };
 }
+
+/** A #rrggbb colour with each channel scaled by `f`, so the same hue, deeper. */
+function deepen(hex: string, f: number): string {
+  const channel = (i: number): string =>
+    Math.round(Number.parseInt(hex.slice(i, i + 2), 16) * f)
+      .toString(16)
+      .padStart(2, '0');
+  return `#${channel(1)}${channel(3)}${channel(5)}`;
+}
+
+/**
+ * Deepens a palette's background and grid, keeping their hue, until the face
+ * stands out from it (the 1.5 contrast a seed's own outfits keep), so a light
+ * outfit still frames the lightest skin tones.
+ *
+ * @param p - A palette whose body is the skin
+ * @returns The palette, with its background deepened if it had to be
+ */
+export function standOut(p: Palette): Palette {
+  for (let f = 1; f > 0; f -= 0.05) {
+    const bg = deepen(p.bg, f);
+    if (contrast(p.body, bg) >= 1.5) return f === 1 ? p : { ...p, bg, grid: deepen(p.grid, f) };
+  }
+  return { ...p, bg: '#000000', grid: '#000000' };
+}

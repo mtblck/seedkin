@@ -27,7 +27,10 @@ Each style exports its own `HOLIDAY_PALETTES`, with Botling's six keys and names
 for that style's roles and at least as readable as its weakest everyday palette (tested
 pair by pair). Noggin's holidays are outfits (`bg`, `grid`, `screen`, `accent`), and its
 `palette` option takes an outfit object, worn with the seed's own skin and hair. Their
-backgrounds are dark enough that every skin tone stands out from them.
+backgrounds are light; where a skin tone wouldn't stand out from one (contrast below
+the 1.5 a seed's own outfits keep), Noggin draws a deeper shade of the same colour.
+(Amended before release, at Matt's ask in the same PR series: the first draft used dark
+backgrounds every skin tone stood out from, which read as too dark.)
 
 ## Consequences
 

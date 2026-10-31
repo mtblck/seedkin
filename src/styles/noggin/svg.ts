@@ -1,7 +1,7 @@
 import { type CommonOptions, checkPalette, settle } from '../../core/options.js';
 import { avatarSvg } from '../../core/render/animated.js';
 import { drawGrid, drawSmallGrid } from './grid/index.js';
-import { PALETTES, paletteFor, SKIN_TONES } from './palettes.js';
+import { PALETTES, paletteFor, SKIN_TONES, standOut } from './palettes.js';
 import { SHAPES } from './parts.js';
 import { hairFor, outfitFor, traits } from './traits.js';
 import type { NogginOptions, NogginTraits, Palette } from './types.js';
@@ -49,7 +49,9 @@ function paletteOf(t: NogginTraits, given: NogginOptions['palette']): Palette {
   const seeded = paletteFor(t.palette, t.skin, t.hairColour);
   if (typeof given !== 'object') return seeded;
   if (given === null || Array.isArray(given)) return checkPalette('noggin', given);
-  return checkPalette('noggin', { ...seeded, ...given });
+  const palette = checkPalette('noggin', { ...seeded, ...given });
+  // A face on its own skin always stands out; a caller who picks the skin picks the contrast.
+  return 'body' in given ? palette : standOut(palette);
 }
 
 /**
