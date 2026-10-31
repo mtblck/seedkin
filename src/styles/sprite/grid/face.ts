@@ -27,6 +27,11 @@ const eyeCells = (eyes: Eyes, dx: number): Cell[] => {
         [dx - 1, 1],
         [dx + 1, 1],
       ];
+    case 'close':
+      return [
+        [dx - 1, 0],
+        [dx - 1, 1],
+      ];
     case 'tiny':
       return [[dx, 1]];
     case 'sleepy':
@@ -50,6 +55,21 @@ const MOUTH_CELLS: Record<Mouth, Cell[]> = {
     [1, 3],
     [0, 4],
   ],
+  open: [
+    [-1, 3],
+    [0, 3],
+    [1, 3],
+    [0, 4],
+  ],
+  smirk: [
+    [-1, 4],
+    [0, 4],
+    [1, 3],
+  ],
+  oh: [
+    [0, 3],
+    [0, 4],
+  ],
   grin: [
     [-1, 3],
     [0, 3],
@@ -71,8 +91,9 @@ export function paintFace(c: Canvas, at: Anchor, face: Face, small: boolean): vo
   // A wink is open on the left and shut on the right.
   const left = eyeCells(face.eyes === 'wink' ? 'dots' : face.eyes, dx);
   const right = face.eyes === 'wink' ? eyeCells('sleepy', dx) : left;
-  for (const [ex, ey] of left) c.paint(x - ex, y + ey, Role.Glow);
-  for (const [ex, ey] of right) c.paint(x + ex, y + ey, Role.Glow);
+  const shift = face.eyes === 'glance' ? 1 : 0;
+  for (const [ex, ey] of left) c.paint(x - ex + shift, y + ey, Role.Glow);
+  for (const [ex, ey] of right) c.paint(x + ex + shift, y + ey, Role.Glow);
   for (const [mx, my] of MOUTH_CELLS[face.mouth]) c.paint(x + mx, y + my, Role.Glow);
   if (face.hasBlush) for (const s of [-1, 1]) c.paint(x + s * (dx + 2), y + 2, Role.Accent);
 }

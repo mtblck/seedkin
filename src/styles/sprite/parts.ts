@@ -10,7 +10,16 @@ export const FORMS: Readonly<Record<Element, readonly Form[]>> = Object.freeze({
   wind: ['puff', 'tornado', 'leaf'],
   space: ['planet', 'star', 'comet'],
 });
-export const EYES: readonly Eyes[] = Object.freeze(['dots', 'tiny', 'round', 'happy', 'sleepy', 'wink']);
-export const MOUTHS: readonly Mouth[] = Object.freeze(['none', 'dot', 'smile', 'grin']);
+export const EYES: readonly Eyes[] = Object.freeze([
+  'dots',
+  'tiny',
+  'round',
+  'happy',
+  'sleepy',
+  'wink',
+  'glance',
+  'close',
+]);
+export const MOUTHS: readonly Mouth[] = Object.freeze(['none', 'dot', 'smile', 'grin', 'open', 'smirk', 'oh']);
 /** Every cell shape. Sprites are drawn in squares unless asked otherwise. */
 export const SHAPES: readonly Shape[] = Object.freeze(['square', 'circle', 'triangle', 'diamond']);

@@ -19,8 +19,18 @@ const EYES = {
   happy: 'happy eyes',
   sleepy: 'sleepy eyes',
   wink: 'a wink',
+  glance: 'a sideways glance',
+  close: 'close-set eyes',
 };
-const MOUTHS = { none: 'no mouth', dot: 'a little mouth', smile: 'a smile', grin: 'a grin' };
+const MOUTHS = {
+  none: 'no mouth',
+  dot: 'a little mouth',
+  smile: 'a smile',
+  grin: 'a grin',
+  open: 'an open smile',
+  smirk: 'a smirk',
+  oh: 'an open mouth',
+};
 const title = (s) => s[0].toUpperCase() + s.slice(1);
 
 /** Names the big Sprite for screen readers, so a change of seed or option is heard. */

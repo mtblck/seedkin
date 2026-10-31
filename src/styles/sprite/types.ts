@@ -22,8 +22,8 @@ export type Form =
   | 'planet'
   | 'star'
   | 'comet';
-export type Eyes = 'dots' | 'tiny' | 'round' | 'happy' | 'sleepy' | 'wink';
-export type Mouth = 'none' | 'dot' | 'smile' | 'grin';
+export type Eyes = 'dots' | 'tiny' | 'round' | 'happy' | 'sleepy' | 'wink' | 'glance' | 'close';
+export type Mouth = 'none' | 'dot' | 'smile' | 'grin' | 'open' | 'smirk' | 'oh';
 
 /** Every choice that makes up one Sprite. */
 export interface SpriteTraits {
