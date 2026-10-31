@@ -30,7 +30,7 @@ const src = nogginDataUri(user.id, { size: 40, skin: 4 });
 </code></pre>
 <p>The seed is salted, so one id's Botling and Noggin are unrelated.</p>
 <h2 id="options">Options</h2>
-<p><code>noggin()</code> takes the same options as <a href="/docs/snoot/#options"><code>snoot()</code></a>, plus <code>skin</code>. <code>palette</code> picks one of the six outfits in <code>PALETTES</code>, or takes a whole palette object; <code>title</code> defaults to <code>'Person avatar'</code>. Below 40px it draws a simpler 9x9 Noggin from the same traits.</p>
+<p><code>noggin()</code> takes the same options as <a href="/docs/snoot/#options"><code>snoot()</code></a>, plus <code>skin</code>. <code>palette</code> picks one of the six outfits in <code>PALETTES</code>, takes an outfit object such as one of its <a href="/docs/botling/#holiday-palettes"><code>HOLIDAY_PALETTES</code></a> (worn with the seed's own skin and hair, against backgrounds every skin tone stands out from), or takes a whole palette object; <code>title</code> defaults to <code>'Person avatar'</code>. Below 40px it draws a simpler 9x9 Noggin from the same traits.</p>
 <h2 id="skin-tones">Skin tones</h2>
 <p><code>skin</code> is an index into <code>SKIN_TONES</code>, lightest first, so people can pick their own. A seed's hair colour and outfit always stand out from its skin; pick another skin tone and they move to the next colours that do.</p>
 <h2 id="animation">Animation</h2>

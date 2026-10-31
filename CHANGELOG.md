@@ -7,8 +7,14 @@ any change to the robot a seed draws is a major version.
 
 ## [Unreleased]
 
+### Added
+
+- `HOLIDAY_PALETTES` for Snoot, Noggin, Beastie and Sprite, with the same six holidays and keys as Botling's (New Year's, Valentine's, St Patrick's, Fourth of July, Halloween and Christmas), each painted for that style. Noggin's are outfits: its `palette` option now also takes an outfit object (`bg`, `grid`, `screen` and `accent`), worn with the seed's own skin and hair. A seed never picks a holiday palette, so no seed's avatar changes (ADR 0015).
+- `Holiday`, the holiday keys, is exported from every style.
+
 ### Site
 
+- Every style's playground has a holiday picker beside its everyday colours.
 - Each style's docs page shows its status next to its name: Stable for every style.
 - The display font is now Silkscreen, a capitals-only pixel font that stays readable at small sizes, in place of Pixelify Sans, whose lowercase e was hard to read. The font file drops from 12 kB to 8 kB.
 

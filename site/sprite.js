@@ -2,6 +2,7 @@
 import {
   ELEMENTS,
   FRAMES,
+  HOLIDAY_PALETTES,
   LOOKS,
   PALETTES,
   randomSeed,
@@ -43,7 +44,8 @@ const title = (s) => s[0].toUpperCase() + s.slice(1);
 /** Names the big Sprite for screen readers, so a change of seed or option is heard. */
 function describe(seed, options) {
   const t = resolveTraits(seed, options);
-  const parts = [`${t.shape} cells`, `${PALETTES[t.palette].name} colours`, EYES[t.eyes], MOUTHS[t.mouth]];
+  const palette = typeof options.palette === 'object' ? options.palette : PALETTES[t.palette];
+  const parts = [`${t.shape} cells`, `${palette.name} colours`, EYES[t.eyes], MOUTHS[t.mouth]];
   if (t.hasBlush) parts.push('rosy cheeks');
   if (MARKS[t.mark]) parts.push(MARKS[t.mark]);
   return `Sprite for "${seed}": a ${t.element} ${t.form}, ${parts.join(', ')}`;
@@ -56,6 +58,7 @@ playground({
   draw: sprite,
   dataUri: spriteDataUri,
   randomSeed,
+  holidays: HOLIDAY_PALETTES,
   describe,
   swatch: (p) => [p.bg, p.body, p.screen, p.accent],
   groups: [
@@ -75,6 +78,11 @@ playground({
       name: 'palette',
       legend: 'Colours',
       choices: [['auto', 'Seed picks'], ...PALETTES.map((p, i) => [String(i), p.name, p])],
+    },
+    {
+      name: 'palette',
+      legend: 'Holiday colours',
+      choices: Object.entries(HOLIDAY_PALETTES).map(([key, p]) => [key, p.name, p]),
     },
     shared.grid,
     shared.motion,

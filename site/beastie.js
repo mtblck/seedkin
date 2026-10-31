@@ -3,6 +3,7 @@ import {
   beastie,
   beastieDataUri,
   FRAMES,
+  HOLIDAY_PALETTES,
   LOOKS,
   PALETTES,
   randomSeed,
@@ -16,9 +17,10 @@ const EYES = { one: 'one eye', two: 'two eyes', three: 'three eyes', stalks: 'ey
 /** Names the big Beastie for screen readers, so a change of seed or option is heard. */
 function describe(seed, options) {
   const t = resolveTraits(seed, options);
+  const palette = typeof options.palette === 'object' ? options.palette : PALETTES[t.palette];
   const parts = [
     `${t.shape} cells`,
-    `${PALETTES[t.palette].name} hide`,
+    `${palette.name} hide`,
     EYES[t.eyes],
     `a ${t.mouth === 'o' ? 'round' : t.mouth} mouth`,
   ];
@@ -35,6 +37,7 @@ playground({
   draw: beastie,
   dataUri: beastieDataUri,
   randomSeed,
+  holidays: HOLIDAY_PALETTES,
   describe,
   swatch: (p) => [p.bg, p.body, p.screen, p.accent],
   groups: [
@@ -45,6 +48,11 @@ playground({
       name: 'palette',
       legend: 'Hide',
       choices: [['auto', 'Seed picks'], ...PALETTES.map((p, i) => [String(i), p.name, p])],
+    },
+    {
+      name: 'palette',
+      legend: 'Holiday hide',
+      choices: Object.entries(HOLIDAY_PALETTES).map(([key, p]) => [key, p.name, p]),
     },
     shared.grid,
     shared.motion,
