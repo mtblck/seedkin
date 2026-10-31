@@ -94,6 +94,8 @@ const SMALL_HEAD = `
  * into flecks that come and go.
  */
 const STREAKS = [frames('5,6 4,5 3,4')[0] ?? [], frames('6,5 5,4 4,3 3,2')[0] ?? [], frames('7,4 6,3 5,2')[0] ?? []];
+/** Tail cells drawn in the accent colour, so the streaks aren't all one tone. */
+const SPARKS = new Set(['3,4', '4,3']);
 const tail = (f: number) => STREAKS.flatMap((cells, i) => cells.filter((_, k) => (k + i * 2 + 4 - f) % 4 !== 0));
 const TAIL_ENDS = frames('2,3 1,1 | 2,1 0,2 | 1,2 3,0 | 0,1 2,0');
 const SMALL_TAIL = frames('3,2 2,1')[0] ?? [];
@@ -102,7 +104,7 @@ const SMALL_TAIL_ENDS = frames('1,0 | 0,1 | 0,0 | 1,1');
 
 const comet: Draw = (f) => {
   const c = canvas(15);
-  dots(c, tail(f), Role.Shade);
+  for (const [x, y] of tail(f)) c.paint(x, y, SPARKS.has(`${x},${y}`) ? Role.Accent : Role.Shade);
   dots(c, pick(TAIL_ENDS, f), Role.Accent);
   art(c, HEAD, 4);
   return { c, at: { x: 9, dx: 2, y: 7 } };
