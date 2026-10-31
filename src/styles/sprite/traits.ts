@@ -1,6 +1,6 @@
 import { createRng, pick } from '../../core/random.js';
-import { palettesFor } from './palettes.js';
 import { marksFor } from './grid/index.js';
+import { palettesFor } from './palettes.js';
 import { ELEMENTS, EYES, FORMS, MOUTHS } from './parts.js';
 import type { Element, SpriteTraits } from './types.js';
 
