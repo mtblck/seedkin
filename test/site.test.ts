@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { describe, expect, it, vi } from 'vitest';
+import { pickAcross } from '../site/pick.js';
 import { options, type PlaygroundState, snippet } from '../site/snippet.js';
 import { arrival, body, HOST, track } from '../site/track.js';
 import { botling, HOLIDAY_PALETTES } from '../src/styles/botling/index.js';
@@ -144,5 +145,28 @@ describe('playground analytics', () => {
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+});
+
+describe('pickAcross', () => {
+  // A fixed sequence of "random" numbers: the first picks the group, the second the value.
+  const seq =
+    (...ns: number[]) =>
+    () =>
+      ns.shift() ?? 0;
+  const everyday = { all: ['0', '1', '2', '3', '4', '5'], from: ['4', '5'] };
+  const holiday = { all: ['xmas', 'halloween'], from: ['xmas', 'halloween'] };
+
+  it('gives each group its share of all the choices, even when narrowed', () => {
+    expect(pickAcross([everyday, holiday], seq(0.74, 0))).toBe('4');
+    expect(pickAcross([everyday, holiday], seq(0.76, 0.9))).toBe('halloween');
+  });
+
+  it('picks only from the narrowed values', () => {
+    expect(pickAcross([everyday], seq(0, 0.99))).toBe('5');
+  });
+
+  it('returns undefined with nothing to pick', () => {
+    expect(pickAcross([])).toBeUndefined();
   });
 });

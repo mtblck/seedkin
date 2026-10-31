@@ -3,12 +3,12 @@
 // (site/botling.js, site/snoot.js). State lives in the URL hash, which never reaches the
 // server or analytics: seeds stay in the browser.
 import { highlight } from '/highlight.js';
+import { pickAcross } from '/pick.js';
 import { options as optionsFor, snippet as snippetFor } from '/snippet.js';
 import { track } from '/track.js';
 
 const $ = (id) => document.getElementById(id);
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const pickOne = (list) => list[Math.floor(Math.random() * list.length)];
 
 const title = (s) => s[0].toUpperCase() + s.slice(1).replaceAll('-', ' ');
 
@@ -247,16 +247,15 @@ export function playground(style) {
   $('random').addEventListener('click', () => {
     state.seed = $('seed').value = randomSeed();
     for (const key of ['shape', 'palette']) {
-      // Each group (everyday or holiday) is as likely as its share of all the choices; a group
-      // that names choices for this avatar then picks from those, so the pick suits it.
+      // Everyday and holiday groups keep their shares; Sprite's narrows to the form's nine.
       const pool = groups
         .filter((g) => g.name === key)
-        .flatMap((g) => {
+        .map((g) => {
           const all = g.choices.map(([v]) => v).filter((v) => v !== 'auto');
-          const from = g.featured ? g.featured(state.seed, options()) : all;
-          return all.map(() => from);
+          return { all, from: g.featured ? g.featured(state.seed, options()) : all };
         });
-      if (pool.length) state[key] = pickOne(pickOne(pool));
+      const value = pickAcross(pool);
+      if (value) state[key] = value;
     }
     draw();
     gallery();
