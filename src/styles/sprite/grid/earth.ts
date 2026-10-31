@@ -141,7 +141,11 @@ const tree: Draw = (f) => {
   art(c, TRUNK, 11);
   art(c, CROWN, 1, (y) => (y < 4 ? sway(f) : 0));
   // Fruit in the swaying rows sways with them.
-  dots(c, FRUIT.map(([x, y]): [number, number] => [x + (y < 5 ? sway(f) : 0), y]), Role.Accent);
+  dots(
+    c,
+    FRUIT.map(([x, y]): [number, number] => [x + (y < 5 ? sway(f) : 0), y]),
+    Role.Accent,
+  );
   dots(c, pick(FALLING, f), Role.Accent);
   return { c, at: { x: 7, dx: 2, y: 5 } };
 };
