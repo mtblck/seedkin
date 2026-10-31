@@ -71,6 +71,7 @@
     "site": "npm run build && node scripts/site.mjs",
     "hosting:check": "node scripts/check-hosting.mjs",
     "serve": "node scripts/serve.mjs",
+    "release": "node scripts/release.mjs",
     "coverage": "vitest run --coverage --coverage.reporter=lcov --coverage.reporter=json-summary --coverage.reporter=text-summary"
   },
   "devDependencies": {
