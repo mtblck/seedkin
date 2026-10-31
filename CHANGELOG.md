@@ -10,6 +10,7 @@ any change to the robot a seed draws is a major version.
 ### Site
 
 - Each style's docs page shows its status next to its name: Stable for Botling, Snoot, Noggin and Beastie, Preview for Sprite.
+- The display font is now Silkscreen, a capitals-only pixel font that stays readable at small sizes, in place of Pixelify Sans, whose lowercase e was hard to read. The font file drops from 12 kB to 8 kB.
 
 ## [2.5.0] - 2026-10-31
 

@@ -1,12 +1,16 @@
 /* botling's site. The page sits on the same square dot grid the robots are drawn on: warm
-   paper in the light theme, indigo ink for what you can press, seafoam for what is glowing. Pixelify Sans for display only,
+   paper in the light theme, indigo ink for what you can press, seafoam for what is glowing. Silkscreen (all capitals) for display only,
    the system sans for reading, the system monospace for code. */
+/* One regular face for every weight: Silkscreen's bold is too heavy at heading size, and
+   claiming the whole range stops the browser smearing a fake bold. Its capitals sit large,
+   so size-adjust brings it back to the old Pixelify measure. */
 @font-face {
-  font-family: "Pixelify";
+  font-family: "Silkscreen";
   font-style: normal;
-  font-weight: 400 700;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/pixelify.woff2") format("woff2-variations");
+  size-adjust: 80%;
+  src: url("/fonts/silkscreen.woff2") format("woff2");
 }
 
 :root {
@@ -31,7 +35,7 @@
   --tok-function: #7b2a9e;
   --tok-tag: #a3155c;
   --tok-attr: #6f4b00;
-  --display: "Pixelify", ui-sans-serif, system-ui, sans-serif;
+  --display: "Silkscreen", ui-sans-serif, system-ui, sans-serif;
   --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --cell: 22px;
