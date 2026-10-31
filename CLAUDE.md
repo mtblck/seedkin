@@ -13,7 +13,7 @@ styles are in `lab/`. README has the API and design notes; `docs/overview.md` th
 `npm test` · `npm run lint` · `npm run typecheck` · `npm run build` · `npm run preview [count]`
 (contact sheet at 24/32/48/96px; look at it for any art change, 24px first) ·
 `npm run site` then `npm run serve` (the playground with production headers) ·
-`npm run hosting:check`
+`npm run hosting:check` · `npm run release -- x.y.z` (the release PR; ADR 0016)
 
 PRs: open as drafts and mark them ready only when the work is done. Before marking
 one ready, run `/pr-review:review <n>` and fix what it finds; the `pr-review` plugin
@@ -52,4 +52,5 @@ one means a new ADR that supersedes it, in the same PR.
   whose author email isn't linked to Matt's account.
 - npm 10 crashes ("edgesOut") installing vitest 4 in Claude's sandbox; use `npx npm@11 i`.
 - Keep TypeScript files under 200 lines; exported functions get JSDoc and explicit return types.
-- Don't publish to npm; Matt publishes from his own account.
+- Don't publish to npm or push tags. A release is a PR from `npm run release`; merge it only on
+  Matt's go, and `release.yml` tags and publishes it. Only a release PR changes `version`.

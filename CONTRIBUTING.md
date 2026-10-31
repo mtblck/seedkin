@@ -53,14 +53,20 @@ test that fails without your change.
 
 ## Releasing
 
-Matt releases; `.github/workflows/release.yml` publishes on a version tag.
+Matt approves releases; `.github/workflows/release.yml` publishes them (ADR 0016).
 
-1. Move the CHANGELOG's `[Unreleased]` entries under a new `## [x.y.z] - date`
-   heading, set `version` in `package.json` to match, and merge that.
-2. Tag the merge commit and push the tag: `git tag vx.y.z && git push origin vx.y.z`.
-3. The workflow checks the tag matches `package.json`, runs lint, typecheck,
-   tests and the build (`prepublishOnly`), publishes with provenance through
-   npm trusted publishing, and makes the GitHub release from the CHANGELOG.
+1. Run `npm run release -- x.y.z`. It moves the CHANGELOG's `[Unreleased]`
+   entries under a new `## [x.y.z] - date` heading, adds its compare link, and
+   sets `version` in `package.json` and `package-lock.json`. Open that as the
+   release PR.
+2. Merge it once Matt says go. On `main`, the workflow sees the version change,
+   runs lint, typecheck, tests and the build (`prepublishOnly`), publishes with
+   provenance through npm trusted publishing, tags the merge commit `vx.y.z`,
+   and makes the GitHub release from the CHANGELOG.
+
+Only a release PR should change `version`: any merge that does releases it.
+Pushing a tag by hand still works (`git tag vx.y.z && git push origin vx.y.z`,
+or GitHub's New release page): the workflow checks it matches `package.json`.
 
 The very first version has to be published by hand (`npm publish --access public`
 from a clean checkout of the tag), because npm only offers trusted publishing
