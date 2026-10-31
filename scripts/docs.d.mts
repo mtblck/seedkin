@@ -8,3 +8,5 @@ export function docsNav(slug: string): string;
 export function toc(html: string): string;
 /** The foot of a page: the previous and next pages, and a link to edit this one. */
 export function pager(slug: string): string;
+/** The breadcrumb over a page's heading: Docs, then its group. */
+export function crumb(slug: string): string;

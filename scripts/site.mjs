@@ -12,7 +12,7 @@ import { gzipSync } from 'node:zlib';
 import { buildSync } from 'esbuild';
 import { highlightPage } from '../site/highlight.js';
 import { changelog } from './changelog.mjs';
-import { DOCS, docsNav, docsSlug, pager, toc } from './docs.mjs';
+import { crumb, DOCS, docsNav, docsSlug, pager, toc } from './docs.mjs';
 import { ogImage, styleOgImage } from './og.mjs';
 import { searchEntries } from './search.mjs';
 import { jsonLd, llms, pageInfo, robots, sitemap } from './seo.mjs';
@@ -98,7 +98,8 @@ for (const file of pages) {
     page = page
       .replace('{{docsnav}}', () => docsNav(slug))
       .replace('{{pager}}', () => pager(slug))
-      .replace('{{toc}}', () => toc(page));
+      .replace('{{toc}}', () => toc(page))
+      .replace(/<h1[\s>]/, (h1) => crumb(slug) + h1);
   }
   if (page.includes('{{')) throw new Error(`site/${file} has a placeholder the build doesn't fill`);
   // After the placeholder check: highlighting decodes the {&#123; that keeps samples from looking like one.
@@ -172,6 +173,6 @@ const font = (pkg, file, as) =>
     path.join(path.dirname(req.resolve(`${pkg}/package.json`)), 'files', file),
     path.join(out, 'fonts', as),
   );
-font('@fontsource-variable/pixelify-sans', 'pixelify-sans-latin-wght-normal.woff2', 'pixelify.woff2');
+font('@fontsource/silkscreen', 'silkscreen-latin-400-normal.woff2', 'silkscreen.woff2');
 
 console.log(`built ${path.relative(ROOT, out)}/`);

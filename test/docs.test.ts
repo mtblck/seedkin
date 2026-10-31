@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { DOCS, docsNav, docsSlug, pager, toc } from '../scripts/docs.mjs';
+import { crumb, DOCS, docsNav, docsSlug, pager, toc } from '../scripts/docs.mjs';
 import { STYLES } from '../scripts/styles.mjs';
 
 const slugs = DOCS.flatMap((g) => g.pages.map(([slug]) => slug));
@@ -38,6 +38,12 @@ describe('docs pages', () => {
     expect(nav).toContain('<a href="/docs/vue/" aria-current="page">Vue</a>');
     expect(nav.match(/aria-current/g)).toHaveLength(1);
     expect(nav).toContain('Docs: Vue');
+  });
+
+  it('puts each page under its group in the breadcrumb', () => {
+    expect(crumb('')).toBe('<p class="kicker"><a href="/docs/">Docs</a> / Getting started</p>');
+    expect(crumb('noggin')).toContain('/ Styles</p>');
+    expect(crumb('versioning')).toContain('/ Reference</p>');
   });
 
   it("lists a page's headings, without badges or markup", () => {
