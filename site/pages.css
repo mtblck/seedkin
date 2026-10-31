@@ -945,6 +945,25 @@ ol.features > li::before {
     background-size: var(--cell) var(--cell);
     background-position: 0 calc(var(--top-h) * -1);
   }
+  /* Paper in the two wedges outside the pinned card's rounded top corners, so the edges of
+     the options scrolling up behind it don't show there. Drawn behind the card's own
+     background, outside its border edge (hence the -1px), so only the wedges show. */
+  .stage::before {
+    --r: 14px;
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    height: var(--r);
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 100% 100%, transparent calc(var(--r) - 1px), var(--paper) var(--r))
+        left top / var(--r) var(--r) no-repeat,
+      radial-gradient(circle at 0 100%, transparent calc(var(--r) - 1px), var(--paper) var(--r))
+        right top / var(--r) var(--r) no-repeat;
+  }
   /* Focused options scroll clear of the pinned avatar card, not under it. */
   html:has(.play) {
     scroll-padding-top: 230px;
