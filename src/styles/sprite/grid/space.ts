@@ -36,7 +36,8 @@ const planet: Draw = (f) => {
   });
   span(c, 7, 1, 13, Role.Accent, Role.Accent);
   twinkle(c, f, Role.Screen);
-  return { c, at: { x: 7, dx: 2, y: 5 } };
+  // The mouth sits a row lower, clear of the ring.
+  return { c, at: { x: 7, dx: 2, y: 5, mouthDy: 1 } };
 };
 
 const planetSmall: Draw = (f) => {

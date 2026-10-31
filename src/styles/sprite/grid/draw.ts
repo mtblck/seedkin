@@ -6,6 +6,8 @@ export interface Anchor {
   x: number;
   dx: number;
   y: number;
+  /** Rows to move the mouth down, to clear something between it and the eyes. */
+  mouthDy?: number;
 }
 
 /** One frame of a form: its cells and where the face goes. */

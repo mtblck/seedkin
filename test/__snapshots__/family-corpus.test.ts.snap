@@ -56,8 +56,8 @@ exports[`snoot golden corpus > pins the traits, grids and colours 1`] = `
 
 exports[`sprite golden corpus > pins the markup, still and animated 1`] = `
 {
-  "full": "010c7aa1106bdae7",
-  "fullAnimated": "0924226e8e7b67ca",
+  "full": "dcdc0e6953fefa21",
+  "fullAnimated": "5901e223a7a600e3",
   "small": "9de2e80e2261cd68",
   "smallAnimated": "1ab718455beb8ebe",
 }
@@ -66,7 +66,7 @@ exports[`sprite golden corpus > pins the markup, still and animated 1`] = `
 exports[`sprite golden corpus > pins the traits, grids and colours 1`] = `
 {
   "colours": "baf89b4220df3342",
-  "full": "1e12d3697e68cd9d",
+  "full": "5e7c7a6358dcd895",
   "small": "f146c65acb9b5383",
   "traits": "64cb5514c4ad6487",
 }

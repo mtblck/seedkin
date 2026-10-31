@@ -121,6 +121,6 @@ export function paintFace(c: Canvas, at: Anchor, face: Face, small: boolean): vo
   const shift = face.eyes === 'glance' ? glance(c, cells) : 0;
   for (const [ex, ey] of left) c.paint(x - ex + shift, y + ey, Role.Glow);
   for (const [ex, ey] of right) c.paint(x + ex + shift, y + ey, Role.Glow);
-  for (const [mx, my] of MOUTH_CELLS[face.mouth]) c.paint(x + mx, y + my, Role.Glow);
+  for (const [mx, my] of MOUTH_CELLS[face.mouth]) c.paint(x + mx, y + my + (at.mouthDy ?? 0), Role.Glow);
   if (face.hasBlush) for (const s of [-1, 1]) c.paint(x + s * (dx + 2), y + 2, Role.Accent);
 }
