@@ -16,6 +16,21 @@
           <ul class="sizes" id="sizes" aria-label="The same {{label}} at 96, 48, 32 and 24 pixels"></ul>
           <p class="note">{{small-note}}</p>
         </div>
+      </div>
+      <div class="side">
+        <section class="options card" id="options" aria-labelledby="options-h">
+          <div class="options-head">
+            <h2 id="options-h">Options</h2>
+            <button class="btn" type="button" id="reset">Reset</button>
+          </div>
+        </section>
+        <!-- The style's palettes get a card of their own; playground.js fills and shows it. -->
+        <section class="options card" id="colours" aria-labelledby="colours-h" hidden>
+          <div class="options-head">
+            <h2 id="colours-h">Colours</h2>
+          </div>
+        </section>
+        <!-- Under the options on a wide screen, so the avatar card above stays short enough to stick. -->
         <div class="output card">
           <h2 class="panel-title" id="output-h">Download</h2>
           <pre class="code" data-nocopy><code id="code"></code></pre>
@@ -31,20 +46,6 @@
           </div>
           <p class="status" id="status" role="status" aria-live="polite"></p>
         </div>
-      </div>
-      <div class="side">
-        <section class="options card" id="options" aria-labelledby="options-h">
-          <div class="options-head">
-            <h2 id="options-h">Options</h2>
-            <button class="btn" type="button" id="reset">Reset</button>
-          </div>
-        </section>
-        <!-- The style's palettes get a card of their own; playground.js fills and shows it. -->
-        <section class="options card" id="colours" aria-labelledby="colours-h" hidden>
-          <div class="options-head">
-            <h2 id="colours-h">Colours</h2>
-          </div>
-        </section>
       </div>
     </section>
 

@@ -835,9 +835,9 @@ ol.features > li::before {
   display: grid;
   gap: 16px;
 }
-/* On a wide screen the avatar and its code stick a little below the header as the page
-   scrolls, and the options and colours scroll by beside them. On a short screen the code's
-   card comes into view as the end of the options passes. */
+/* On a wide screen the avatar card sticks a little below the header as the page scrolls,
+   while the options, colours and download cards scroll by beside it, until the last of them
+   is in view. */
 @media (min-width: 901px) {
   .preview {
     position: sticky;
