@@ -30,7 +30,7 @@ const bubble: Draw = (f) => {
   else rows(c, 3, [2, 3, 4, 5, 5, 5, 5, 4, 3, 2]);
   dots(c, frames(`5,${4 + s} 4,${5 + s} 3,${6 + s}`)[0] ?? [], Role.Screen);
   dots(c, pick(BUBBLES, f + 2), Role.Accent);
-  return { c, at: { x: 7, dx: 2, y: 8 - s } };
+  return { c, at: { x: 7, dx: 2, y: 7 - s } };
 };
 
 const bubbleSmall: Draw = (f) => {
