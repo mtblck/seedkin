@@ -6,7 +6,7 @@ public: false
 
 - **Status:** Accepted
 - **Date:** 2026-10-31
-- **PR:** <https://github.com/mtblck/seedkin/pulls>
+- **PR:** [#90](https://github.com/mtblck/seedkin/pull/90)
 
 ## Context
 
