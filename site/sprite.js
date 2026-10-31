@@ -58,7 +58,7 @@ function describe(seed, options) {
   const parts = [`${t.shape} cells`, `${PALETTES[t.palette].name} colours`, EYES[t.eyes], MOUTHS[t.mouth]];
   if (t.hasBlush) parts.push('rosy cheeks');
   if (MARKS[t.mark]) parts.push(MARKS[t.mark]);
-  return `Sprite for "${seed}": a ${t.element} ${formName(t.form)}, ${parts.join(', ')}`;
+  return `Sprite for "${seed}": ${/^[aeiou]/.test(t.element) ? 'an' : 'a'} ${t.element} ${formName(t.form)}, ${parts.join(', ')}`;
 }
 
 const shared = sharedGroups({ SHAPES, FRAMES, LOOKS });

@@ -109,8 +109,7 @@ export function playground(style) {
     `<i class="sw" aria-hidden="true">${(Array.isArray(p) ? p : style.swatch(p)).map((c) => `<b data-c="${c}"></b>`).join('')}</i>`;
   const choice = (i, g, [value, label, p]) => {
     const id = `opt-${i}-${value}`;
-    const tip = g.sections && p ? ` title="${label}"` : '';
-    return `<input type="radio" name="${g.name}" id="${id}" value="${value}"><label for="${id}"${tip}>${p ? swatch(p) : ''}<span>${label}</span></label>`;
+    return `<input type="radio" name="${g.name}" id="${id}" value="${value}"><label for="${id}">${p ? swatch(p) : ''}<span>${label}</span></label>`;
   };
   // A group with sections (Sprite's 81 palettes) names a few choices and folds the rest
   // away as small tiles, one row per section; draw() moves each choice to where it belongs.
@@ -144,9 +143,10 @@ export function playground(style) {
   const placed = groups.flatMap((g, i) => {
     if (!g.sections) return [];
     const set = document.querySelector(`[data-group="${i}"]`);
-    const items = g.choices.slice(1).map(([value, label]) => {
+    // A choice in no section isn't drawn, so it is left out rather than breaking the page.
+    const items = g.choices.slice(1).flatMap(([value, label]) => {
       const input = set.querySelector(`input[value="${CSS.escape(value)}"]`);
-      return { value, label, input, tag: input.nextElementSibling, home: input.parentElement };
+      return input ? [{ value, label, input, tag: input.nextElementSibling, home: input.parentElement }] : [];
     });
     return [{ g, set, items, key: '' }];
   });
@@ -157,12 +157,21 @@ export function playground(style) {
       entry.set.querySelector('.picked').textContent = picked ? `: ${picked.label}` : '';
       const featured = new Set(entry.g.featured(state.seed, options()));
       const key = [...featured].join();
-      if (key === entry.key) continue;
-      entry.key = key;
-      const top = entry.set.querySelector('[data-featured]');
-      for (const it of entry.items) (featured.has(it.value) ? top : it.home).append(it.input, it.tag);
-      for (const s of entry.set.querySelectorAll('.section')) s.hidden = !s.querySelector('input');
-      entry.set.querySelector('[data-count]').textContent = `(${entry.items.length - featured.size})`;
+      if (key !== entry.key) {
+        entry.key = key;
+        const top = entry.set.querySelector('[data-featured]');
+        // Appended in order, so each row keeps its order. A tile is named on hover; a chip shows its name.
+        for (const it of entry.items) {
+          const named = featured.has(it.value);
+          (named ? top : it.home).append(it.input, it.tag);
+          if (named) it.tag.removeAttribute('title');
+          else it.tag.title = it.label;
+        }
+        for (const s of entry.set.querySelectorAll('.section')) s.hidden = !s.querySelector('input');
+        entry.set.querySelector('[data-count]').textContent = `(${entry.items.length - featured.size})`;
+      }
+      // A picked choice in the fold opens it: the pick stays in view, and Tab can reach the group.
+      if (picked && !featured.has(picked.value)) entry.set.querySelector('.others').open = true;
     }
   }
   // Swatch colours go in through the CSSOM, which the CSP allows, rather than style attributes.
@@ -217,7 +226,10 @@ export function playground(style) {
   $('random').addEventListener('click', () => {
     state.seed = $('seed').value = randomSeed();
     for (const key of ['shape', 'palette']) {
-      const values = groups.filter((g) => g.name === key).flatMap((g) => g.choices.map(([v]) => v));
+      // A group that names choices for this avatar picks from those, so the pick suits it.
+      const values = groups
+        .filter((g) => g.name === key)
+        .flatMap((g) => (g.featured ? g.featured(state.seed, options()) : g.choices.map(([v]) => v)));
       const picks = values.filter((v) => v !== 'auto');
       if (picks.length) state[key] = pickOne(picks);
     }

@@ -499,14 +499,6 @@ legend {
     grid-template-columns: repeat(4, 5px);
   }
 }
-.choices.tiles label span {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -737,7 +729,8 @@ legend {
 .tabs [role="tab"]:hover {
   color: var(--ink);
 }
-.sr-only {
+.sr-only,
+.choices.tiles label span {
   position: absolute;
   width: 1px;
   height: 1px;
