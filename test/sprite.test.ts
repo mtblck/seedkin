@@ -11,7 +11,6 @@ import {
   grid,
   MOUTHS,
   PALETTES,
-  palettesFor,
   resolveTraits,
   SHAPES,
   SMALL_GRID_SIZE,
@@ -45,7 +44,7 @@ describe('sprite', () => {
     const all = seeds.map((s) => traits(s));
     for (const t of all) {
       expect(FORMS[t.element]).toContain(t.form);
-      expect(palettesFor(t.element, t.form)).toContain(t.palette);
+      expect(PALETTES[t.palette]).toBeDefined();
       expect(t.beats).toHaveLength(FRAME_COUNT);
     }
     expect(new Set(all.map((t) => t.element)).size).toBe(ELEMENTS.length);
@@ -54,14 +53,9 @@ describe('sprite', () => {
     expect(new Set(all.map((t) => t.mouth)).size).toBe(MOUTHS.length);
   });
 
-  it('gives every palette to some form, and keeps gems for crystals and stones for boulders', () => {
-    const used = new Set(ELEMENTS.flatMap((e) => FORMS[e].flatMap((f) => palettesFor(e, f))));
+  it('lets any form wear any palette', () => {
+    const used = new Set(Array.from({ length: 2000 }, (_, i) => traits(`palette-${i}`).palette));
     expect(used.size).toBe(PALETTES.length);
-    const names = (e: 'earth', f: 'boulder' | 'crystal'): string[] =>
-      palettesFor(e, f).map((i) => PALETTES[i]?.name ?? '');
-    expect(names('earth', 'crystal')).toContain('Amethyst');
-    expect(names('earth', 'crystal')).not.toContain('Clay');
-    expect(names('earth', 'boulder')).toContain('Clay');
   });
 
   it('lets the caller pick the element without changing the rest of the seed', () => {

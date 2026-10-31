@@ -1,160 +1,96 @@
-import type { Element, Form, Palette } from './types.js';
+import type { Palette } from './types.js';
 
 const p = (name: string, ...c: [string, string, string, string, string, string, string]): Palette => {
   const [bg, grid, body, shade, screen, glow, accent] = c;
   return { name, bg, grid, body, shade, screen, glow, accent };
 };
 
-type Suit = readonly [Element, ...Form[]];
-
 /**
- * Each element's palettes, nine for every form, with the forms they're kept
- * for, if any. Screen is the bright core or highlight (a tree's trunk, a
+ * Every Sprite palette. Any form can wear any of them; they were drawn for
+ * fire, water, stones, gems, mushrooms, trees, clouds, leaves and space, in
+ * that order. Screen is the bright core or highlight (a tree's trunk, a
  * mushroom's stem), glow the face, accent the motes and cheeks.
  */
-const GROUPS: readonly (readonly [Suit, readonly Palette[]])[] = [
-  [
-    ['fire'],
-    [
-      p('Ember', '#1d1210', '#2c1c18', '#ff7a2f', '#d9461f', '#ffd25e', '#2a0f05', '#ffb347'),
-      p('Gas', '#0e1424', '#18213a', '#4f8cff', '#2f5fd6', '#bfe3ff', '#0b1430', '#8fd0ff'),
-      p('Spark', '#1a0f1f', '#281830', '#ff4fa3', '#c92d7a', '#ffd0e8', '#2a0618', '#ffb3dc'),
-      p('Candle', '#fbf3e6', '#f1e4cf', '#ffb02e', '#e07b12', '#fff1b8', '#3a1d00', '#ff6b3d'),
-      p('Jade', '#0f1c18', '#182b25', '#3ddc97', '#22a571', '#d4ffe9', '#05140e', '#a8ffd6'),
-      p('Blaze', '#1f0d0d', '#2e1716', '#ff3b30', '#c41f1a', '#ffc04d', '#2a0505', '#ffd27a'),
-      p('Sulfur', '#161a0c', '#232914', '#c8e63c', '#93b31f', '#f6ffc2', '#151c03', '#fff07a'),
-      p('Torch', '#fdf0e8', '#f5dfd0', '#ff5a36', '#d23a1c', '#ffd96b', '#3a0e00', '#ffa64d'),
-      p('Ghostfire', '#140f24', '#211a36', '#b36bff', '#8243d6', '#f0d9ff', '#1a0833', '#7af0ff'),
-    ],
-  ],
-  [
-    ['water'],
-    [
-      p('Lagoon', '#0f1b26', '#182a3a', '#3fa9f5', '#2177c4', '#d7f0ff', '#0b1a2c', '#8fd3ff'),
-      p('Sea glass', '#eaf6f3', '#d8ece7', '#3fc1b0', '#239184', '#e6fffb', '#0d2a26', '#239184'),
-      p('Ink', '#f2f0fa', '#e2def2', '#5b6cf0', '#3b48c4', '#dfe3ff', '#11143a', '#9aa5ff'),
-      p('Deep', '#0b1030', '#151c45', '#2f6bff', '#1f47c2', '#c9dcff', '#050a24', '#5ce1ff'),
-      p('Rain', '#e9eef5', '#d9e1ec', '#7fa7d9', '#5a83b8', '#eef5ff', '#16243a', '#5a83b8'),
-      p('Tide', '#0a1a1d', '#13292d', '#1fc2c2', '#14918f', '#ccfff9', '#03191a', '#7ff7e8'),
-      p('Ice', '#eef6fb', '#dceaf3', '#9fd8f5', '#6cb4dd', '#ffffff', '#0f2a3d', '#ff9ec4'),
-      p('Pond', '#e9f2ea', '#d6e6d8', '#4fb09a', '#33857a', '#d8f5ea', '#0c2620', '#f2a65a'),
-      p('Abyss', '#07081a', '#11132b', '#3b3fb8', '#282b8a', '#9fa8ff', '#e6e8ff', '#ff6fb5'),
-    ],
-  ],
-  [
-    ['earth', 'boulder'],
-    [
-      p('Clay', '#f4ede4', '#e7dccd', '#b07b4f', '#855630', '#f3dcbc', '#2a170a', '#4f9e33'),
-      p('Stone', '#1a1c1a', '#272a27', '#8d958c', '#646b63', '#e4e9e2', '#121412', '#7ed957'),
-      p('Moss', '#eef1e4', '#dfe4cf', '#6f9a4a', '#4f7433', '#cfe3b0', '#18240c', '#c98a3a'),
-      p('Granite', '#efeeec', '#e0dedb', '#9b9690', '#716c66', '#e8e4df', '#1d1b18', '#e0533d'),
-      p('Basalt', '#101214', '#1b1e21', '#4c535b', '#343a40', '#a9b2bc', '#e8edf2', '#ffb347'),
-      p('Sandstone', '#22170f', '#312218', '#d9955a', '#a86a36', '#ffe1bf', '#2a1405', '#7fd0ff'),
-      p('Slate', '#e8ecf0', '#d6dde4', '#5e7387', '#435566', '#cfdae5', '#0f1a24', '#f2b84a'),
-      p('Lava', '#1a0b0b', '#291515', '#5a3a36', '#3d2522', '#ff8a3d', '#ffd8c2', '#ff5a36'),
-      p('Lichen', '#18200f', '#232d18', '#9aa86a', '#6f7d45', '#e6f0c4', '#121a06', '#d9e86b'),
-    ],
-  ],
-  [
-    ['earth', 'crystal'],
-    [
-      p('Amethyst', '#17121f', '#241c30', '#a77bf0', '#7550c4', '#efe3ff', '#1a0f2e', '#ffd166'),
-      p('Ruby', '#1d1014', '#2b1a20', '#e0455f', '#a82a40', '#ffd3dc', '#22070d', '#ffcf6b'),
-      p('Quartz', '#eef2f6', '#dde4ec', '#bcd3ea', '#8faccb', '#ffffff', '#1b2a3a', '#f29bb8'),
-      p('Emerald', '#0c1a14', '#152a21', '#2fd07a', '#1d9a57', '#d8ffe9', '#03170c', '#fff07a'),
-      p('Sapphire', '#0b1024', '#151c3a', '#3d6bff', '#2848c9', '#d6e2ff', '#050a24', '#ff9ed2'),
-      p('Topaz', '#fbf2e2', '#f1e3c9', '#ffb547', '#d9861f', '#fff4cc', '#331e00', '#5ab0ff'),
-      p('Rose quartz', '#fbeef2', '#f1dce3', '#f5a6c0', '#d27894', '#fff3f7', '#3a1022', '#5fbfae'),
-      p('Onyx', '#f0eff2', '#e0dfe4', '#3a3842', '#24222b', '#a9a6b8', '#f3f1ff', '#ff6fa8'),
-      p('Aquamarine', '#0b1c1f', '#142c30', '#5fe3dc', '#33b0aa', '#e6fffd', '#031a19', '#ffd166'),
-    ],
-  ],
-  [
-    ['earth', 'mushroom'],
-    [
-      p('Toadstool', '#f3efe6', '#e6e0d2', '#e0453a', '#a82a24', '#fff6e6', '#2a0f0a', '#ff9e8a'),
-      p('Chanterelle', '#1c1a12', '#2a271c', '#f2a93b', '#c47a1c', '#fff1cf', '#2a1a05', '#ffd27a'),
-      p('Porcini', '#eef0e6', '#dfe2d3', '#9a6a43', '#6e4628', '#f6e9d2', '#24150a', '#7fbf5a'),
-      p('Inkcap', '#ecebf0', '#dcdbe3', '#4d4a5c', '#33313f', '#f0eef5', '#1a1824', '#9f8cff'),
-      p('Bluecap', '#0f1424', '#1a2138', '#4f7dff', '#3557c9', '#e6ecff', '#0a0f24', '#7ff0ff'),
-      p('Morel', '#1d1712', '#2b231b', '#b98a52', '#8a6234', '#f3e2c6', '#231708', '#ffcf6b'),
-      p('Glowcap', '#0a1410', '#13221b', '#7dff9a', '#46c967', '#f0fff2', '#04150a', '#d6ff6b'),
-      p('Deceiver', '#f3eef8', '#e5dcef', '#9a5fd6', '#7140a8', '#f6eefc', '#1e0c33', '#ff9ec4'),
-      p('Honey', '#f7f0e0', '#ece0c6', '#e0a63a', '#b47c1c', '#fff6dc', '#2e1d02', '#c2593a'),
-    ],
-  ],
-  [
-    ['earth', 'tree'],
-    [
-      p('Oak', '#eef3e6', '#dfe7d3', '#5fae4a', '#3d7f2f', '#8a5a36', '#13240c', '#e5533d'),
-      p('Blossom', '#2a1d2a', '#382838', '#f5a3c7', '#d0709c', '#8a5a46', '#3a0f22', '#fff0f6'),
-      p('Autumn', '#1d1712', '#2b231b', '#e8902f', '#b8621b', '#7a5236', '#2a1505', '#f2d04a'),
-      p('Pine', '#0f1a15', '#182821', '#2f8f5b', '#1f6640', '#7a4f2e', '#06140c', '#f2e6b8'),
-      p('Lemon', '#f5f6e6', '#e8eacd', '#7ec850', '#579a32', '#8a5a36', '#162a08', '#f2c40c'),
-      p('Birch', '#eef1ea', '#dfe4d8', '#a6cf5a', '#7ca23a', '#e9e6dc', '#1b2608', '#e58a3a'),
-      p('Winter', '#1a1f2a', '#252b39', '#e8eef7', '#b2bfd3', '#6b4a33', '#151a24', '#e04a4a'),
-      p('Jacaranda', '#1b1426', '#282038', '#a57bf0', '#7b52c9', '#6e4a36', '#160a2a', '#ffe36b'),
-      p('Olive', '#f3efe2', '#e7e0cd', '#8fa45a', '#677a3c', '#7d6a52', '#1c2208', '#4a3a6a'),
-    ],
-  ],
-  [
-    ['wind', 'puff', 'tornado'],
-    [
-      p('Breeze', '#dcecf7', '#cbe0ef', '#ffffff', '#a9c6dd', '#ffffff', '#2b3f55', '#6fa9d6'),
-      p('Storm', '#1b2030', '#262d42', '#c9d3e6', '#8f9bb5', '#eef2fa', '#151a28', '#ffe066'),
-      p('Gust', '#102320', '#1a332f', '#b8f2df', '#79c9ae', '#e9fff7', '#0b1f1a', '#5fe0b5'),
-      p('Dusk', '#2a1f3d', '#382b50', '#f3d9ff', '#c9a3e6', '#fff4ff', '#241631', '#ffb3c7'),
-      p('Sand', '#e6d5b3', '#dccaa5', '#fffaf0', '#c9ad7a', '#ffffff', '#4a3a1f', '#d8a24a'),
-      p('Mist', '#edf0f3', '#dde2e8', '#f7f9fb', '#b6bfca', '#ffffff', '#2e3743', '#7f9bbb'),
-      p('Sunset', '#3a2030', '#4a2b3e', '#ffd2b8', '#e89a8a', '#fff1e6', '#2e1424', '#ffd36b'),
-      p('Thunder', '#121521', '#1d2132', '#9aa4c0', '#6a7493', '#dfe5f5', '#0d1018', '#ffd23f'),
-      p('Spring', '#e8f6ee', '#d4ecdf', '#ffffff', '#9fd5b9', '#ffffff', '#1f3d2e', '#4fb882'),
-    ],
-  ],
-  [
-    ['wind', 'leaf'],
-    [
-      p('Maple', '#fbeee2', '#f1ddca', '#e8573a', '#b23a22', '#ffd9c2', '#2a0d05', '#d9a441'),
-      p('Sycamore', '#e8f2df', '#d7e6ca', '#6dbb4a', '#478a2e', '#e4f7d4', '#122408', '#e0b84a'),
-      p('Ginkgo', '#1b1d14', '#292c1f', '#f4cf3b', '#c9a21c', '#fff6c6', '#2a2205', '#9ad16a'),
-      p('Fern', '#14200f', '#1f2e18', '#4fc23a', '#348a25', '#d6ffc4', '#0a1a05', '#b5ff6b'),
-      p('Holly', '#f3eee6', '#e6dfd2', '#2f8a4a', '#1f6334', '#c9efd2', '#0c2414', '#e0303a'),
-      p('Beech', '#1e1610', '#2c2219', '#c9662a', '#97451a', '#ffd5aa', '#241004', '#ffb347'),
-      p('Willow', '#eef3dc', '#e0e8c6', '#a8c94a', '#7c9a2e', '#f2ffd0', '#1e2808', '#5a96cc'),
-      p('Plum', '#1c1220', '#2a1c30', '#a8456e', '#7a2c4f', '#ffc7dc', '#22081a', '#f2c94c'),
-      p('Frost', '#e9eef4', '#d7e0ea', '#8fb8c9', '#6690a3', '#f2fbff', '#152733', '#b47fd6'),
-    ],
-  ],
-  [
-    ['space'],
-    [
-      p('Nebula', '#0d0b1f', '#1a1733', '#7b5cff', '#5236d1', '#fff3b0', '#0d0b1f', '#ff8fd1'),
-      p('Void', '#05070f', '#121626', '#4f63a8', '#33437a', '#ffffff', '#e9ecff', '#ffd166'),
-      p('Saturn', '#14101e', '#221b31', '#f2b56b', '#c9853b', '#fff1c9', '#2a1806', '#c3a6ff'),
-      p('Comet', '#071a1f', '#0f2a31', '#5fd4e8', '#2fa3b8', '#e8fdff', '#03161b', '#fff3a3'),
-      p('Mars', '#1a0e0c', '#2a1714', '#e0663f', '#a8442a', '#ffd6c4', '#1a0805', '#ffcf8a'),
-      p('Aurora', '#08161a', '#10252a', '#46e0a0', '#2aa874', '#e3fff2', '#04140d', '#c38bff'),
-      p('Moon', '#151820', '#20242f', '#c7ccd6', '#9097a6', '#ffffff', '#14171f', '#ffe58a'),
-      p('Cosmos', '#f1effa', '#e2def3', '#6a4fe0', '#4a33b5', '#ffe7a3', '#14093a', '#ff7fb0'),
-      p('Pulsar', '#1a0a18', '#2a1427', '#ff5fa8', '#cc3b80', '#ffe1f0', '#22051a', '#7fe7ff'),
-    ],
-  ],
-];
-
-/** Every Sprite palette, grouped by element and form. */
-export const PALETTES: readonly Palette[] = Object.freeze(GROUPS.flatMap(([, palettes]) => palettes));
-
-/** The suit of each palette, indexed like `PALETTES`. */
-const SUITS: readonly Suit[] = GROUPS.flatMap(([suit, palettes]) => palettes.map(() => suit));
-
-/**
- * The palettes a seed picks from for one form: its element's, less those
- * kept for the element's other forms (gems for a crystal, stones for a boulder).
- *
- * @param element - The sprite's element
- * @param form - The sprite's form
- * @returns Indexes into `PALETTES`
- */
-export function palettesFor(element: Element, form: Form): number[] {
-  return SUITS.flatMap(([e, ...only], i) => (e === element && (only.length === 0 || only.includes(form)) ? [i] : []));
-}
+export const PALETTES: readonly Palette[] = Object.freeze([
+  p('Ember', '#1d1210', '#2c1c18', '#ff7a2f', '#d9461f', '#ffd25e', '#2a0f05', '#ffb347'),
+  p('Gas', '#0e1424', '#18213a', '#4f8cff', '#2f5fd6', '#bfe3ff', '#0b1430', '#8fd0ff'),
+  p('Spark', '#1a0f1f', '#281830', '#ff4fa3', '#c92d7a', '#ffd0e8', '#2a0618', '#ffb3dc'),
+  p('Candle', '#fbf3e6', '#f1e4cf', '#ffb02e', '#e07b12', '#fff1b8', '#3a1d00', '#ff6b3d'),
+  p('Jade', '#0f1c18', '#182b25', '#3ddc97', '#22a571', '#d4ffe9', '#05140e', '#a8ffd6'),
+  p('Blaze', '#1f0d0d', '#2e1716', '#ff3b30', '#c41f1a', '#ffc04d', '#2a0505', '#ffd27a'),
+  p('Sulfur', '#161a0c', '#232914', '#c8e63c', '#93b31f', '#f6ffc2', '#151c03', '#fff07a'),
+  p('Torch', '#fdf0e8', '#f5dfd0', '#ff5a36', '#d23a1c', '#ffd96b', '#3a0e00', '#ffa64d'),
+  p('Ghostfire', '#140f24', '#211a36', '#b36bff', '#8243d6', '#f0d9ff', '#1a0833', '#7af0ff'),
+  p('Lagoon', '#0f1b26', '#182a3a', '#3fa9f5', '#2177c4', '#d7f0ff', '#0b1a2c', '#8fd3ff'),
+  p('Sea glass', '#eaf6f3', '#d8ece7', '#3fc1b0', '#239184', '#e6fffb', '#0d2a26', '#239184'),
+  p('Ink', '#f2f0fa', '#e2def2', '#5b6cf0', '#3b48c4', '#dfe3ff', '#11143a', '#9aa5ff'),
+  p('Deep', '#0b1030', '#151c45', '#2f6bff', '#1f47c2', '#c9dcff', '#050a24', '#5ce1ff'),
+  p('Rain', '#e9eef5', '#d9e1ec', '#7fa7d9', '#5a83b8', '#eef5ff', '#16243a', '#5a83b8'),
+  p('Tide', '#0a1a1d', '#13292d', '#1fc2c2', '#14918f', '#ccfff9', '#03191a', '#7ff7e8'),
+  p('Ice', '#eef6fb', '#dceaf3', '#9fd8f5', '#6cb4dd', '#ffffff', '#0f2a3d', '#ff9ec4'),
+  p('Pond', '#e9f2ea', '#d6e6d8', '#4fb09a', '#33857a', '#d8f5ea', '#0c2620', '#f2a65a'),
+  p('Abyss', '#07081a', '#11132b', '#3b3fb8', '#282b8a', '#9fa8ff', '#e6e8ff', '#ff6fb5'),
+  p('Clay', '#f4ede4', '#e7dccd', '#b07b4f', '#855630', '#f3dcbc', '#2a170a', '#4f9e33'),
+  p('Stone', '#1a1c1a', '#272a27', '#8d958c', '#646b63', '#e4e9e2', '#121412', '#7ed957'),
+  p('Moss', '#eef1e4', '#dfe4cf', '#6f9a4a', '#4f7433', '#cfe3b0', '#18240c', '#c98a3a'),
+  p('Granite', '#efeeec', '#e0dedb', '#9b9690', '#716c66', '#e8e4df', '#1d1b18', '#e0533d'),
+  p('Basalt', '#101214', '#1b1e21', '#4c535b', '#343a40', '#a9b2bc', '#e8edf2', '#ffb347'),
+  p('Sandstone', '#22170f', '#312218', '#d9955a', '#a86a36', '#ffe1bf', '#2a1405', '#7fd0ff'),
+  p('Slate', '#e8ecf0', '#d6dde4', '#5e7387', '#435566', '#cfdae5', '#0f1a24', '#f2b84a'),
+  p('Lava', '#1a0b0b', '#291515', '#5a3a36', '#3d2522', '#ff8a3d', '#ffd8c2', '#ff5a36'),
+  p('Lichen', '#18200f', '#232d18', '#9aa86a', '#6f7d45', '#e6f0c4', '#121a06', '#d9e86b'),
+  p('Amethyst', '#17121f', '#241c30', '#a77bf0', '#7550c4', '#efe3ff', '#1a0f2e', '#ffd166'),
+  p('Ruby', '#1d1014', '#2b1a20', '#e0455f', '#a82a40', '#ffd3dc', '#22070d', '#ffcf6b'),
+  p('Quartz', '#eef2f6', '#dde4ec', '#bcd3ea', '#8faccb', '#ffffff', '#1b2a3a', '#f29bb8'),
+  p('Emerald', '#0c1a14', '#152a21', '#2fd07a', '#1d9a57', '#d8ffe9', '#03170c', '#fff07a'),
+  p('Sapphire', '#0b1024', '#151c3a', '#3d6bff', '#2848c9', '#d6e2ff', '#050a24', '#ff9ed2'),
+  p('Topaz', '#fbf2e2', '#f1e3c9', '#ffb547', '#d9861f', '#fff4cc', '#331e00', '#5ab0ff'),
+  p('Rose quartz', '#fbeef2', '#f1dce3', '#f5a6c0', '#d27894', '#fff3f7', '#3a1022', '#5fbfae'),
+  p('Onyx', '#f0eff2', '#e0dfe4', '#3a3842', '#24222b', '#a9a6b8', '#f3f1ff', '#ff6fa8'),
+  p('Aquamarine', '#0b1c1f', '#142c30', '#5fe3dc', '#33b0aa', '#e6fffd', '#031a19', '#ffd166'),
+  p('Toadstool', '#f3efe6', '#e6e0d2', '#e0453a', '#a82a24', '#fff6e6', '#2a0f0a', '#ff9e8a'),
+  p('Chanterelle', '#1c1a12', '#2a271c', '#f2a93b', '#c47a1c', '#fff1cf', '#2a1a05', '#ffd27a'),
+  p('Porcini', '#eef0e6', '#dfe2d3', '#9a6a43', '#6e4628', '#f6e9d2', '#24150a', '#7fbf5a'),
+  p('Inkcap', '#ecebf0', '#dcdbe3', '#4d4a5c', '#33313f', '#f0eef5', '#1a1824', '#9f8cff'),
+  p('Bluecap', '#0f1424', '#1a2138', '#4f7dff', '#3557c9', '#e6ecff', '#0a0f24', '#7ff0ff'),
+  p('Morel', '#1d1712', '#2b231b', '#b98a52', '#8a6234', '#f3e2c6', '#231708', '#ffcf6b'),
+  p('Glowcap', '#0a1410', '#13221b', '#7dff9a', '#46c967', '#f0fff2', '#04150a', '#d6ff6b'),
+  p('Deceiver', '#f3eef8', '#e5dcef', '#9a5fd6', '#7140a8', '#f6eefc', '#1e0c33', '#ff9ec4'),
+  p('Honey', '#f7f0e0', '#ece0c6', '#e0a63a', '#b47c1c', '#fff6dc', '#2e1d02', '#c2593a'),
+  p('Oak', '#eef3e6', '#dfe7d3', '#5fae4a', '#3d7f2f', '#8a5a36', '#13240c', '#e5533d'),
+  p('Blossom', '#2a1d2a', '#382838', '#f5a3c7', '#d0709c', '#8a5a46', '#3a0f22', '#fff0f6'),
+  p('Autumn', '#1d1712', '#2b231b', '#e8902f', '#b8621b', '#7a5236', '#2a1505', '#f2d04a'),
+  p('Pine', '#0f1a15', '#182821', '#2f8f5b', '#1f6640', '#7a4f2e', '#06140c', '#f2e6b8'),
+  p('Lemon', '#f5f6e6', '#e8eacd', '#7ec850', '#579a32', '#8a5a36', '#162a08', '#f2c40c'),
+  p('Birch', '#eef1ea', '#dfe4d8', '#a6cf5a', '#7ca23a', '#e9e6dc', '#1b2608', '#e58a3a'),
+  p('Winter', '#1a1f2a', '#252b39', '#e8eef7', '#b2bfd3', '#6b4a33', '#151a24', '#e04a4a'),
+  p('Jacaranda', '#1b1426', '#282038', '#a57bf0', '#7b52c9', '#6e4a36', '#160a2a', '#ffe36b'),
+  p('Olive', '#f3efe2', '#e7e0cd', '#8fa45a', '#677a3c', '#7d6a52', '#1c2208', '#4a3a6a'),
+  p('Breeze', '#dcecf7', '#cbe0ef', '#ffffff', '#a9c6dd', '#ffffff', '#2b3f55', '#6fa9d6'),
+  p('Storm', '#1b2030', '#262d42', '#c9d3e6', '#8f9bb5', '#eef2fa', '#151a28', '#ffe066'),
+  p('Gust', '#102320', '#1a332f', '#b8f2df', '#79c9ae', '#e9fff7', '#0b1f1a', '#5fe0b5'),
+  p('Dusk', '#2a1f3d', '#382b50', '#f3d9ff', '#c9a3e6', '#fff4ff', '#241631', '#ffb3c7'),
+  p('Sand', '#e6d5b3', '#dccaa5', '#fffaf0', '#c9ad7a', '#ffffff', '#4a3a1f', '#d8a24a'),
+  p('Mist', '#edf0f3', '#dde2e8', '#f7f9fb', '#b6bfca', '#ffffff', '#2e3743', '#7f9bbb'),
+  p('Sunset', '#3a2030', '#4a2b3e', '#ffd2b8', '#e89a8a', '#fff1e6', '#2e1424', '#ffd36b'),
+  p('Thunder', '#121521', '#1d2132', '#9aa4c0', '#6a7493', '#dfe5f5', '#0d1018', '#ffd23f'),
+  p('Spring', '#e8f6ee', '#d4ecdf', '#ffffff', '#9fd5b9', '#ffffff', '#1f3d2e', '#4fb882'),
+  p('Maple', '#fbeee2', '#f1ddca', '#e8573a', '#b23a22', '#ffd9c2', '#2a0d05', '#d9a441'),
+  p('Sycamore', '#e8f2df', '#d7e6ca', '#6dbb4a', '#478a2e', '#e4f7d4', '#122408', '#e0b84a'),
+  p('Ginkgo', '#1b1d14', '#292c1f', '#f4cf3b', '#c9a21c', '#fff6c6', '#2a2205', '#9ad16a'),
+  p('Fern', '#14200f', '#1f2e18', '#4fc23a', '#348a25', '#d6ffc4', '#0a1a05', '#b5ff6b'),
+  p('Holly', '#f3eee6', '#e6dfd2', '#2f8a4a', '#1f6334', '#c9efd2', '#0c2414', '#e0303a'),
+  p('Beech', '#1e1610', '#2c2219', '#c9662a', '#97451a', '#ffd5aa', '#241004', '#ffb347'),
+  p('Willow', '#eef3dc', '#e0e8c6', '#a8c94a', '#7c9a2e', '#f2ffd0', '#1e2808', '#5a96cc'),
+  p('Plum', '#1c1220', '#2a1c30', '#a8456e', '#7a2c4f', '#ffc7dc', '#22081a', '#f2c94c'),
+  p('Frost', '#e9eef4', '#d7e0ea', '#8fb8c9', '#6690a3', '#f2fbff', '#152733', '#b47fd6'),
+  p('Nebula', '#0d0b1f', '#1a1733', '#7b5cff', '#5236d1', '#fff3b0', '#0d0b1f', '#ff8fd1'),
+  p('Void', '#05070f', '#121626', '#4f63a8', '#33437a', '#ffffff', '#e9ecff', '#ffd166'),
+  p('Saturn', '#14101e', '#221b31', '#f2b56b', '#c9853b', '#fff1c9', '#2a1806', '#c3a6ff'),
+  p('Comet', '#071a1f', '#0f2a31', '#5fd4e8', '#2fa3b8', '#e8fdff', '#03161b', '#fff3a3'),
+  p('Mars', '#1a0e0c', '#2a1714', '#e0663f', '#a8442a', '#ffd6c4', '#1a0805', '#ffcf8a'),
+  p('Aurora', '#08161a', '#10252a', '#46e0a0', '#2aa874', '#e3fff2', '#04140d', '#c38bff'),
+  p('Moon', '#151820', '#20242f', '#c7ccd6', '#9097a6', '#ffffff', '#14171f', '#ffe58a'),
+  p('Cosmos', '#f1effa', '#e2def3', '#6a4fe0', '#4a33b5', '#ffe7a3', '#14093a', '#ff7fb0'),
+  p('Pulsar', '#1a0a18', '#2a1427', '#ff5fa8', '#cc3b80', '#ffe1f0', '#22051a', '#7fe7ff'),
+]);

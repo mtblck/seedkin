@@ -114,7 +114,7 @@ export const STYLES = [
       ['EYES', 'eyes'],
       ['MOUTHS', 'mouths'],
     ],
-    palette: "Index into Sprite's <code>PALETTES</code>, or a palette object. The seed picks from its element's.",
+    palette: "Index into Sprite's <code>PALETTES</code>, or a palette object. The seed picks any of them.",
     options: [
       [
         'element',
