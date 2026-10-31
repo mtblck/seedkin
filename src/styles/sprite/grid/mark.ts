@@ -1,3 +1,4 @@
+import { MARKS } from '../parts.js';
 import type { Mark } from '../types.js';
 import { type Anchor, type Canvas, type Drawn, Role } from './draw.js';
 
@@ -39,6 +40,20 @@ const SMALL: Record<Mark, Cell[]> = { none: [], dot: DOT, plus: DOT, bar: BAR, c
 const fits = (c: Canvas, at: Anchor, cells: Cell[], lift: number): boolean =>
   cells.every(([mx, my]) => c.cells[at.y - 2 - lift + my]?.[at.x + mx] === Role.Body);
 
+/** How far above its usual place a mark sits so it fits every frame, or `undefined` if it fits nowhere. */
+const liftFor = (cells: Cell[], frames: readonly Drawn[]): number | undefined =>
+  [0, 1, 2].find((n) => frames.every((f) => fits(f.c, f.at, cells, n)));
+
+/**
+ * The marks that fit on a form at full size, so a seed only picks one that shows.
+ *
+ * @param frames - All four full-size frames of the form, before any face
+ * @returns `'none'` and every mark that fits
+ */
+export function marksThatFit(frames: readonly Drawn[]): Mark[] {
+  return MARKS.filter((m) => m === 'none' || liftFor(CELLS[m], frames) !== undefined);
+}
+
 /**
  * Paints a mark on the forehead, in the accent colour. It goes two rows above
  * the eyes, or up to two rows higher, wherever all of it lands on plain body
@@ -54,7 +69,7 @@ const fits = (c: Canvas, at: Anchor, cells: Cell[], lift: number): boolean =>
 export function paintMark(c: Canvas, at: Anchor, mark: Mark, frames: readonly Drawn[], small: boolean): void {
   const cells = (small ? SMALL : CELLS)[mark];
   if (cells.length === 0) return;
-  const lift = [0, 1, 2].find((n) => frames.every((f) => fits(f.c, f.at, cells, n)));
+  const lift = liftFor(cells, frames);
   if (lift === undefined) return;
   for (const [mx, my] of cells) c.paint(at.x + mx, at.y - 2 - lift + my, Role.Accent);
 }
