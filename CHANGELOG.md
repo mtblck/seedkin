@@ -7,6 +7,10 @@ any change to the robot a seed draws is a major version.
 
 ## [Unreleased]
 
+### Fixed
+
+- An animated Beastie no longer flashes a spot from under its mouth when it talks, or from under its eyes when it blinks (about a third of spotted Beasties at full size, such as `bouncy-spark-642`). Below 40px, stalk eyes no longer flash a horn tip or a spot when they blink. Spots and those top pieces are now never drawn under a moving part, so a squash shows hide. Still Beasties are unchanged; only the animated markup changes.
+
 ## [2.6.0] - 2026-10-31
 
 ### Added

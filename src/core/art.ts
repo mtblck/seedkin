@@ -45,3 +45,22 @@ export function blob(c: Canvas, top: number, widths: readonly number[], fill: Ro
     for (let dx = 0; dx <= w; dx++) c.mirror(dx, top + i, dx === w ? edge : fill);
   });
 }
+
+/**
+ * A view of a canvas that paints only cells no moving part sits on. Marks
+ * drawn through it after the moving parts look the same as marks drawn
+ * before them, but a blink or a talk never uncovers them.
+ *
+ * @param c - Canvas to draw on
+ * @returns The same canvas, with `paint` and `mirror` skipping moving cells
+ */
+export function still(c: Canvas): Canvas {
+  const paint = (x: number, y: number, role: Role): void => {
+    if (c.parts[y]?.[x] === null) c.paint(x, y, role);
+  };
+  const mirror = (dx: number, y: number, role: Role): void => {
+    paint(c.center - dx, y, role);
+    paint(c.center + dx, y, role);
+  };
+  return { ...c, paint, mirror };
+}

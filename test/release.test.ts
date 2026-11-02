@@ -54,6 +54,9 @@ Intro.
   it('reads the real CHANGELOG.md', () => {
     const real = fs.readFileSync('CHANGELOG.md', 'utf8');
     const withEntry = real.replace('## [Unreleased]\n', '## [Unreleased]\n\n- Something.\n');
-    expect(cutRelease(withEntry, '9.9.9', '2026-11-01')).toContain('## [9.9.9] - 2026-11-01\n\n- Something.\n\n## [');
+    // Unreleased may already hold entries, so check the cut, not what follows it.
+    expect(cutRelease(withEntry, '9.9.9', '2026-11-01')).toContain(
+      '## [Unreleased]\n\n## [9.9.9] - 2026-11-01\n\n- Something.\n',
+    );
   });
 });

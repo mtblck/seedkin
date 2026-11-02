@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Role } from '../src/core/types.js';
 import { drawGrid } from '../src/styles/beastie/grid/full.js';
+import { drawSmallGrid } from '../src/styles/beastie/grid/small.js';
 import {
   BODIES,
   beastie,
@@ -123,5 +124,15 @@ describe('beastie', () => {
       expect(c.cells[y]?.[x]).toBe(Role.Body);
       expect(c.parts[y]?.[x]).toBeNull();
     }
+  });
+
+  it('never hides a spot or a horn under a blink or a talk', () => {
+    // bouncy-spark-642 had a spot under its mouth; seed-21's small eye stalks sat on its horn tips.
+    const seeds = ['bouncy-spark-642', 'seed-21', ...Array.from({ length: 300 }, (_, i) => `seed-${i}`)];
+    for (const seed of seeds)
+      for (const c of [drawGrid(resolveTraits(seed)), drawSmallGrid(resolveTraits(seed))])
+        for (const [y, row] of c.under.entries())
+          for (const [x, role] of row.entries())
+            if (c.parts[y]?.[x]) expect(role, `${seed} ${x},${y}`).not.toBe(Role.Accent);
   });
 });
