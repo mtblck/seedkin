@@ -41,10 +41,11 @@ document.addEventListener('click', (e) => {
 });
 
 // The floating Support link tucks away while the footer, which has its own, is on screen.
-const fab = document.querySelector('.support-fab');
+// The button comes from the tipjar package, drawn at build time; this is the part of its mount() the site needs.
+const tip = document.querySelector('.tipjar');
 const foot = document.querySelector('.foot');
-if (fab && foot && 'IntersectionObserver' in window) {
-  new IntersectionObserver(([entry]) => fab.classList.toggle('is-tucked', entry.isIntersecting)).observe(foot);
+if (tip && foot && 'IntersectionObserver' in window) {
+  new IntersectionObserver(([entry]) => tip.toggleAttribute('data-tucked', entry.isIntersecting)).observe(foot);
 }
 
 track('pageview', arrival(document.referrer, location.hostname));
