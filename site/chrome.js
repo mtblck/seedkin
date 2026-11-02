@@ -40,4 +40,11 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.top')) setMenu(false);
 });
 
+// The floating Support link tucks away while the footer, which has its own, is on screen.
+const fab = document.querySelector('.support-fab');
+const foot = document.querySelector('.foot');
+if (fab && foot && 'IntersectionObserver' in window) {
+  new IntersectionObserver(([entry]) => fab.classList.toggle('is-tucked', entry.isIntersecting)).observe(foot);
+}
+
 track('pageview', arrival(document.referrer, location.hostname));
