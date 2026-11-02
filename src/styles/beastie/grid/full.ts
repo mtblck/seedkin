@@ -1,4 +1,4 @@
-import { blob, stamp } from '../../../core/art.js';
+import { blob, stamp, still } from '../../../core/art.js';
 import { type Canvas, createCanvas, tagged } from '../../../core/canvas.js';
 import { type BeastieTraits, Role } from '../types.js';
 
@@ -36,19 +36,21 @@ export function drawGrid(t: BeastieTraits): Canvas {
   blob(c, top, r, Role.Body, Role.Shade);
   if (t.body === 'ghost') for (let dx = 1; dx <= hw; dx += 2) c.mirror(dx, bottom, Role.Empty);
   else for (const dx of [Math.max(1, hw - 3), Math.max(2, hw - 2)]) c.mirror(dx, bottom + 1, Role.Shade);
-  if (t.hasSpots)
-    for (const [dx, dy] of [
-      [-hw + 1, 4],
-      [hw - 2, 2],
-      [-1, 6],
-    ] as const)
-      c.paint(c.center + dx, top + dy, Role.Accent);
   tagged(c, 'top', () => topPiece(c, t, top, r[0] ?? hw));
   const eyeRow = top + 2;
   tagged(c, 'eyes', () => eyes(c, t, eyeRow, hw));
   // Stalks hold still; only the eyes on them blink.
   if (t.eyes === 'stalks') tagged(c, null, () => stalks(c, eyeRow));
   tagged(c, 'mouth', () => mouth(c, t, eyeRow + 3, hw));
+  // Spots go on last, and only where no moving part sits, so a blink or a talk
+  // uncovers hide, not a spot hidden under the eyes or mouth.
+  if (t.hasSpots)
+    for (const [dx, dy] of [
+      [-hw + 1, 4],
+      [hw - 2, 2],
+      [-1, 6],
+    ] as const)
+      still(c).paint(c.center + dx, top + dy, Role.Accent);
   return c;
 }
 

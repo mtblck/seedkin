@@ -1,4 +1,4 @@
-import { blob } from '../../../core/art.js';
+import { blob, still } from '../../../core/art.js';
 import { type Canvas, createCanvas, SMALL_GRID_SIZE, tagged } from '../../../core/canvas.js';
 import { type BeastieTraits, Role } from '../types.js';
 
@@ -35,26 +35,17 @@ export function drawSmallGrid(t: BeastieTraits): Canvas {
   if (t.sides === 'arms') c.mirror(hw + 1, top + 3, Role.Shade);
   if (t.body === 'ghost') for (const dx of [1, 3]) c.mirror(dx, bottom, Role.Empty);
   else c.mirror(Math.min(2, hw - 1), bottom + 1, Role.Shade);
-  if (t.hasSpots) {
-    c.paint(c.center - hw + 1, top + 3, Role.Accent);
-    c.paint(c.center + hw - 1, bottom - 1, Role.Accent);
-  }
-  const w0 = rows[0] ?? 1;
-  if (t.top === 'horns') {
-    c.mirror(w0, top - 1, Role.Shade);
-    c.mirror(w0 + 1, top - 2, Role.Accent);
-  } else if (t.top === 'antennae') {
-    c.mirror(1, top - 1, Role.Shade);
-    c.mirror(1, top - 2, Role.Accent);
-  } else if (t.top === 'spikes') {
-    for (let dx = 0; dx <= w0; dx += 2) c.mirror(dx, top - 1, Role.Shade);
-  } else if (t.top === 'tuft') {
-    c.paint(c.center, top - 1, Role.Shade);
-    c.paint(c.center - 1, top - 2, Role.Shade);
-  }
   const eyeRow = Math.min(top + 2, bottom - 3);
   // Tagged eyes blink when animated.
   tagged(c, 'eyes', () => eyes(c, t, eyeRow));
+  // The top piece and spots go on after the eyes, and never under them, so a
+  // blink uncovers hide and not a horn tip or a spot.
+  const s = still(c);
+  topPiece(s, t, top, rows[0] ?? 1);
+  if (t.hasSpots) {
+    s.paint(c.center - hw + 1, top + 3, Role.Accent);
+    s.paint(c.center + hw - 1, bottom - 1, Role.Accent);
+  }
   mouth(c, t, eyeRow + 2);
   return c;
 }
@@ -115,5 +106,20 @@ function mouth(c: Canvas, t: BeastieTraits, y: number): void {
       line(1);
       c.paint(c.center, y + 1, Role.Accent);
       return;
+  }
+}
+
+function topPiece(c: Canvas, t: BeastieTraits, top: number, w0: number): void {
+  if (t.top === 'horns') {
+    c.mirror(w0, top - 1, Role.Shade);
+    c.mirror(w0 + 1, top - 2, Role.Accent);
+  } else if (t.top === 'antennae') {
+    c.mirror(1, top - 1, Role.Shade);
+    c.mirror(1, top - 2, Role.Accent);
+  } else if (t.top === 'spikes') {
+    for (let dx = 0; dx <= w0; dx += 2) c.mirror(dx, top - 1, Role.Shade);
+  } else if (t.top === 'tuft') {
+    c.paint(c.center, top - 1, Role.Shade);
+    c.paint(c.center - 1, top - 2, Role.Shade);
   }
 }
