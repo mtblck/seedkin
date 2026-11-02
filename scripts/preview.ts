@@ -18,7 +18,7 @@ const sheet = (theme: string): string =>
     return `<h2>${shape}</h2>${bySize}`;
   }).join('')}<p>${theme}</p>`;
 
-const html = `<!doctype html><meta charset="utf-8"><title>botling preview</title>
+const html = `<!doctype html><meta charset="utf-8"><title>Botling preview</title>
 <style>body{font:14px system-ui;margin:0;display:grid;grid-template-columns:1fr 1fr}
 section{padding:16px}section.dark{background:#16151c;color:#eee}section.light{background:#fff;color:#222}
 .row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;align-items:center}

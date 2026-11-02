@@ -3,9 +3,16 @@
 All notable changes to this project are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/) with the output rule in the README:
-any change to the robot a seed draws is a major version.
+any change to the avatar a seed draws is a major version.
 
 ## [Unreleased]
+
+### Site
+
+- The page's dot grid stays fixed in place, and the gap and corners above the phone playground card are covered.
+- A floating Support button sits at the bottom right of every page and tucks away near the footer.
+- The home page's row of avatars animates by default, unless you prefer reduced motion.
+- The home page's seed box takes the full width, with Random, a new Sticker button and Animate beneath it. Sticker draws the row in the sticker look and carries it to the playground. The npm install chip is gone from the hero.
 
 ## [2.6.1] - 2026-11-02
 
