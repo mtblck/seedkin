@@ -1137,13 +1137,3 @@ ol.features > li::before {
   top: 20px;
   right: 20px;
 }
-
-/* The home page's seed box is short: the seed, Random and Animate on one line. */
-.hero .seed-row {
-  max-width: 460px;
-}
-@media (min-width: 481px) {
-  .hero .seed-row input {
-    flex-basis: 10rem;
-  }
-}

@@ -15,11 +15,17 @@ import { PREVIEWS } from '/preview.js';
 // 'self' would block the <style> inside an inlined SVG. The SVG also holds still for reduced
 // motion, but not every browser passes that preference into an <img>, so the default checks too.
 let animate = false;
-/** Draws a style still, inline, or animated, as an image. */
-const drawer = (draw, dataUri) => (seed, size, frame) =>
-  animate
-    ? `<img src="${dataUri(seed, { size, frame, animate: true, title: null })}" alt="" width="${size}" height="${size}">`
-    : draw(seed, { size, frame, title: null });
+// Its Sticker button, off by default, draws the row with square cells and the sticker look,
+// and the kin's links carry that to the playground. Lab previews have neither option.
+let sticker = false;
+const STICKER = { shape: 'square', look: 'sticker' };
+/** Draws a style still, inline, or animated, as an image, as a sticker when that's on. */
+const drawer = (draw, dataUri) => (seed, size, frame) => {
+  const opts = { size, frame, ...(sticker && STICKER), title: null };
+  return animate
+    ? `<img src="${dataUri(seed, { ...opts, animate: true })}" alt="" width="${size}" height="${size}">`
+    : draw(seed, opts);
+};
 const DRAW = {
   botling: drawer(botling, botlingDataUri),
   snoot: drawer(snoot, snootDataUri),
@@ -46,7 +52,7 @@ function grow(seed, selector = '[data-avatar]:not([data-seed])') {
     el.firstElementChild?.setAttribute('aria-hidden', 'true');
   }
   for (const link of document.querySelectorAll('[data-to]')) {
-    link.href = `/styles/${link.dataset.to}/#${new URLSearchParams({ seed })}`;
+    link.href = `/styles/${link.dataset.to}/#${new URLSearchParams({ seed, ...(sticker && STICKER) })}`;
   }
 }
 
@@ -81,6 +87,11 @@ if (input) {
     input.value = randomSeed();
     grow(input.value);
     saveHash(input.value);
+  });
+  $('sticker')?.addEventListener('click', (e) => {
+    sticker = !sticker;
+    e.currentTarget.setAttribute('aria-pressed', String(sticker));
+    grow(input.value);
   });
   $('animate')?.addEventListener('click', (e) => {
     animate = !animate;
