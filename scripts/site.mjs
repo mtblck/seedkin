@@ -10,6 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { buildSync } from 'esbuild';
+import { tipjar } from 'tipjar';
 import { highlightPage } from '../site/highlight.js';
 import { changelog } from './changelog.mjs';
 import { crumb, DOCS, docsNav, docsSlug, pager, toc } from './docs.mjs';
@@ -54,6 +55,10 @@ const styleLibs = Object.fromEntries(
   await Promise.all(STYLES.map(async ({ name }) => [name, await import(path.join(dist, `styles/${name}/index.js`))])),
 );
 
+// The floating Support button (the tipjar package), bottom right on every page. The footer
+// keeps its own Support link; site/chrome.js tucks the button away while the footer shows.
+const tip = tipjar({ href: 'https://ko-fi.com/mtblck', description: 'future projects on Ko-fi', iconStyle: 'pixel' });
+
 const partials = Object.fromEntries(
   ['head', 'header', 'footer', 'playground'].map((name) => [
     name,
@@ -71,6 +76,7 @@ for (const file of pages) {
   let page = fs
     .readFileSync(path.join(site, file), 'utf8')
     .replace(/{{(head|header|footer)}}/g, (_, name) => partials[name])
+    .replaceAll('{{tipjar}}', tip)
     .replaceAll('{{logo}}', logo)
     .replaceAll('{{preloads}}', preloads)
     .replace(/{{(version|botling-kb)}}/g, (_, name) => figures[name]);
@@ -155,6 +161,7 @@ fs.writeFileSync(path.join(out, 'og.png'), ogImage(lib));
 for (const f of fs.readdirSync(site).filter((f) => /\.(js|css)$/.test(f))) {
   fs.copyFileSync(path.join(site, f), path.join(out, f));
 }
+fs.copyFileSync(createRequire(import.meta.url).resolve('tipjar/style.css'), path.join(out, 'tipjar.css'));
 buildSync({
   entryPoints: [path.join(ROOT, 'lab/preview.ts')],
   outfile: path.join(out, 'preview.js'),

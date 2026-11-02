@@ -622,6 +622,20 @@ legend {
   margin: 20px 0 10px;
 }
 
+/* ---- floating Support button (the tipjar package's style.css, in the site's colours) ---- */
+:root {
+  --tipjar-bg: var(--accent);
+  --tipjar-label: var(--accent-ink);
+  --tipjar-ring: var(--paper);
+  --tipjar-font: var(--display);
+  --tipjar-weight: 400;
+  --tipjar-font-size: 0.85rem;
+  --tipjar-tracking: 0.02em;
+  --tipjar-icon-size: 12px;
+  /* Above the page and the playground's pinned avatar card, under the sticky header and its menu. */
+  --tipjar-z: 9;
+}
+
 /* ---- footer ---- */
 .foot {
   border-top: 1px solid var(--rule);

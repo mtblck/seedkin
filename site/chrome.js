@@ -40,4 +40,12 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.top')) setMenu(false);
 });
 
+// The floating Support link tucks away while the footer, which has its own, is on screen.
+// The button comes from the tipjar package, drawn at build time; this is the part of its mount() the site needs.
+const tip = document.querySelector('.tipjar');
+const foot = document.querySelector('.foot');
+if (tip && foot && 'IntersectionObserver' in window) {
+  new IntersectionObserver(([entry]) => tip.toggleAttribute('data-tucked', entry.isIntersecting)).observe(foot);
+}
+
 track('pageview', arrival(document.referrer, location.hostname));
