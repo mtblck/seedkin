@@ -44,13 +44,14 @@ export function drawGrid(t: BeastieTraits): Canvas {
   tagged(c, 'mouth', () => mouth(c, t, eyeRow + 3, hw));
   // Spots go on last, and only where no moving part sits, so a blink or a talk
   // uncovers hide, not a spot hidden under the eyes or mouth.
+  const s = still(c);
   if (t.hasSpots)
     for (const [dx, dy] of [
       [-hw + 1, 4],
       [hw - 2, 2],
       [-1, 6],
     ] as const)
-      still(c).paint(c.center + dx, top + dy, Role.Accent);
+      s.paint(c.center + dx, top + dy, Role.Accent);
   return c;
 }
 
