@@ -9,9 +9,11 @@ import { snoot, snootDataUri } from '/lib/styles/snoot/index.js';
 import { sprite, spriteDataUri } from '/lib/styles/sprite/index.js';
 import { PREVIEWS } from '/preview.js';
 
-// The landing page's Animate button. An animated avatar goes in an <img>, because the CSP's
-// style-src 'self' would block the <style> inside an inlined SVG. It holds still for anyone
-// who asks for reduced motion.
+// The landing page's Animate button, on by default (its aria-pressed in the HTML) unless the
+// visitor asks for reduced motion. It moves the seed box's row only; fixed-seed avatars and the
+// /styles/ strips stay still. An animated avatar goes in an <img>, because the CSP's style-src
+// 'self' would block the <style> inside an inlined SVG. The SVG also holds still for reduced
+// motion, but not every browser passes that preference into an <img>, so the default checks too.
 let animate = false;
 /** Draws a style still, inline, or animated, as an image. */
 const drawer = (draw, dataUri) => (seed, size, frame) =>
@@ -62,6 +64,8 @@ function saveHash(seed) {
 }
 
 grow('', '[data-avatar][data-seed]');
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) $('animate')?.setAttribute('aria-pressed', 'false');
+animate = $('animate')?.getAttribute('aria-pressed') === 'true';
 const input = $('seed');
 if (input) {
   const readHash = () => {
