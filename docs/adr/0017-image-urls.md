@@ -4,9 +4,9 @@ public: true
 
 # 0017: Serve avatars as image URLs from seedkin.dev
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-12
-- **PR:** (this PR)
+- **PR:** [#102](https://github.com/mtblck/seedkin/pull/102)
 
 ## Context
 
@@ -29,14 +29,15 @@ so its output is the package's, byte for byte, and the snapshot tests guard it l
 - SVG only. PNG needs a rasterizer, which is heavier and costs more per request.
 - Unknown or repeated options and out-of-range values are a 400, not ignored, so a URL that
   works now can't draw something else once an option is added. Seeds are capped at 200
-  characters and the query at 1024.
+  characters and the raw query at 4096 characters, so a seed in any script fits.
 - Pictures are `Cache-Control: public, max-age=31536000, immutable`; refusals cache briefly.
   Responses allow any origin (CORS and CORP) and carry their own CSP, which lets only the
   animation's inline `<style>` run.
 
 ## Consequences
 
-Anyone can use an avatar with a plain `<img>`. The docs call it a preview with no uptime
+Anyone can use an avatar with a plain `<img>`. It is the one place seedkin.dev receives a seed (the
+playground keeps seeds in the URL hash); the privacy page says so. The docs call it a preview with no uptime
 promise until Matt decides to announce it. Random seeds miss the cache, so a bot can still
 make the function run. The guard is a Vercel Firewall rule (set in the dashboard, not in this
 repo): requests to paths starting `/api/2.x/` are rate limited to 600 a minute per IP, a fixed

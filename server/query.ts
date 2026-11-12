@@ -16,7 +16,7 @@ export class BadRequest extends Error {
 }
 
 /** The longest query string read, and the longest seed and value within it. */
-export const MAX_QUERY = 1024;
+export const MAX_QUERY = 4096;
 export const MAX_SEED = 200;
 export const MAX_VALUE = 64;
 /** Bounds on `size`, in pixels. The SVG scales, so this only sets its width and height. */
@@ -99,7 +99,7 @@ export function readOptions(params: Map<string, string>, rules: StyleRules): [st
     if (name === 'size') opts.size = int(name, value, MIN_SIZE, MAX_SIZE);
     else if (name === 'background' || name === 'animate') opts[name] = bool(name, value);
     else if (name === 'grid') opts.showGrid = value === 'auto' ? 'auto' : bool(name, value);
-    else if (name === 'title') opts.title = value === '' ? null : value;
+    else if (name === 'title') opts.title = title(value);
     else if (name === 'palette') opts.palette = palette(value, rules);
     else if (rules.ints?.includes(name)) opts[name] = int(name, value, 0, 99);
     else if (STRINGS.has(name) || rules.strings?.includes(name)) opts[name] = value;
@@ -113,4 +113,11 @@ const palette = (value: string, rules: StyleRules): number | object => {
   if (Object.keys(rules.holidays).includes(value)) return rules.holidays[value] as object;
   const names = Object.keys(rules.holidays).join(', ');
   throw new BadRequest(`palette must be a palette number or a holiday: ${names}`);
+};
+
+// XML has no place for most control characters, so one in the title would break the SVG.
+const title = (value: string): string | null => {
+  // biome-ignore lint/suspicious/noControlCharactersInRegex: matching them is the point
+  if (/[\u0000-\u001f\u007f]/.test(value)) throw new BadRequest('title must not contain control characters');
+  return value === '' ? null : value;
 };

@@ -24,8 +24,14 @@ http
   .createServer((req, res) => {
     const url = new URL(req.url ?? '/', 'http://localhost');
     if (url.pathname.startsWith('/api/')) {
-      const { status, headers, body } = avatarResponse(req.method ?? 'GET', req.url ?? '/');
-      return res.writeHead(status, headers).end(body ?? undefined);
+      try {
+        const { status, headers, body } = avatarResponse(req.method ?? 'GET', req.url ?? '/');
+        return res.writeHead(status, headers).end(body ?? undefined);
+      } catch (err) {
+        // As on Vercel, an unexpected error is a 500, not a crashed server.
+        console.error(err);
+        return res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' }).end('internal error\n');
+      }
     }
     let file;
     try {

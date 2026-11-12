@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { withoutVercelStyle } from '../api/2.x/[style]/svg.js';
 import { avatarResponse, CACHE_FOREVER } from '../server/avatar.js';
 import { MAX_QUERY, parseQuery } from '../server/query.js';
 import { botling } from '../src/styles/botling/index.js';
@@ -46,9 +47,23 @@ describe('avatar API', () => {
     expect(get('/api/2.x/beastie/svg?seed=x').status).toBe(200);
   });
 
-  it('ignores the style Vercel adds from the path, but not a different one', () => {
-    expect(get('/api/2.x/botling/svg?seed=x&style=botling').body).toBe(botling('x'));
-    expect(get('/api/2.x/botling/svg?seed=x&style=snoot').status).toBe(400);
+  it('drops only the style Vercel appends from the path', () => {
+    const at = (q: string) => withoutVercelStyle(`https://seedkin.dev/api/2.x/botling/svg?${q}`);
+    expect(at('seed=x&style=botling')).toBe('https://seedkin.dev/api/2.x/botling/svg?seed=x');
+    expect(at('seed=x&style=snoot&style=botling')).toBe('https://seedkin.dev/api/2.x/botling/svg?seed=x&style=snoot');
+    expect(at('style=botling')).toBe('https://seedkin.dev/api/2.x/botling/svg');
+    expect(at('seed=x')).toBe('https://seedkin.dev/api/2.x/botling/svg?seed=x');
+    expect(get('/api/2.x/botling/svg?seed=x&style=botling').status).toBe(400);
+  });
+
+  it('answers a CORS preflight', () => {
+    const res = avatarResponse('OPTIONS', '/api/2.x/botling/svg?seed=x');
+    expect([res.status, res.body, res.headers['Access-Control-Allow-Methods']]).toEqual([204, null, 'GET, HEAD']);
+  });
+
+  it('takes a long seed in any script, counted after decoding', () => {
+    const seed = '名'.repeat(200);
+    expect(get(`/api/2.x/botling/svg?seed=${encodeURIComponent(seed)}`).body).toBe(botling(seed));
   });
 
   it('answers HEAD without a body', () => {
@@ -71,6 +86,7 @@ describe('avatar API', () => {
     ['/api/2.x/botling/svg?seed=x&palette=toString', 400, 'palette must be a palette number or a holiday'],
     ['/api/2.x/botling/svg?seed=x&shape=hexagon', 400, 'botling: unknown shape "hexagon"'],
     ['/api/2.x/botling/svg?seed=%E0%A4%A', 400, 'malformed'],
+    ['/api/2.x/botling/svg?seed=x&title=a%01b', 400, 'title must not contain control characters'],
     [`/api/2.x/botling/svg?seed=x&title=${'t'.repeat(65)}`, 400, 'title must be at most 64'],
     [`/api/2.x/botling/svg?seed=x&z=${'z'.repeat(MAX_QUERY)}`, 414, 'longer than'],
     ['/api/2.x/robot/svg?seed=x', 404, 'no such style'],
@@ -86,7 +102,7 @@ describe('avatar API', () => {
 
   it('serves only GET and HEAD', () => {
     const res = avatarResponse('POST', '/api/2.x/botling/svg?seed=x');
-    expect([res.status, res.headers.Allow]).toEqual([405, 'GET, HEAD']);
+    expect([res.status, res.headers.Allow]).toEqual([405, 'GET, HEAD, OPTIONS']);
   });
 
   it('reads + as a space and a bare name as empty', () => {

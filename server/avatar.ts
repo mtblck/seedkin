@@ -49,6 +49,15 @@ const PATH = /^\/api\/2\.x\/([^/]+)\/svg\/?$/;
  */
 export function avatarResponse(method: string, url: string): ApiResponse {
   const head = method === 'HEAD';
+  // A CORS preflight, for a cross-origin fetch that sends its own headers.
+  if (method === 'OPTIONS') {
+    const cors = {
+      'Access-Control-Allow-Methods': 'GET, HEAD',
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Max-Age': '86400',
+    };
+    return { status: 204, headers: { ...SHARED, ...cors, Allow: 'GET, HEAD, OPTIONS' }, body: null };
+  }
   try {
     if (method !== 'GET' && !head) throw new BadRequest('only GET and HEAD are served', 405);
     const path = url.replace(/^[a-z]+:\/\/[^/]+/i, '');
@@ -56,10 +65,7 @@ export function avatarResponse(method: string, url: string): ApiResponse {
     const style = PATH.exec(at === -1 ? path : path.slice(0, at))?.[1] ?? '';
     const rules = Object.keys(API_STYLES).includes(style) ? API_STYLES[style] : undefined;
     if (!rules) throw new BadRequest(`no such style; try ${Object.keys(API_STYLES).join(', ')}`, 404);
-    const params = parseQuery(at === -1 ? '' : path.slice(at + 1));
-    // Vercel passes the [style] path segment on as ?style=, which the path has already said.
-    if (params.get('style') === style) params.delete('style');
-    const [seed, opts] = readOptions(params, rules);
+    const [seed, opts] = readOptions(parseQuery(at === -1 ? '' : path.slice(at + 1)), rules);
     const svg = rules.draw(seed, opts);
     const headers = { ...SHARED, 'Content-Type': 'image/svg+xml; charset=utf-8', 'Cache-Control': CACHE_FOREVER };
     return { status: 200, headers, body: head ? null : svg };
@@ -72,7 +78,7 @@ export function avatarResponse(method: string, url: string): ApiResponse {
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': CACHE_ERROR,
     };
-    if (status === 405) headers.Allow = 'GET, HEAD';
+    if (status === 405) headers.Allow = 'GET, HEAD, OPTIONS';
     return { status, headers, body: head ? null : `${err.message}\n` };
   }
 }
