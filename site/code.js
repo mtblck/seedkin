@@ -1,7 +1,7 @@
 // Code samples on every page: a Copy button on each one, and tabs where a sample comes in
 // several flavours. Pages mark the flavours up as plain blocks, so without scripts they all
 // show:
-//   <div class="tabs" data-label="Package manager" data-sync="pm">
+//   <div class="tabs" data-label="How to install" data-sync="pm">
 //     <pre class="code" data-tab="npm">…</pre> <pre class="code" data-tab="pnpm">…</pre>
 //   </div>
 // Blocks the page copies itself (the playground's live code) carry data-nocopy.

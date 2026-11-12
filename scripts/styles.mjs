@@ -320,6 +320,11 @@ export function styleGuide(name, lib, kb) {
         `<tr><td><code>${opt}</code></td><td data-label="Type">${type}</td><td data-label="Default">${def}</td><td>${what}</td></tr>`,
     )
     .join('\n');
+  // The image URL API serves the Stable styles; a preview's art can still change, which a URL cached for good can't follow.
+  const cdn =
+    s.status === 'stable'
+      ? `<pre class="code" data-tab="CDN"><code class="language-html">&lt;img src="https://seedkin.dev/api/2.x/${name}/svg?seed=ada" alt="" width="48" height="48" /&gt;</code></pre>`
+      : '';
   const i = STYLES.indexOf(s);
   const link = (o, rel, label) =>
     o ? `<a class="${rel}" href="/styles/${o.name}/" rel="${rel}"><span>${label}</span>${o.title}</a>` : '';
@@ -328,12 +333,12 @@ export function styleGuide(name, lib, kb) {
       <div class="cols">
         <div>
           <h3>Install</h3>
-          <div class="tabs" data-label="Package manager" data-sync="pm">
+          <div class="tabs" data-label="How to install" data-sync="pm">
 <pre class="code" data-tab="npm"><code class="language-sh">npm install seedkin</code></pre>
 <pre class="code" data-tab="pnpm"><code class="language-sh">pnpm add seedkin</code></pre>
 <pre class="code" data-tab="yarn"><code class="language-sh">yarn add seedkin</code></pre>
 <pre class="code" data-tab="bun"><code class="language-sh">bun add seedkin</code></pre>
-<pre class="code" data-tab="CDN"><code class="language-html">&lt;img src="https://seedkin.dev/api/2.x/${name}/svg?seed=ada" alt="" width="48" height="48" /&gt;</code></pre>
+${cdn}
           </div>
           <h3>Draw one</h3>
           ${usage(s)}

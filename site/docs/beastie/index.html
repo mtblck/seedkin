@@ -28,7 +28,7 @@
 const svg = beastie(user.id);
 const src = beastieDataUri(user.id, { size: 40 });
 </code></pre>
-<p>Or with nothing installed, as an <a href="/docs/api/">image URL</a>: <code>https://seedkin.dev/api/2.x/beastie/svg?seed=ada</code>, with the options below as query parameters.</p>
+<p>Or with nothing installed, as an <a href="/docs/api/">image URL</a>: <code>https://seedkin.dev/api/2.x/beastie/svg?seed=ada</code>. Most options below work as query parameters; <a href="/docs/api/#options">Image URLs</a> lists them.</p>
 <p>The seed is salted, so one id's Botling, Snoot and Beastie are unrelated.</p>
 <h2 id="options">Options</h2>
 <p><code>beastie()</code> takes the same options as <a href="/docs/snoot/#options"><code>snoot()</code></a>: <code>shape</code>, <code>palette</code> (an index into Beastie's own eight <code>PALETTES</code>, or a palette object such as one of its <a href="/docs/botling/#holiday-palettes"><code>HOLIDAY_PALETTES</code></a>), <code>size</code>, <code>detail</code>, <code>showGrid</code>, <code>look</code>, <code>frame</code>, <code>background</code>, <code>animate</code> and <code>title</code> (default <code>'Monster avatar'</code>). Below 40px it draws a simpler 9x9 Beastie from the same traits.</p>

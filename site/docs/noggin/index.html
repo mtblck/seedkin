@@ -28,7 +28,7 @@
 const svg = noggin(user.id);
 const src = nogginDataUri(user.id, { size: 40, skin: 4 });
 </code></pre>
-<p>Or with nothing installed, as an <a href="/docs/api/">image URL</a>: <code>https://seedkin.dev/api/2.x/noggin/svg?seed=ada</code>, with the options below as query parameters.</p>
+<p>Or with nothing installed, as an <a href="/docs/api/">image URL</a>: <code>https://seedkin.dev/api/2.x/noggin/svg?seed=ada</code>. Most options below work as query parameters; <a href="/docs/api/#options">Image URLs</a> lists them.</p>
 <p>The seed is salted, so one id's Botling and Noggin are unrelated.</p>
 <h2 id="options">Options</h2>
 <p><code>noggin()</code> takes the same options as <a href="/docs/snoot/#options"><code>snoot()</code></a>, plus <code>skin</code>. <code>palette</code> picks one of the six outfits in <code>PALETTES</code>, or takes a palette object laid over the seed's colours: an outfit such as one of its <a href="/docs/botling/#holiday-palettes"><code>HOLIDAY_PALETTES</code></a> keeps the seed's own skin and hair, against backgrounds every skin tone stands out from; <code>title</code> defaults to <code>'Person avatar'</code>. Below 40px it draws a simpler 9x9 Noggin from the same traits.</p>
