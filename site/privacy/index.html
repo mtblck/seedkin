@@ -4,12 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Privacy · Seedkin</title>
-  <meta name="description" content="What seedkin.dev counts (daily totals of visits, copies and downloads, with nothing about you), what it never sees (the seeds you type), and what the Seedkin library sends (nothing)." />
+  <meta name="description" content="What seedkin.dev counts (daily totals of visits, copies and downloads, with nothing about you), what it never sees (the seeds you type in the playground), what image URLs send, and what the Seedkin library sends (nothing)." />
   <link rel="canonical" href="https://seedkin.dev/privacy/" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://seedkin.dev/privacy/" />
   <meta property="og:title" content="Privacy · Seedkin" />
-  <meta property="og:description" content="What seedkin.dev counts (daily totals of visits, copies and downloads, with nothing about you), what it never sees (the seeds you type), and what the Seedkin library sends (nothing)." />
+  <meta property="og:description" content="What seedkin.dev counts (daily totals of visits, copies and downloads, with nothing about you), what it never sees (the seeds you type in the playground), what image URLs send, and what the Seedkin library sends (nothing)." />
   {{head}}
 </head>
 <body>
@@ -20,7 +20,7 @@
     <article class="prose">
       <p class="kicker">The small print</p>
       <h1>Privacy</h1>
-      <p class="lede">Seedkin the library sends nothing anywhere. This site counts visits, copies and downloads without cookies or anything about you, and never sees the seeds you type.</p>
+      <p class="lede">Seedkin the library sends nothing anywhere. This site counts visits, copies and downloads without cookies or anything about you, and never sees the seeds you type. Image URLs are the exception: they carry their seed to the server.</p>
 
       <h2 id="library">The library</h2>
       <p>The <code>seedkin</code> package makes no requests, sets no cookies, reads no storage and keeps no state. Each function takes a seed and returns an SVG string, computed where you call it, so your users' ids never leave your app to get an avatar. It has no dependencies that could do otherwise.</p>
@@ -28,6 +28,9 @@
 
       <h2 id="seeds">The seeds you type here</h2>
       <p>The playground draws in your browser. The seed and options you pick live in the part of the URL after <code>#</code>, which browsers never send to a server, so a shared link carries them but our server never sees them. Before any page view is counted, the part after <code>#</code> is cut off.</p>
+
+      <h2 id="image-urls">Image URLs</h2>
+      <p>The <a href="/docs/api/">image URLs</a> under <code>/api/</code> are the one place the seed is sent to this site: it is in the URL's query, because the server draws the avatar. Like any web request, it reaches Vercel's request logs with the visitor's IP address, and the firewall counts requests per IP address to stop abuse. We don't keep or count seeds ourselves. Seed with an opaque id, or draw avatars in your own app with the library, which sends nothing.</p>
 
       <h2 id="counting">What this site counts</h2>
       <ul>

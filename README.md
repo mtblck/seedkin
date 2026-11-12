@@ -34,7 +34,7 @@ const src = botlingDataUri(user.id, { size: 48 });
 <img src={botlingDataUri(user.id, { size: 40, title: null })} alt="" width={40} height={40} />
 ```
 
-Every style works the same way: swap `botling` for `snoot`, `noggin`, `beastie` or `sprite`. Seed with an opaque, stable id such as a database id or UUID, not an email address: anyone can render the avatar for a guessed email and compare. [Choosing a seed](https://seedkin.dev/docs/#choosing-a-seed) has more, and there are guides for [React](https://seedkin.dev/docs/react/), [Vue](https://seedkin.dev/docs/vue/), [Svelte](https://seedkin.dev/docs/svelte/), [plain HTML](https://seedkin.dev/docs/html/), [the server](https://seedkin.dev/docs/server/) and [falling back from a profile photo](https://seedkin.dev/docs/fallback/).
+Every style works the same way: swap `botling` for `snoot`, `noggin`, `beastie` or `sprite`. Seed with an opaque, stable id such as a database id or UUID, not an email address: anyone can render the avatar for a guessed email and compare. [Choosing a seed](https://seedkin.dev/docs/#choosing-a-seed) has more, and there are guides for [React](https://seedkin.dev/docs/react/), [Vue](https://seedkin.dev/docs/vue/), [Svelte](https://seedkin.dev/docs/svelte/), [plain HTML](https://seedkin.dev/docs/html/), [the server](https://seedkin.dev/docs/server/) and [falling back from a profile photo](https://seedkin.dev/docs/fallback/). With nothing installed, an avatar is also an image URL: `https://seedkin.dev/api/2.x/botling/svg?seed=jolly-sprocket-65` ([Image URLs](https://seedkin.dev/docs/api/), a preview).
 
 ## Styles
 

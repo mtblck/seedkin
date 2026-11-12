@@ -19,7 +19,7 @@
     { "source": "/styles/noggin", "destination": "/styles/noggin/", "permanent": true },
     { "source": "/docs", "destination": "/docs/", "permanent": true },
     {
-      "source": "/docs/:page(react|vue|svelte|html|server|fallback|botling|snoot|noggin|beastie|sprite|how-it-works|versioning)",
+      "source": "/docs/:page(react|vue|svelte|html|server|api|fallback|botling|snoot|noggin|beastie|sprite|how-it-works|versioning)",
       "destination": "/docs/:page/",
       "permanent": true
     },

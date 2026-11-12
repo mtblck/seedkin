@@ -1132,3 +1132,12 @@ ol.features > li::before {
   top: 20px;
   right: 20px;
 }
+/* The image URL docs' row of live avatars, one per style. */
+.api-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.api-demo img {
+  border-radius: 10px;
+}

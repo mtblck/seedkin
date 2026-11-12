@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Image URLs · Seedkin docs</title>
+  <meta name="description" content="Use any Seedkin avatar as a plain image URL from seedkin.dev, with nothing to install: for Markdown, no-JS pages and prototypes." />
+  <link rel="canonical" href="https://seedkin.dev/docs/api/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://seedkin.dev/docs/api/" />
+  <meta property="og:title" content="Image URLs · Seedkin docs" />
+  <meta property="og:description" content="Use any Seedkin avatar as a plain image URL from seedkin.dev, with nothing to install: for Markdown, no-JS pages and prototypes." />
+  {{head}}
+  <script type="module" src="/docs.js"></script>
+</head>
+<body>
+  <a class="skip" href="#doc">Skip to the docs</a>
+  {{header}}
+
+  <main id="main" class="docs wrap">
+    {{docsnav}}
+    <article id="doc" class="prose" tabindex="-1">
+<h1>Image URLs</h1>
+<p class="lede">Every avatar has a URL on seedkin.dev, so you can show one with a plain <code>&lt;img&gt;</code> and nothing to install: in Markdown, on a page without JavaScript, or in a quick prototype.</p>
+<p class="api-demo">
+  <img src="/api/2.x/botling/svg?seed=jolly-sprocket-65&amp;size=64" width="64" height="64" alt="A Botling robot" />
+  <img src="/api/2.x/snoot/svg?seed=jolly-sprocket-65&amp;size=64" width="64" height="64" alt="A Snoot animal" />
+  <img src="/api/2.x/noggin/svg?seed=jolly-sprocket-65&amp;size=64" width="64" height="64" alt="A Noggin person" />
+  <img src="/api/2.x/beastie/svg?seed=jolly-sprocket-65&amp;size=64" width="64" height="64" alt="A Beastie monster" />
+  <img src="/api/2.x/sprite/svg?seed=jolly-sprocket-65&amp;size=64" width="64" height="64" alt="A Sprite" />
+</p>
+<pre><code class="language-html">&lt;img src=&quot;https://seedkin.dev/api/2.x/botling/svg?seed=jolly-sprocket-65&amp;amp;size=64&quot;
+     width=&quot;64&quot; height=&quot;64&quot; alt=&quot;&quot; /&gt;
+</code></pre>
+<p class="callout">This is a preview. The URLs may still change before the API is announced, and it has no uptime promise. For anything that matters, install the package and draw avatars yourself: it is small, makes no requests and works offline.</p>
+<h2 id="url">The URL</h2>
+<p><code>https://seedkin.dev/api/2.x/&lt;style&gt;/svg?seed=&lt;seed&gt;&amp;&lt;options&gt;</code>, where <code>&lt;style&gt;</code> is <code>botling</code>, <code>snoot</code>, <code>noggin</code>, <code>beastie</code> or <code>sprite</code>. <code>2.x</code> is the package's major version: a seed draws the same avatar at the same URL for as long as 2.x lasts, and a 3.0 would come at new URLs rather than change these. The response is the SVG that <code>seedkin</code> 2.x draws for the same seed and options, byte for byte.</p>
+<pre><code class="language-sh">curl 'https://seedkin.dev/api/2.x/sprite/svg?seed=jolly-sprocket-65&amp;element=water&amp;look=sticker'
+</code></pre>
+<h2 id="options">Options</h2>
+<table>
+<thead>
+<tr><th>Option</th><th>Values</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>seed</code></td><td>any text, up to 200 characters</td><td>Required. Picks the avatar.</td></tr>
+<tr><td><code>size</code></td><td>8 to 1024</td><td>Width and height in pixels. Default 96. Below 40 the simpler 9x9 avatar is drawn.</td></tr>
+<tr><td><code>palette</code></td><td>a number, or a holiday: <code>newYear</code>, <code>valentines</code>, <code>stPatricks</code>, <code>fourthOfJuly</code>, <code>halloween</code>, <code>christmas</code></td><td>The colours. Numbers index the style's palettes; the style pages list them.</td></tr>
+<tr><td><code>shape</code></td><td><code>square</code>, <code>circle</code>, <code>triangle</code>, <code>diamond</code></td><td>Cell shape.</td></tr>
+<tr><td><code>frame</code></td><td><code>square</code>, <code>rounded</code>, <code>squircle</code>, <code>circle</code></td><td>The outline of the background.</td></tr>
+<tr><td><code>look</code></td><td><code>gapped</code>, <code>flat</code>, <code>inked</code>, <code>soft</code>, <code>soft-inked</code>, <code>sticker</code></td><td>How cells are drawn.</td></tr>
+<tr><td><code>detail</code></td><td><code>auto</code>, <code>full</code>, <code>small</code></td><td>The 15x15 or the 9x9 avatar, or the size's pick.</td></tr>
+<tr><td><code>background</code></td><td><code>true</code>, <code>false</code></td><td>Draw the palette's background.</td></tr>
+<tr><td><code>grid</code></td><td><code>auto</code>, <code>true</code>, <code>false</code></td><td>Draw the empty grid cells (gapped look only).</td></tr>
+<tr><td><code>animate</code></td><td><code>true</code>, <code>false</code></td><td>A small CSS animation inside the SVG, still for anyone who prefers reduced motion.</td></tr>
+<tr><td><code>title</code></td><td>up to 64 characters</td><td>The SVG's accessible name. Inside an <code>&lt;img&gt;</code>, the <code>alt</code> text is what counts.</td></tr>
+<tr><td><code>element</code></td><td><code>fire</code>, <code>water</code>, <code>earth</code>, <code>wind</code>, <code>space</code></td><td>Sprite only.</td></tr>
+<tr><td><code>skin</code></td><td>a number</td><td>Noggin only: an index into its skin tones.</td></tr>
+</tbody>
+</table>
+<p>An unknown option, an option given twice or a value out of range gets a <code>400</code> with the reason in plain text, rather than an avatar that quietly ignores it. That way a URL that works today can't draw something else when an option is added later.</p>
+<h2 id="caching">Caching</h2>
+<p>Since a URL always draws the same picture, responses are sent with <code>Cache-Control: public, max-age=31536000, immutable</code>. Browsers and the CDN keep them for a year, so a page full of avatars costs one request each, once.</p>
+<h2 id="privacy">Privacy</h2>
+<p>The seed is part of the URL, so it reaches seedkin.dev's logs and anything else that sees the URL. Seed with an opaque id, never an email address or a name. If that doesn't suit you, <a href="/docs/server/">serve avatars yourself</a>: it is a few lines.</p>
+<h2 id="email">Email and PNG</h2>
+<p>The API serves SVG only for now. Many email clients, Gmail among them, don't show SVG; for email, <a href="/docs/server/#email">convert to PNG on your own server</a>.</p>
+{{pager}}
+    </article>
+    {{toc}}
+  </main>
+
+  {{footer}}
+</body>
+</html>
