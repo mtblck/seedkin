@@ -27,6 +27,7 @@
 const svg = botling(user.id, { frame: 'circle' });
 const src = botlingDataUri(user.id, { size: 40, title: null });
 </code></pre>
+<p>Or with nothing installed, as an <a href="/docs/api/">image URL</a>: <code>https://seedkin.dev/api/2.x/botling/svg?seed=ada</code>. Most options below work as query parameters; <a href="/docs/api/#options">Image URLs</a> lists them.</p>
 <h2 id="random-robots">Random robots</h2>
 <p><code>randomSeed()</code> returns a readable random seed, like <code>plucky-servo-427</code>, for a &quot;give me a new robot&quot; button or a default for someone without an id. Store the seed: that&#39;s what brings the same robot back.</p>
 <pre><code class="language-ts">import { botling, randomSeed } from &#39;seedkin/botling&#39;;

@@ -18,6 +18,12 @@ Seeded pixel avatars, drawn as SVG. Plant a seed (a user id, any string) and the
 npm install seedkin
 ```
 
+Or install nothing and use an image URL from seedkin.dev (a [preview](https://seedkin.dev/docs/api/)):
+
+```html
+<img src="https://seedkin.dev/api/2.x/botling/svg?seed=ada" alt="" width="48" height="48" />
+```
+
 ## Use
 
 ```ts
