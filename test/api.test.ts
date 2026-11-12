@@ -46,6 +46,11 @@ describe('avatar API', () => {
     expect(get('/api/2.x/beastie/svg?seed=x').status).toBe(200);
   });
 
+  it('ignores the style Vercel adds from the path, but not a different one', () => {
+    expect(get('/api/2.x/botling/svg?seed=x&style=botling').body).toBe(botling('x'));
+    expect(get('/api/2.x/botling/svg?seed=x&style=snoot').status).toBe(400);
+  });
+
   it('answers HEAD without a body', () => {
     const res = avatarResponse('HEAD', '/api/2.x/botling/svg?seed=x');
     expect([res.status, res.body]).toEqual([200, null]);

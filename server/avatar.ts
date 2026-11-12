@@ -56,7 +56,10 @@ export function avatarResponse(method: string, url: string): ApiResponse {
     const style = PATH.exec(at === -1 ? path : path.slice(0, at))?.[1] ?? '';
     const rules = Object.keys(API_STYLES).includes(style) ? API_STYLES[style] : undefined;
     if (!rules) throw new BadRequest(`no such style; try ${Object.keys(API_STYLES).join(', ')}`, 404);
-    const [seed, opts] = readOptions(parseQuery(at === -1 ? '' : path.slice(at + 1)), rules);
+    const params = parseQuery(at === -1 ? '' : path.slice(at + 1));
+    // Vercel passes the [style] path segment on as ?style=, which the path has already said.
+    if (params.get('style') === style) params.delete('style');
+    const [seed, opts] = readOptions(params, rules);
     const svg = rules.draw(seed, opts);
     const headers = { ...SHARED, 'Content-Type': 'image/svg+xml; charset=utf-8', 'Cache-Control': CACHE_FOREVER };
     return { status: 200, headers, body: head ? null : svg };
