@@ -38,5 +38,7 @@ so its output is the package's, byte for byte, and the snapshot tests guard it l
 
 Anyone can use an avatar with a plain `<img>`. The docs call it a preview with no uptime
 promise until Matt decides to announce it. Random seeds miss the cache, so a bot can still
-make the function run: a Vercel Firewall rate limit on `/api/` is the guard if usage grows.
+make the function run. The guard is a Vercel Firewall rule (set in the dashboard, not in this
+repo): requests to paths starting `/api/2.x/` are rate limited to 600 a minute per IP, a fixed
+window, answered with a 429.
 Revisit if requests cost real money, or if people ask for PNG.
