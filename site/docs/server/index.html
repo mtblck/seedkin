@@ -21,7 +21,7 @@
     {{docsnav}}
     <article id="doc" class="prose" tabindex="-1">
 <h1>On the server</h1>
-<p class="lede">Serve avatars as image URLs, such as <code>/avatar/123</code>, so any page or app can show them with a plain <code>&lt;img&gt;</code>. Seedkin makes no requests and keeps no state, so it runs anywhere JavaScript does, including edge runtimes.</p>
+<p class="lede">Serve avatars as image URLs, such as <code>/avatar/123</code>, so any page or app can show them with a plain <code>&lt;img&gt;</code>. Seedkin makes no requests and keeps no state, so it runs anywhere JavaScript does, including edge runtimes. For a URL without a server of your own, use seedkin.dev's <a href="/docs/api/">image URLs</a>.</p>
 <h2 id="route-handler">A route handler</h2>
 <p>In Next.js (App Router), as <code>app/avatar/[id]/route.ts</code>:</p>
 <pre><code class="language-ts">import { botling } from 'seedkin/botling';

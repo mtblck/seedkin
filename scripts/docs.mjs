@@ -13,6 +13,7 @@ export const DOCS = [
       ['svelte', 'Svelte'],
       ['html', 'Plain HTML'],
       ['server', 'On the server'],
+      ['api', 'Image URLs'],
       ['fallback', 'Profile photo fallback'],
     ],
   },

@@ -1,8 +1,10 @@
 // npm run serve: serves dist-site/ on http://localhost:4173 with vercel.json's headers,
-// so the CSP is tested locally exactly as Vercel will send it.
+// so the CSP is tested locally exactly as Vercel will send it. The avatar API under /api/2.x/
+// runs from its TypeScript source, as the edge function does (hence tsx).
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
+import { avatarResponse } from '../server/avatar.ts';
 
 const root = path.resolve('dist-site');
 const config = JSON.parse(fs.readFileSync('vercel.json', 'utf8'));
@@ -21,6 +23,10 @@ const port = Number(process.env.PORT ?? 4173);
 http
   .createServer((req, res) => {
     const url = new URL(req.url ?? '/', 'http://localhost');
+    if (url.pathname.startsWith('/api/')) {
+      const { status, headers, body } = avatarResponse(req.method ?? 'GET', req.url ?? '/');
+      return res.writeHead(status, headers).end(body ?? undefined);
+    }
     let file;
     try {
       file = path.join(root, decodeURIComponent(url.pathname));

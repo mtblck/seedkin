@@ -13,6 +13,7 @@ any change to the avatar a seed draws is a major version.
 - A floating Support button sits at the bottom right of every page and tucks away near the footer.
 - The home page's row of avatars animates by default, unless you prefer reduced motion.
 - The home page's seed box takes the full width, with Random, a new Sticker button and Animate beneath it. Sticker draws the row in the sticker look and carries it to the playground. The npm install chip is gone from the hero.
+- Image URLs (preview): `https://seedkin.dev/api/2.x/<style>/svg?seed=...` returns an avatar as SVG, cached for good, for use without installing anything. See the new Image URLs docs page.
 
 ## [2.6.1] - 2026-11-02
 

@@ -20,5 +20,5 @@
     "outDir": "dist",
     "noEmit": true
   },
-  "include": ["src", "test", "scripts", "lab", "vitest.config.ts"]
+  "include": ["src", "server", "api", "test", "scripts", "lab", "vitest.config.ts"]
 }
