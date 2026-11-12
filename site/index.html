@@ -128,7 +128,7 @@
       <h2 id="why-h">Small, private and the same forever</h2>
       <ul class="features">
         <li class="card"><h3>Same seed, same avatar</h3><p>Within a major version a seed never draws a different picture. The picture is the API.</p></li>
-        <li class="card"><h3>Nothing leaves the page</h3><p>No API to call, no requests, no storage. Your users' ids stay on your servers.</p></li>
+        <li class="card"><h3>Nothing leaves the page</h3><p>No API needed, no requests, no storage. Your users' ids stay on your servers.</p></li>
         <li class="card"><h3>Readable at 24px</h3><p>Below 40px each style draws a simpler version of the same face, so it still reads in a comment thread.</p></li>
         <li class="card"><h3>Zero dependencies</h3><p>An SVG string out. It runs in the browser, on the server and at the edge, under a strict CSP.</p></li>
         <li class="card"><h3>Moves when you ask</h3><p>Opt-in animation lives inside the SVG, and holds still for anyone who prefers less motion.</p></li>
@@ -142,7 +142,8 @@
         <p class="kicker">Quick start</p>
         <h2 id="start-h">Two lines</h2>
         <p class="sub">Import a style, pass a seed, get an SVG string. Each style is its own entry point, so an app only ships the ones it uses.</p>
-        <p><a href="/docs/">Read the docs</a></p>
+        <p>No build step? The CDN tab is an image URL that needs nothing installed.</p>
+        <p><a href="/docs/">Read the docs</a> · <a href="/docs/api/">Image URLs</a></p>
       </div>
       <div>
         <div class="tabs" data-label="Package manager" data-sync="pm">
@@ -150,6 +151,7 @@
           <pre class="code" data-tab="pnpm"><code class="language-sh">pnpm add seedkin</code></pre>
           <pre class="code" data-tab="yarn"><code class="language-sh">yarn add seedkin</code></pre>
           <pre class="code" data-tab="bun"><code class="language-sh">bun add seedkin</code></pre>
+          <pre class="code" data-tab="CDN"><code class="language-html">&lt;img src="https://seedkin.dev/api/2.x/botling/svg?seed=ada" alt="" width="48" height="48" /&gt;</code></pre>
         </div>
         <pre class="code"><code class="language-js">import { botling } from 'seedkin/botling';
 

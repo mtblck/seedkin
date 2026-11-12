@@ -28,6 +28,7 @@
 const svg = snoot(user.id);
 const src = snootDataUri(user.id, { size: 40 });
 </code></pre>
+<p>Or with nothing installed, as an <a href="/docs/api/">image URL</a>: <code>https://seedkin.dev/api/2.x/snoot/svg?seed=ada</code>, with the options below as query parameters.</p>
 <p>The seed is salted, so <code>snoot(id)</code> and <code>botling(id)</code> are unrelated.</p>
 <h2 id="options">Options</h2>
 <p><code>snoot()</code> takes the same options as <a href="/docs/botling/#options"><code>botling()</code></a> <code>shape</code>, <code>palette</code> (an index into Snoot's own twelve <code>PALETTES</code>, or a palette object such as one of its <a href="/docs/botling/#holiday-palettes"><code>HOLIDAY_PALETTES</code></a>), <code>size</code>, <code>detail</code>, <code>showGrid</code>, <code>look</code>, <code>frame</code>, <code>background</code>, <code>animate</code> and <code>title</code> (default <code>'Animal avatar'</code>). Below 40px it draws a simpler 9x9 Snoot from the same traits.</p>

@@ -333,6 +333,7 @@ export function styleGuide(name, lib, kb) {
 <pre class="code" data-tab="pnpm"><code class="language-sh">pnpm add seedkin</code></pre>
 <pre class="code" data-tab="yarn"><code class="language-sh">yarn add seedkin</code></pre>
 <pre class="code" data-tab="bun"><code class="language-sh">bun add seedkin</code></pre>
+<pre class="code" data-tab="CDN"><code class="language-html">&lt;img src="https://seedkin.dev/api/2.x/${name}/svg?seed=ada" alt="" width="48" height="48" /&gt;</code></pre>
           </div>
           <h3>Draw one</h3>
           ${usage(s)}

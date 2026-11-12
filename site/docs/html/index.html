@@ -35,10 +35,15 @@
 &lt;/script&gt;
 </code></pre>
 <p><code>seedkin@2</code> follows the latest 2.x release, which never changes a stable style's pictures. Pin an exact version (<code>seedkin@2.2.0</code>) if you'd rather upgrade by hand.</p>
+<h2 id="no-javascript">No JavaScript at all</h2>
+<p>An avatar is also an image URL on seedkin.dev, so a page with no scripts can show one:</p>
+<pre><code class="language-html">&lt;img src="https://seedkin.dev/api/2.x/botling/svg?seed=ada&amp;amp;size=48" alt="" width="48" height="48" /&gt;
+</code></pre>
+<p>It takes the same options as query parameters and is cached for good. The seed is sent to seedkin.dev, so seed with an opaque id. See <a href="/docs/api/">Image URLs</a> for every option, and the CSP note below.</p>
 <h2 id="self-hosted">Self-hosted</h2>
 <p>Copy <code>node_modules/seedkin/dist</code> to your site, say to <code>/vendor/seedkin/</code>, and import <code>/vendor/seedkin/styles/botling/index.js</code> instead. The files import each other by relative path, so keep the folder whole.</p>
 <h2 id="content-security-policy">Content Security Policy</h2>
-<p>If your site sends a Content Security Policy, the page needs <code>img-src data:</code> for the avatars, and <code>script-src https://cdn.jsdelivr.net</code> for the CDN import (not needed self-hosted). A module script inside the page counts as an inline script, so under <code>script-src 'self'</code> move it into its own file, as this site does.</p>
+<p>If your site sends a Content Security Policy, the page needs <code>img-src data:</code> for the avatars, and <code>script-src https://cdn.jsdelivr.net</code> for the CDN import (not needed self-hosted). Image URLs need <code>img-src https://seedkin.dev</code> instead, and no script at all. A module script inside the page counts as an inline script, so under <code>script-src 'self'</code> move it into its own file, as this site does.</p>
 {{pager}}
     </article>
     {{toc}}
