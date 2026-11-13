@@ -60,6 +60,7 @@ export function figure(seed: string): Figure {
   const colours: Colours = {
     body: pal.body,
     leg: t.species === 'panda' ? pal.shade : pal.body,
+    paw: t.species === 'panda' ? pal.shade : pal.body,
     haunch: t.species === 'panda' ? pal.shade : pal.body,
     shade: pal.shade,
     screen: pal.screen,

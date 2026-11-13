@@ -56,8 +56,9 @@ function sitting(p: Pix, t: SnootTraits): void {
   // Hind paws point forward beside the front legs, set a little back (higher).
   for (const s of [-1, 1]) {
     const x = CX + s * (bunny ? 12.5 : 11.5);
-    p.fill(ellipse(x, 60, bunny ? 4.6 : 3.4, 2.3), 'leg');
-    p.fill(rect(Math.round(x), 61, Math.round(x), 61), 'leg', -2);
+    // Their own material, so the front paws drawn over them get an outline.
+    p.fill(ellipse(x, 60, bunny ? 4.6 : 3.4, 2.3), 'paw');
+    p.fill(rect(Math.round(x), 61, Math.round(x), 61), 'paw', -2);
   }
   forelegs(p);
   if (t.species === 'cat') p.fill(tube([CX + 15, 61], [CX + 12, 63.5], [CX + 2, 62.6], 1.5), 'body');
