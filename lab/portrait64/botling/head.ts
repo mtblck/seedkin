@@ -60,8 +60,8 @@ export function layout(t: Traits): Bot {
 }
 
 /**
- * The head: a shade-coloured shell with the body colour inset from its
- * lower right, so it reads as a bevelled plate; then markings and the screen.
+ * The head: the body colour edged on both sides in the shade colour, as the
+ * avatar is; then markings and the screen.
  */
 export function drawHead(p: Pix, t: Traits, b: Bot): void {
   // A TV head has plates on its sides, as the avatar's is a cell wider in its middle rows.
@@ -71,7 +71,8 @@ export function drawHead(p: Pix, t: Traits, b: Bot): void {
       'shade',
     );
   p.fill(b.head, 'shade');
-  p.fill((x, y) => b.head(x, y) && b.head(x + 2, y + 2), 'body');
+  // Like the avatar, the shade colour edges the head on both sides, so two-tone palettes stay symmetrical.
+  p.fill((x, y) => b.head(x, y) && b.head(x + 2, y) && b.head(x - 2, y), 'body');
   if (t.pattern === 'stripe') p.over(rect(0, Math.round(b.top) + 3, 63, Math.round(b.top) + 4), 'shade', ['body']);
   if (t.pattern === 'chin') p.over((_x, y) => y >= b.bottom - 6, 'shade', ['body']);
   if (t.pattern === 'rivets') {
