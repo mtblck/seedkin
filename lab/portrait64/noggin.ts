@@ -1,20 +1,12 @@
-import { createRng, pick, type Rng } from '../../src/core/random.js';
+import { createRng, pick } from '../../src/core/random.js';
 import { paletteFor } from '../../src/styles/noggin/palettes.js';
 import { traits } from '../../src/styles/noggin/traits.js';
-import { type Colours, createPix, ink, mix, type Pix, shadeRuns } from './canvas.js';
+import { type Colours, createPix, ink, mix, shadeRuns } from './canvas.js';
 import { body, CLOTHES, collar } from './clothes.js';
+import { type Figure, pair, single } from './compose.js';
 import { eyewear, FEATURES, face, headwear, scarfBack } from './face.js';
 import { backHair, frontHair, head } from './hair.js';
-import { scene } from './scene.js';
-import { toSvg } from './svg.js';
-
-/** A drawn character: its canvas, colours, the portrait's generator and outfit background. */
-export interface Figure {
-  p: Pix;
-  colours: Colours;
-  rng: Rng;
-  bg: string;
-}
+import { HOME_SCENES } from './scene.js';
 
 /**
  * Draws a Noggin as a 64x64 shoulders-up portrait. Who they are (skin,
@@ -69,7 +61,7 @@ export function figure(seed: string): Figure {
     lens: '#18141c',
     ink: '#1a1018',
   };
-  return { p, colours, rng, bg: pal.bg };
+  return { p, colours, rng, bg: pal.bg, scenes: HOME_SCENES };
 }
 
 /**
@@ -79,29 +71,10 @@ export function figure(seed: string): Figure {
  * @param px - Pixels per cell
  */
 export function portrait(seed: string, px = 4): string {
-  const f = figure(seed);
-  return toSvg([scene(f.rng, f.bg), { p: f.p, colours: f.colours }], px);
+  return single(figure(seed), px);
 }
 
-/** Two Noggins facing each other in one 128x64 scene; the right one is flipped. */
+/** Two Noggins facing each other in one 128x64 scene. */
 export function duet(left: string, right: string, px = 4): string {
-  const a = figure(left);
-  const b = figure(right);
-  const back = scene(a.rng, a.bg, 128);
-  const p = createPix(128, 64);
-  const colours: Colours = {};
-  for (const [f, dx, flip, k] of [
-    [a, 2, false, 'a'],
-    [b, 62, true, 'b'],
-  ] as const) {
-    for (const [m, c] of Object.entries(f.colours)) colours[`${k}${m}`] = c;
-    for (let y = 0; y < 64; y++) {
-      for (let x = 0; x < 64; x++) {
-        const sx = flip ? 63 - x : x;
-        const m = f.p.get(sx, y);
-        if (m !== '') p.set(x + dx, y, `${k}${m}`, (f.p.tone[y] as number[])[sx] as number);
-      }
-    }
-  }
-  return toSvg([back, { p, colours }], px);
+  return pair(figure(left), figure(right), px);
 }

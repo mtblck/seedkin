@@ -166,3 +166,12 @@ export function colourOf(base: string, tone: number): string {
   if (tone > 0) return mix(base, '#fff2d8', 0.2);
   return base;
 }
+
+/** A rectangle of half-size (hx, hy) centred at (cx, cy), with corners rounded to radius r. */
+export const rounded =
+  (cx: number, cy: number, hx: number, hy: number, r: number): Shape =>
+  (x, y) => {
+    const dx = Math.max(Math.abs(x + 0.5 - cx) - (hx - r), 0);
+    const dy = Math.max(Math.abs(y + 0.5 - cy) - (hy - r), 0);
+    return Math.abs(x + 0.5 - cx) <= hx && Math.abs(y + 0.5 - cy) <= hy && dx * dx + dy * dy <= r * r;
+  };

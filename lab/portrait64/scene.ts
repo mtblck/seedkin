@@ -1,8 +1,10 @@
 import type { Rng } from '../../src/core/random.js';
 import { type Colours, createPix, ellipse, or, type Pix } from './canvas.js';
+import { workshop } from './workshop.js';
 
-export type Scene = 'room' | 'shelf' | 'sky' | 'plain';
-const SCENES: readonly Scene[] = ['room', 'shelf', 'sky', 'plain'];
+export type Scene = 'room' | 'shelf' | 'sky' | 'plain' | 'workshop';
+/** The scenes a person stands in. */
+export const HOME_SCENES: readonly Scene[] = ['room', 'shelf', 'sky', 'plain'];
 
 /** Wall, trim, window sky (top to bottom), a prop colour and a hill colour. */
 const MOODS = [
@@ -43,9 +45,15 @@ const MOODS = [
  * @param rng - The portrait's own generator
  * @param bg - The outfit background, for the plain scene
  * @param w - Width in cells (64, or 128 for two characters)
+ * @param kinds - The scenes to pick from
  */
-export function scene(rng: Rng, bg: string, w = 64): { p: Pix; colours: Colours } {
-  const kind = SCENES[Math.floor(rng() * SCENES.length)] as Scene;
+export function scene(
+  rng: Rng,
+  bg: string,
+  w = 64,
+  kinds: readonly Scene[] = HOME_SCENES,
+): { p: Pix; colours: Colours } {
+  const kind = kinds[Math.floor(rng() * kinds.length)] as Scene;
   const mood = MOODS[Math.floor(rng() * MOODS.length)] as (typeof MOODS)[number];
   const p = createPix(w, 64);
   const colours: Colours = {
@@ -87,6 +95,10 @@ export function scene(rng: Rng, bg: string, w = 64): { p: Pix; colours: Colours 
   p.fill((x, y) => ellipse(lamp, 18, 22, 22)(x, y) && x % 8 !== 0, 'wall', 1);
   p.fill((_x, y) => y <= 4, 'trim');
   p.fill((_x, y) => y === 5, 'trim', -1);
+  if (kind === 'workshop') {
+    workshop(p, rng, w);
+    return { p, colours };
+  }
   if (kind === 'room') {
     const x0 = rng() < 0.5 ? 2 : w - 22;
     p.fill((x, y) => x >= x0 && x < x0 + 20 && y >= 10 && y < 38, 'trim');
