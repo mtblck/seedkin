@@ -28,9 +28,15 @@ export function layout(t: Traits): Bot {
   const hx = 5 + t.halfWidth * 2;
   const hy = 9 + (t.bottomRow - t.topRow) * 0.65;
   const top = cy - hy;
-  const taper = (y: number, wide: 'top' | 'bottom'): number => {
-    const k = (y + 0.5 - top) / (2 * hy);
-    return hx - 4 * (wide === 'top' ? k : 1 - k);
+  // Bucket and wedge narrow the way the avatar's rows do, in avatar cells scaled up:
+  // a bucket loses a cell every three rows down from the top, a wedge every two rows
+  // up from the bottom, never below two cells narrower.
+  const hw = t.halfWidth;
+  const rowH = (2 * hy) / (t.bottomRow - t.topRow + 1);
+  const scale = hx / (hw + 0.5);
+  const taper = (y: number, from: 'top' | 'bottom'): number => {
+    const rows = from === 'top' ? (y + 0.5 - top) / rowH : (top + 2 * hy - (y + 0.5)) / rowH;
+    return (Math.max(hw - 2, hw - rows / (from === 'top' ? 3 : 2)) + 0.5) * scale;
   };
   const shapes: Record<Traits['head'], Shape> = {
     box: rounded(cx, cy, hx, hy, 2.5),
@@ -41,8 +47,8 @@ export function layout(t: Traits): Bot {
       and(ellipse(cx, cy + 1, hx, hy + 1), (_x, y) => y < cy + 1),
       and(rounded(cx, cy, hx, hy, 2.5), (_x, y) => y >= cy),
     ),
-    bucket: and(rounded(cx, cy, hx, hy, 2), (x, y) => Math.abs(x + 0.5 - cx) <= taper(y, 'bottom')),
-    wedge: and(rounded(cx, cy, hx, hy, 2), (x, y) => Math.abs(x + 0.5 - cx) <= taper(y, 'top')),
+    bucket: and(rounded(cx, cy, hx, hy, 2), (x, y) => Math.abs(x + 0.5 - cx) <= taper(y, 'top')),
+    wedge: and(rounded(cx, cy, hx, hy, 2), (x, y) => Math.abs(x + 0.5 - cx) <= taper(y, 'bottom')),
   };
   return {
     cx,
@@ -86,7 +92,9 @@ export function drawHead(p: Pix, t: Traits, b: Bot): void {
   const sy0 = b.eyeY - 5;
   const sy1 = b.mouthY + 4;
   const sx = b.hx - (t.head === 'tv' ? 3 : 3.5);
-  const sc = rounded(b.cx, (sy0 + sy1) / 2, sx, (sy1 - sy0) / 2, 3);
+  const box = rounded(b.cx, (sy0 + sy1) / 2, sx, (sy1 - sy0) / 2, 3);
+  // Kept inside the head, so where a tapered head is narrower than the screen it runs to the rim, as on the avatar.
+  const sc: Shape = (x, y) => box(x, y) && b.head(x - 1, y) && b.head(x + 1, y);
   p.fill(sc, 'screen');
   // A glare across the screen's upper left.
   p.over(
