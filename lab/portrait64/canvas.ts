@@ -175,3 +175,15 @@ export const rounded =
     const dy = Math.max(Math.abs(y + 0.5 - cy) - (hy - r), 0);
     return Math.abs(x + 0.5 - cx) <= hx && Math.abs(y + 0.5 - cy) <= hy && dx * dx + dy * dy <= r * r;
   };
+
+/** A triangle through three points, measured to cell centres. */
+export const tri =
+  (ax: number, ay: number, bx: number, by: number, cx: number, cy: number): Shape =>
+  (x, y) => {
+    const px = x + 0.5;
+    const py = y + 0.5;
+    const d1 = (px - bx) * (ay - by) - (ax - bx) * (py - by);
+    const d2 = (px - cx) * (by - cy) - (bx - cx) * (py - cy);
+    const d3 = (px - ax) * (cy - ay) - (cx - ax) * (py - ay);
+    return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
+  };
