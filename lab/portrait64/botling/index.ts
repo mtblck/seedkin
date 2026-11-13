@@ -74,7 +74,7 @@ function colours(pal: Palette, fabric: string): Colours {
   };
 }
 
-/** A segmented neck and a chassis, with what the robot wears on it. */
+/** A segmented neck, a torso with arms, and what the robot wears on it. */
 function body(p: Pix, gear: Gear, light: boolean, neckTop: number): void {
   const chassis = rounded(CX, 64, 25, 16, 6);
   const hole = ellipse(CX, 47.5, 5.6, 2.6);
@@ -95,8 +95,21 @@ function body(p: Pix, gear: Gear, light: boolean, neckTop: number): void {
     p.fill(or(rect(CX - 4, 51, CX - 4, 58), rect(CX + 3, 51, CX + 3, 58)), 'accent');
     return;
   }
-  p.fill(chassis, 'body');
-  p.fill(or(ellipse(CX - 21, 52, 4.5, 4.5), ellipse(CX + 21, 52, 4.5, 4.5)), 'shade');
+  // Arms hang from ball joints beside a narrower torso, splayed a little so
+  // the background shows between, and ringed like the neck.
+  const arm =
+    (s: number) =>
+    (x: number, y: number): boolean =>
+      y >= 50 && Math.abs(x + 0.5 - (CX + s * (20 + (y - 50) * 0.5))) <= 3.4;
+  const arms = or(arm(-1), arm(1));
+  p.fill(arms, 'body');
+  p.fill(
+    and(arms, (_x, y) => y % 3 === 1 && y > 54),
+    'shade',
+    -1,
+  );
+  p.fill(rounded(CX, 64, 15, 16, 5), 'body');
+  p.fill(or(ellipse(CX - 18, 51.5, 4.4, 4.4), ellipse(CX + 18, 51.5, 4.4, 4.4)), 'shade');
   p.fill(rounded(CX, 57, 9, 5, 2), 'panel');
   if (light) {
     p.fill(ellipse(CX, 57, 2.8, 2.8), 'accent');
