@@ -114,7 +114,12 @@ export function toSvg(layers: { p: Pixels; colours: Materials }[], scale = 1): s
         }
         const fill = colourOf(colours[m] ?? '#ff00ff', (p.tone[y] as number[])[x] as number);
         let end = x + 1;
-        while (end < w && p.get(end, y) !== '' && colourOf(colours[p.get(end, y)] ?? '#ff00ff', (p.tone[y] as number[])[end] as number) === fill) end++;
+        while (
+          end < w &&
+          p.get(end, y) !== '' &&
+          colourOf(colours[p.get(end, y)] ?? '#ff00ff', (p.tone[y] as number[])[end] as number) === fill
+        )
+          end++;
         rects.push(`<rect x="${x}" y="${y}" width="${end - x}" height="1" fill="${fill}"/>`);
         x = end;
       }

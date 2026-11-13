@@ -73,7 +73,12 @@ export function figure(seed: string): Figure {
 function neckline(p: Pixels, clothes: Clothes): void {
   if (clothes === 'tee') {
     stack(p, 25, [3, 2], 'skin', -1);
-    for (const [x, y] of [[C - 4, 25], [C - 3, 26], [C - 2, 26]]) p.mirror(x as number, y as number, 'cloth', -1);
+    for (const [x, y] of [
+      [C - 4, 25],
+      [C - 3, 26],
+      [C - 2, 26],
+    ])
+      p.mirror(x as number, y as number, 'cloth', -1);
   } else if (clothes === 'vneck') {
     stack(p, 25, [3, 2, 1, 1], 'skin', -1);
     for (let i = 0; i < 4; i++) p.mirror(C - 4 + i, 25 + i, 'trim');
@@ -114,7 +119,10 @@ export function duet(left: string, right: string, scale = 8): string {
   const back = scene(a.rng, a.bg, 64);
   const p = createPixels(64, 32);
   const colours: Materials = {};
-  for (const [f, dx, flip, k] of [[a, -4, false, 'a'], [b, 36, true, 'b']] as const) {
+  for (const [f, dx, flip, k] of [
+    [a, -4, false, 'a'],
+    [b, 36, true, 'b'],
+  ] as const) {
     for (const [m, c] of Object.entries(f.colours)) colours[`${k}${m}`] = c;
     for (let y = 0; y < 32; y++) {
       for (let x = 0; x < 32; x++) {

@@ -14,7 +14,8 @@ const seeds = Array.from({ length: count }, (_, i) => `portrait-${i + 1}`);
 
 const cards = seeds
   .map(
-    (s) => `<figure><div class="pair">${noggin(s, { size: 96, look: 'flat', shape: 'square' })}${portrait(s, scale)}</div><figcaption>${s}</figcaption></figure>`,
+    (s) =>
+      `<figure><div class="pair">${noggin(s, { size: 96, look: 'flat', shape: 'square' })}${portrait(s, scale)}</div><figcaption>${s}</figcaption></figure>`,
   )
   .join('');
 
