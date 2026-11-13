@@ -6,6 +6,8 @@ export interface Bot {
   cx: number;
   cy: number;
   hx: number;
+  /** How far out the side pieces sit: past the plates on a TV head. */
+  side: number;
   hy: number;
   top: number;
   bottom: number;
@@ -46,6 +48,7 @@ export function layout(t: Traits): Bot {
     cx,
     cy,
     hx: t.head === 'tv' ? hx + 2 : hx,
+    side: t.head === 'tv' ? hx + 5 : hx,
     hy,
     top: t.head === 'tv' ? top + 1 : top,
     bottom: cy + hy,
@@ -61,6 +64,12 @@ export function layout(t: Traits): Bot {
  * lower right, so it reads as a bevelled plate; then markings and the screen.
  */
 export function drawHead(p: Pix, t: Traits, b: Bot): void {
+  // A TV head has plates on its sides, as the avatar's is a cell wider in its middle rows.
+  if (t.head === 'tv')
+    p.fill(
+      or(rounded(b.cx - b.hx - 1.5, b.cy, 2.6, b.hy * 0.5, 1), rounded(b.cx + b.hx + 1.5, b.cy, 2.6, b.hy * 0.5, 1)),
+      'shade',
+    );
   p.fill(b.head, 'shade');
   p.fill((x, y) => b.head(x, y) && b.head(x + 2, y + 2), 'body');
   if (t.pattern === 'stripe') p.over(rect(0, Math.round(b.top) + 3, 63, Math.round(b.top) + 4), 'shade', ['body']);

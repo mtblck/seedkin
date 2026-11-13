@@ -8,8 +8,12 @@ const stalk =
   (cx, cy) =>
     cy >= base - len && cy <= base && Math.abs(cx + 0.5 - (x + (base - cy) * lean)) < 1;
 
-/** The top piece, drawn behind the head so the head covers its base. */
-export function drawTop(p: Pix, t: Traits, b: Bot): void {
+/**
+ * The top piece, drawn behind the head so the head covers its base. Horns
+ * come as the avatar's leaning, ball-tipped stalks or (`hornTips` false) as
+ * solid triangles.
+ */
+export function drawTop(p: Pix, t: Traits, b: Bot, hornTips = false): void {
   const top = Math.round(b.top);
   const ball = (x: number, y: number): void => p.fill(ellipse(x, y, 2.6, 2.6), 'accent');
   switch (t.top) {
@@ -21,6 +25,16 @@ export function drawTop(p: Pix, t: Traits, b: Bot): void {
       ball(b.cx - 7.6, top - 8);
       return ball(b.cx + 7.6, top - 8);
     case 'horns':
+      if (hornTips) {
+        // Like the avatar: stalks leaning out from the head's top corners, each with a ball.
+        const lean =
+          (sd: number): Shape =>
+          (x, y) =>
+            y >= top - 6 && y <= top + 1 && Math.abs(x + 0.5 - (b.cx + sd * (b.hx - 3 + (top + 1 - y) * 0.8))) < 1;
+        p.fill(or(lean(-1), lean(1)), 'body');
+        ball(b.cx - b.hx - 2.6, top - 6.5);
+        return ball(b.cx + b.hx + 2.6, top - 6.5);
+      }
       return p.fill((x, y) => {
         if (y < top - 7 || y > top + 1) return false;
         const off = b.hx - 4 + (top - y) * 0.5;
@@ -39,7 +53,7 @@ export function drawTop(p: Pix, t: Traits, b: Bot): void {
       p.fill(rect(b.cx - 1, top - 6, b.cx, top + 1), 'shade');
       p.fill(
         and(ellipse(b.cx, top - 7, 6.5, 3.5), (_x, y) => y >= top - 7),
-        'shade',
+        'accent',
       );
       p.fill(rect(b.cx - 1, top - 11, b.cx, top - 7), 'shade');
       return ball(b.cx, top - 12);
@@ -52,15 +66,16 @@ export function drawTop(p: Pix, t: Traits, b: Bot): void {
 export function drawSides(p: Pix, kind: Traits['sides'], b: Bot, only?: -1): void {
   const sides = only ? [only] : [-1, 1];
   for (const s of sides) {
-    const x = b.cx + s * (b.hx + 1.5);
+    const x = b.cx + s * (b.side + 1.5);
     if (kind === 'bolts') {
-      p.fill(ellipse(x, b.cy + 1, 2.8, 2.8), 'shade');
-      p.fill(ellipse(x + s * 0.5, b.cy + 1, 1, 1), 'accent');
+      // Bolts and handles are in the accent colour, ears in the shade, as on the avatar.
+      p.fill(ellipse(x, b.cy + 1, 2.8, 2.8), 'accent');
+      p.fill(ellipse(x + s * 0.5, b.cy + 1, 1, 1), 'accent', -1);
     } else if (kind === 'ears') {
       p.fill(rounded(x + s * 0.5, b.cy, 2.5, 5.5, 1.5), 'shade');
       p.fill(rounded(x + s * 2, b.cy, 1.2, 3, 1), 'accent');
     } else if (kind === 'handles') {
-      p.fill(and(rounded(x + s * 1, b.cy, 3.5, 6.5, 2.5), not(rounded(x, b.cy, 2.2, 4.4, 1.5))), 'shade');
+      p.fill(and(rounded(x + s * 1, b.cy, 3.5, 6.5, 2.5), not(rounded(x, b.cy, 2.2, 4.4, 1.5))), 'accent');
     }
   }
 }

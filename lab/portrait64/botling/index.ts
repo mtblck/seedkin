@@ -44,7 +44,8 @@ export function figure(seed: string): Figure {
   const b = layout(t);
   const s = slots(t);
   const p = createPix();
-  if (s.hasTop) drawTop(p, t, b);
+  // Two in three horned robots get the avatar's ball-tipped stalks; a side generator keeps the rest of the draws put.
+  if (s.hasTop) drawTop(p, t, b, createRng(`botling-portrait:${seed}:horns`)() < 0.67);
   if (s.hasSides) drawSides(p, t.sides, b);
   if (s.hasQuirk) drawQuirk(p, t, b, false);
   body(p, gear, t.hasChestLight, b.bottom);
