@@ -21,7 +21,8 @@ const pair = (f: (s: number) => Shape): Shape => or(f(-1), f(1));
 function tail(p: Pix, t: SnootTraits): void {
   switch (t.species) {
     case 'cat':
-      return p.fill(tube([CX + 9, 58], [CX + 22, 57], [CX + 20, 42], 1.8), 'body');
+      // Curled round the side to lie in front of the paws, as a sitting cat's does.
+      return p.fill(tube([CX + 12, 50], [CX + 19, 56], [CX + 15, 61], 1.6), 'body');
     case 'fox':
       p.fill(tube([CX + 8, 58], [CX + 23, 61], [CX + 21, 45], 3.6), 'body');
       return p.fill(tube([CX + 8, 58], [CX + 23, 61], [CX + 21, 45], 3.6, 0.75), 'screen');
@@ -48,15 +49,18 @@ function sitting(p: Pix, t: SnootTraits): void {
     pair((s) => ellipse(CX + s * 8.5, 51, 8, 9.5)),
     limb,
   );
-  p.fill(
-    pair((s) => ellipse(CX + s * (bunny ? 14 : 13), 61, bunny ? 7 : 5, 2.4)),
-    limb,
-  );
   p.fill(or(ellipse(CX, 42, 9, 15), ellipse(CX, 51, 10.5, 9)), 'body');
   // A pale chest, and the belly in shadow behind the front legs.
   if (t.species !== 'pig' && t.species !== 'panda') p.fill(ellipse(CX, 39, 5, 7.5), 'screen');
   p.fill(and(ellipse(CX, 56, 3, 7), (_x, y) => y >= 50), 'body', -1);
+  // Hind paws point forward beside the front legs, set a little back (higher).
+  for (const s of [-1, 1]) {
+    const x = CX + s * (bunny ? 12.5 : 11.5);
+    p.fill(ellipse(x, 60, bunny ? 4.6 : 3.4, 2.3), 'leg');
+    p.fill(rect(Math.round(x), 61, Math.round(x), 61), 'leg', -2);
+  }
   forelegs(p);
+  if (t.species === 'cat') p.fill(tube([CX + 15, 61], [CX + 12, 63.5], [CX + 2, 62.6], 1.5), 'body');
 }
 
 /**
@@ -100,28 +104,29 @@ function owl(p: Pix): void {
       p.fill(rect(Math.round(CX + s * 4 + dx), 60, Math.round(CX + s * 4 + dx), 62), 'accent');
 }
 
-/** A frog squatting: a round body, folded back legs at its sides, front legs between. */
+/**
+ * A frog squatting, seen from the front: a pear of a body with a pale throat
+ * and belly, thighs folded up at its sides with long feet splayed out, and
+ * front arms that come out from under the jaw, run down the sides of the
+ * throat and plant their hands in front, between and below the hind feet.
+ */
 function frog(p: Pix): void {
-  p.fill(ellipse(CX, 50, 14, 12), 'body');
-  p.fill(ellipse(CX, 53, 8, 7.5), 'screen');
-  p.fill(
-    pair((s) => ellipse(CX + s * 14, 54, 6, 7.5)),
-    'haunch',
-  );
-  p.fill(
-    pair((s) => ellipse(CX + s * 18, 61.5, 5.5, 1.9)),
-    'haunch',
-  );
-  // Front arms come down over the belly's edges, angling out a little, onto wide webbed hands.
+  // Drawn three cells higher than the numbers say, to leave room for the hands below.
+  const fill = (sh: Shape, m: string, tone?: number): void => p.fill((x, y) => sh(x, y + 3), m, tone);
+  fill(or(ellipse(CX, 50, 13, 12), ellipse(CX, 55, 15, 7)), 'body');
+  fill(ellipse(CX, 50, 6.5, 10), 'screen');
+  fill(pair((s) => ellipse(CX + s * 14, 53, 6, 7)), 'haunch');
   for (const s of [-1, 1]) {
-    const x = CX + s * 7;
-    const arm: Shape = (cx, cy) => cy >= 49 && cy <= 60 && Math.abs(cx + 0.5 - (x + s * (cy - 49) * 0.15)) <= 1.9;
-    const hand = ellipse(x + s * 2.2, 61.5, 3.6, 1.8);
-    p.fill(or(arm, hand), 'leg');
-    p.fill(and(arm, (cx, cy) => (cx + 0.5 - (x + s * (cy - 49) * 0.15)) * s > 0.6), 'leg', -1);
-    p.fill(and(arm, (cx, cy) => (cx + 0.5 - (x + s * (cy - 49) * 0.15)) * s < -0.6 && cy < 58), 'leg', 1);
-    // Three fingers, split by creases.
-    for (const dx of [-1, 1]) p.fill(rect(Math.round(x + s * 2.2 + dx * 1.5), 62, Math.round(x + s * 2.2 + dx * 1.5), 62), 'leg', -2);
+    // Hind feet: out to the sides, set back (higher) than the hands, two long toes.
+    fill(ellipse(CX + s * 18.5, 59, 4.6, 1.7), 'leg');
+    for (const dx of [3, 6]) fill(ellipse(CX + s * (18.5 + dx), 59.6 + dx * 0.15, 1.6, 1), 'leg');
+    // Lit, so the arm stands out from the body behind it; the outer edge in shadow.
+    const arm = tube([CX + s * 8, 40], [CX + s * 9.8, 51], [CX + s * 6, 60], 2.1);
+    fill(arm, 'leg', 1);
+    fill(and(arm, (x, y) => (x + 0.5 - (CX + s * (y < 50 ? 9 : 7.6))) * s > 0.6), 'leg', -1);
+    // Hands planted in front: a palm and three splayed fingers with gaps between.
+    fill(ellipse(CX + s * 6, 61.5, 2.6, 1.4), 'leg');
+    for (const dx of [-2.6, 0, 2.6]) fill(ellipse(CX + s * 6 + dx * s, 63.2, 0.9, 1.3), 'leg');
   }
 }
 
@@ -137,7 +142,7 @@ export function openShoulders(p: Pix, t: SnootTraits): void {
 
 /** Where a body's neck is, for collars and scarves. */
 export function neckY(t: SnootTraits): number {
-  return t.species === 'frog' ? 38 : 30;
+  return t.species === 'frog' ? 35 : 30;
 }
 
 /** The species' body, sitting. */

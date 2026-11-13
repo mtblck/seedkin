@@ -44,7 +44,7 @@ export function figure(seed: string): Figure {
   const gear = pick(rng, GEAR);
   const fabric = pick(rng, FABRICS);
   // A smaller head, so the whole body fits; a frog's is wide and sits low on its body.
-  const h = t.species === 'frog' ? layout(t, 0.9, 31) : layout(t, 0.78, 19);
+  const h = t.species === 'frog' ? layout(t, 0.9, 28) : layout(t, 0.78, 19);
   const p = createPix();
   ears(p, t, h);
   body(p, t);
