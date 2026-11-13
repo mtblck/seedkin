@@ -12,7 +12,7 @@ export function markings(p: Pix, t: SnootTraits, h: Head): void {
   const fur = ['body'];
   if (t.species === 'panda' || t.marking === 'mask')
     p.over(
-      both((x) => ellipse(x, h.eyeY + 0.5, 4.6, 3.6), h),
+      both((x) => ellipse(x, h.eyeY + 0.5, 4.6 * h.k, 3.6 * h.k), h),
       'shade',
       fur,
     );
@@ -71,12 +71,12 @@ export function face(p: Pix, t: SnootTraits, h: Head): void {
   const frog = t.species === 'frog';
   if (t.species === 'owl')
     p.fill(
-      both((x) => disc(x, h.eyeY, 4.6), h),
+      both((x) => disc(x, h.eyeY, 4.6 * h.k), h),
       'white',
     );
   if (frog)
     p.fill(
-      both((x) => disc(x, h.eyeY, 4.2), h),
+      both((x) => disc(x, h.eyeY, 4.2 * h.k), h),
       'white',
     );
   p.fill(
@@ -110,26 +110,30 @@ function muzzle(p: Pix, t: SnootTraits, h: Head): void {
         'accent',
       );
     case 'pig':
-      p.fill(ellipse(cx, mY, 4.6, 3.2), 'accent');
+      p.fill(ellipse(cx, mY, 4.6 * h.k, 3.2 * h.k), 'accent');
       p.fill(or(rect(cx - 3, mY - 1, cx - 2, mY), rect(cx + 1, mY - 1, cx + 2, mY)), 'glow');
       if (open) p.fill(ellipse(cx, mY + 5, 2, 1.2), tongue ? 'tongue' : 'glow');
       return;
     case 'frog':
       p.fill(
-        and(arc(cx, mY - 6, 9, false), (x) => Math.abs(x + 0.5 - cx) < 8),
+        and(arc(cx, mY - 6 * h.k, 9 * h.k, false), (x) => Math.abs(x + 0.5 - cx) < 8 * h.k),
         'glow',
       );
       if (tongue) p.fill(ellipse(cx, mY + 3.5, 1.6, 1.6), 'tongue');
       return;
     case 'fox':
       p.over(
-        or(ellipse(cx, mY + 2, 7, 5), ellipse(cx - h.hx + 3, mY + 1, 4, 5), ellipse(cx + h.hx - 3, mY + 1, 4, 5)),
+        or(
+          ellipse(cx, mY + 2 * h.k, 7 * h.k, 5 * h.k),
+          ellipse(cx - h.hx + 3 * h.k, mY + h.k, 4 * h.k, 5 * h.k),
+          ellipse(cx + h.hx - 3 * h.k, mY + h.k, 4 * h.k, 5 * h.k),
+        ),
         'screen',
         ['body', 'shade'],
       );
       break;
     default:
-      p.fill(ellipse(cx, mY + 0.5, 6, 4.4), 'screen');
+      p.fill(ellipse(cx, mY + 0.5, 6 * h.k, 4.4 * h.k), 'screen');
   }
   p.fill(or(ellipse(cx, mY - 2, 2.2, 1.4)), 'glow');
   p.fill(rect(cx - 1, mY - 1, cx, mY), 'glow');

@@ -31,7 +31,7 @@ figcaption{font-size:12px;color:#8a7e8a;margin-top:4px}
 svg{display:block;border-radius:6px}
 </style>
 <h1>Snoot portraits, 64x64 (lab prototype)</h1>
-<p>Each row: today's avatar for the seed, its 64x64 portrait at ${px * 64}px, then the same portrait at 128px and 64px.</p>
+<p>Each: the avatar, its 64x64 portrait at ${px * 64}px, then the same portrait at 128px and 64px.</p>
 <div class="grid">${cards}</div>
 <div class="duets">${duet('snoot-3', 'snoot-8', px)}${duet('snoot-2', 'snoot-10', px)}</div>`;
 

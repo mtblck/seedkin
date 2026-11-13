@@ -14,30 +14,35 @@ export interface Head {
   /** The muzzle's middle row. */
   mY: number;
   shape: Shape;
+  /** Size against the full-frame head: smaller when the whole body is shown. */
+  k: number;
 }
 
-/** Sizes the head from the avatar's width and height; a frog's is wider and flatter. */
-export function layout(t: SnootTraits): Head {
+/**
+ * Sizes the head from the avatar's width and height; a frog's is wider and
+ * flatter. `k` scales it and `cy` places it, so a whole sitting body fits below.
+ */
+export function layout(t: SnootTraits, k = 1, cy = 27): Head {
   const frog = t.species === 'frog';
   const cx = 32;
-  const cy = 27;
-  const hx = 3.2 + t.halfWidth * 2.5 + (frog ? 4 : 0);
+  const hx = (3.2 + t.halfWidth * 2.5 + (frog ? 4 : 0)) * k;
   // A frog's head is a wide, flat pill, as on the avatar.
-  const hy = (t.isTall ? 13 : 11.5) - (frog ? 3.5 : 0);
+  const hy = ((t.isTall ? 13 : 11.5) - (frog ? 3.5 : 0)) * k;
   const eyeX = Math.min(t.halfWidth - 2, 2 + (t.halfWidth > 4 ? 1 : 0));
   const shape: Shape = (x, y) => {
     const dx = x + 0.5 - cx;
     const dy = y + 0.5 - cy;
     // Rounder than an ellipse, narrowing a little toward the chin like the avatar's last rows.
-    const k = dy > 0 && !frog ? 1 - 0.2 * (dy / hy) ** 1.5 : 1;
-    return Math.abs(dx / (hx * k)) ** 2.4 + Math.abs(dy / hy) ** 2.4 <= 1;
+    const jaw = dy > 0 && !frog ? 1 - 0.2 * (dy / hy) ** 1.5 : 1;
+    return Math.abs(dx / (hx * jaw)) ** 2.4 + Math.abs(dy / hy) ** 2.4 <= 1;
   };
-  const eyeY = frog ? cy - hy : cy - 2;
-  return { cx, cy, hx, hy, top: cy - hy, eyeY, ex: eyeX * 2.5 + 1.5, mY: cy + 4.5, shape };
+  const eyeY = frog ? cy - hy : cy - 2 * k;
+  return { cx, cy, hx, hy, top: cy - hy, eyeY, ex: (eyeX * 2.5 + 1.5) * k, mY: cy + 4.5 * k, shape, k };
 }
 
 /** A pointed ear leaning out from the head's top, with an accent lining. */
-function pointed(p: Pix, h: Head, base: number, height: number, at: number, lean: number, lined: boolean): void {
+function pointed(p: Pix, h: Head, b: number, tall: number, at: number, l: number, lined: boolean): void {
+  const [base, height, lean] = [b * h.k, tall * h.k, l * h.k];
   for (const s of [-1, 1]) {
     const x = h.cx + s * h.hx * at;
     const y = h.top + 3;
@@ -48,7 +53,8 @@ function pointed(p: Pix, h: Head, base: number, height: number, at: number, lean
 }
 
 /** A round ear at each top corner. */
-function round(p: Pix, h: Head, r: number, at: number, dy: number, inner: number): void {
+function round(p: Pix, h: Head, size: number, at: number, dy: number, lining: number): void {
+  const [r, inner] = [size * h.k, lining * h.k];
   for (const s of [-1, 1]) {
     p.fill(ellipse(h.cx + s * h.hx * at, h.top + dy, r, r), 'shade');
     if (inner) p.fill(ellipse(h.cx + s * h.hx * at, h.top + dy, inner, inner), 'accent');
@@ -74,8 +80,8 @@ export function ears(p: Pix, t: SnootTraits, h: Head): void {
       return round(p, h, 7, 0.86, 1, 4.4);
     case 'bunny':
       for (const s of [-1, 1]) {
-        p.fill(ellipse(h.cx + s * h.hx * 0.38, h.top - 7, 3.4, 10.5), 'shade');
-        p.fill(ellipse(h.cx + s * h.hx * 0.38, h.top - 6, 1.6, 7.5), 'accent');
+        p.fill(ellipse(h.cx + s * h.hx * 0.38, h.top - 7 * h.k, 3.4 * h.k, 10.5 * h.k), 'shade');
+        p.fill(ellipse(h.cx + s * h.hx * 0.38, h.top - 6 * h.k, 1.6 * h.k, 7.5 * h.k), 'accent');
       }
       return;
     default:
@@ -86,7 +92,10 @@ export function ears(p: Pix, t: SnootTraits, h: Head): void {
 /** A dog's ears hang down over the sides of its head. */
 export function dogEars(p: Pix, h: Head): void {
   p.fill(
-    or(rounded(h.cx - h.hx + 1.5, h.cy - 1, 3.6, 9.5, 3.4), rounded(h.cx + h.hx - 1.5, h.cy - 1, 3.6, 9.5, 3.4)),
+    or(
+      rounded(h.cx - h.hx + 1.5, h.cy - h.k, 3.6 * h.k, 9.5 * h.k, 3.4 * h.k),
+      rounded(h.cx + h.hx - 1.5, h.cy - h.k, 3.6 * h.k, 9.5 * h.k, 3.4 * h.k),
+    ),
     'shade',
   );
 }
@@ -97,7 +106,9 @@ export function dogEars(p: Pix, h: Head): void {
  */
 export function drawHead(p: Pix, t: SnootTraits, h: Head): void {
   const bumps =
-    t.species === 'frog' ? or(ellipse(h.cx - h.ex, h.eyeY, 6, 6), ellipse(h.cx + h.ex, h.eyeY, 6, 6)) : () => false;
+    t.species === 'frog'
+      ? or(ellipse(h.cx - h.ex, h.eyeY, 6 * h.k, 6 * h.k), ellipse(h.cx + h.ex, h.eyeY, 6 * h.k, 6 * h.k))
+      : () => false;
   const all = or(h.shape, bumps);
   p.fill(all, 'shade');
   p.fill(
