@@ -1,5 +1,5 @@
 import type { Rng } from '../../src/core/random.js';
-import { type Colours, createPix, ellipse, type Pix } from './canvas.js';
+import { type Colours, createPix, ellipse, or, type Pix } from './canvas.js';
 
 export type Scene = 'room' | 'shelf' | 'sky' | 'plain';
 const SCENES: readonly Scene[] = ['room', 'shelf', 'sky', 'plain'];
@@ -98,21 +98,39 @@ export function scene(rng: Rng, bg: string, w = 64): { p: Pix; colours: Colours 
   } else {
     p.fill((_x, y) => y >= 42 && y <= 43, 'trim');
     p.fill((_x, y) => y === 44, 'trim', -2);
-    for (let x0 = 2 + Math.floor(rng() * 4); x0 < w - 8; x0 += 9 + Math.floor(rng() * 5)) {
-      const r = 3 + Math.floor(rng() * 2);
-      if (rng() < 0.6) {
-        const cy = 41 - r - Math.floor(rng() * 14);
-        p.fill(ellipse(x0 + r, cy, r + 1, r + 1), 'trim');
-        p.fill(ellipse(x0 + r, cy, r, r), 'prop');
-        p.fill(
-          (x, y) =>
-            (x === Math.floor(x0 + r) && y >= cy - r + 1 && y < cy) ||
-            (y === Math.floor(cy) && x >= x0 + r && x < x0 + r + r - 1),
-          'hand',
-        );
+    // One clock on the wall: beside the character, or between two of them.
+    const left = rng() < 0.5;
+    const cx = w > 64 ? w / 2 : left ? 10 : 54;
+    p.fill(ellipse(cx, 19, 6, 6), 'trim');
+    p.fill(ellipse(cx, 19, 5, 5), 'prop');
+    p.fill(
+      (x, y) => (x === Math.floor(cx) - 1 && y >= 15 && y < 19) || (y === 18 && x >= cx - 1 && x < cx + 3),
+      'hand',
+    );
+    // Books, jars and a plant along the shelf.
+    const spines = ['hill', 'sky1', 'sky2', 'trim', 'prop'];
+    for (let x0 = 1 + Math.floor(rng() * 3); x0 < w - 6; ) {
+      const kind = rng();
+      if (kind < 0.5) {
+        const n = 3 + Math.floor(rng() * 3);
+        for (let i = 0; i < n; i++) {
+          const h = 6 + Math.floor(rng() * 4);
+          const m = spines[Math.floor(rng() * spines.length)] as string;
+          p.fill((x, y) => x >= x0 + i * 2 && x < x0 + i * 2 + 2 && y >= 42 - h && y < 42, m, i % 2 ? -1 : 0);
+        }
+        x0 += n * 2 + 3 + Math.floor(rng() * 4);
+      } else if (kind < 0.8) {
+        p.fill((x, y) => x >= x0 && x < x0 + 5 && y >= 36 && y < 42, 'prop', 0);
+        p.fill((x, y) => x >= x0 + 1 && x < x0 + 4 && y === 35, 'trim');
+        x0 += 8 + Math.floor(rng() * 4);
       } else {
-        p.fill((x, y) => x >= x0 && x < x0 + 2 * r && y >= 42 - r * 2 && y < 42, 'prop', 0);
-        p.fill((x, y) => x >= x0 + 1 && x < x0 + 2 * r - 1 && y >= 41 - r * 2 && y < 42 - r * 2, 'trim');
+        p.fill((x, y) => x >= x0 && x < x0 + 5 && y >= 38 && y < 42, 'trim', 1);
+        p.fill(
+          or(ellipse(x0 + 2.5, 35, 3.5, 3), ellipse(x0 + 1, 32, 1.6, 2.5), ellipse(x0 + 4, 32, 1.6, 2.5)),
+          'hill',
+          1,
+        );
+        x0 += 9 + Math.floor(rng() * 4);
       }
     }
   }
