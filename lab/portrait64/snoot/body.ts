@@ -40,7 +40,8 @@ function tail(p: Pix, t: SnootTraits): void {
 
 /** A four-legged animal sitting back on its haunches, front legs straight, tail curled round. */
 function sitting(p: Pix, t: SnootTraits): void {
-  const limb = t.species === 'panda' ? 'shade' : 'body';
+  // Haunches are their own material so the ink pass draws the thigh's line where the body overlaps it.
+  const limb = 'haunch';
   const bunny = t.species === 'bunny';
   tail(p, t);
   p.fill(
@@ -52,13 +53,28 @@ function sitting(p: Pix, t: SnootTraits): void {
     limb,
   );
   p.fill(or(ellipse(CX, 42, 9, 15), ellipse(CX, 51, 10.5, 9)), 'body');
-  // A pale chest above the legs, and shadow between them.
+  // A pale chest, and the belly in shadow behind the front legs.
   if (t.species !== 'pig' && t.species !== 'panda') p.fill(ellipse(CX, 39, 5, 7.5), 'screen');
-  p.fill(rect(CX - 2, 47, CX + 1, 62), 'body', -1);
-  p.fill(
-    pair((s) => or(rounded(CX + s * 4, 53, 2.6, 8, 2), ellipse(CX + s * 4.2, 61, 3.2, 2))),
-    limb,
-  );
+  p.fill(and(ellipse(CX, 56, 3, 7), (_x, y) => y >= 50), 'body', -1);
+  forelegs(p);
+}
+
+/**
+ * Two straight front legs standing in front of the haunches. They are their
+ * own material, so the ink pass outlines them against the body behind, and
+ * each is lit on its left and shadowed on its right.
+ */
+function forelegs(p: Pix): void {
+  for (const s of [-1, 1]) {
+    const x = CX + s * 4;
+    // A shoulder that narrows into the leg, then a paw.
+    const leg = or(ellipse(x + s * 0.6, 46, 3.8, 4), rounded(x, 53, 3, 8, 2), ellipse(x + s * 0.3, 60.5, 3.6, 2.4));
+    p.fill(leg, 'leg');
+    p.fill(and(leg, (cx) => cx + 0.5 - x > 1.4), 'leg', -1);
+    p.fill(and(leg, (cx, cy) => cx + 0.5 - x < -1.2 && cy < 57), 'leg', 1);
+    // Toes: two short creases on each paw.
+    for (const dx of [-1, 1]) p.fill(rect(Math.round(x + s * 0.4 + dx), 61, Math.round(x + s * 0.4 + dx), 62), 'leg', -2);
+  }
 }
 
 /** An owl: an egg of a body, a pale barred breast, wings folded at its sides, talons below. */

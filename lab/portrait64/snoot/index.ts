@@ -54,10 +54,12 @@ export function figure(seed: string): Figure {
   face(p, t, h);
   if (t.species === 'dog') dogEars(p, h);
   extra(p, t, h);
-  shadeRuns(p, ['body', 'shade', 'fabric', 'screen'], 0.22, 0.2);
+  shadeRuns(p, ['body', 'haunch', 'shade', 'fabric', 'screen'], 0.22, 0.2);
   ink(p, FEATURES);
   const colours: Colours = {
     body: pal.body,
+    leg: t.species === 'panda' ? pal.shade : pal.body,
+    haunch: t.species === 'panda' ? pal.shade : pal.body,
     shade: pal.shade,
     screen: pal.screen,
     white: pal.screen,
