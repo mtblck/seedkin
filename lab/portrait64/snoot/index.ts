@@ -18,7 +18,7 @@ import {
 } from '../canvas.js';
 import { type Figure, pair, single } from '../compose.js';
 import type { Scene } from '../scene.js';
-import { body, neckY } from './body.js';
+import { body, neckY, openShoulders } from './body.js';
 import { extra, face, markings } from './face.js';
 import { dogEars, drawHead, ears, layout } from './head.js';
 
@@ -56,6 +56,7 @@ export function figure(seed: string): Figure {
   extra(p, t, h);
   shadeRuns(p, ['body', 'haunch', 'shade', 'fabric', 'screen'], 0.22, 0.2);
   ink(p, FEATURES);
+  openShoulders(p, t);
   const colours: Colours = {
     body: pal.body,
     leg: t.species === 'panda' ? pal.shade : pal.body,

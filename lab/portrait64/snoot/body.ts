@@ -106,16 +106,33 @@ function frog(p: Pix): void {
   p.fill(ellipse(CX, 53, 8, 7.5), 'screen');
   p.fill(
     pair((s) => ellipse(CX + s * 14, 54, 6, 7.5)),
-    'body',
+    'haunch',
   );
   p.fill(
     pair((s) => ellipse(CX + s * 18, 61.5, 5.5, 1.9)),
-    'body',
+    'haunch',
   );
-  p.fill(
-    pair((s) => or(rounded(CX + s * 6, 57, 1.6, 4, 1.4), ellipse(CX + s * 6.5, 61.5, 2.6, 1.5))),
-    'body',
-  );
+  // Front arms come down over the belly's edges, angling out a little, onto wide webbed hands.
+  for (const s of [-1, 1]) {
+    const x = CX + s * 7;
+    const arm: Shape = (cx, cy) => cy >= 49 && cy <= 60 && Math.abs(cx + 0.5 - (x + s * (cy - 49) * 0.15)) <= 1.9;
+    const hand = ellipse(x + s * 2.2, 61.5, 3.6, 1.8);
+    p.fill(or(arm, hand), 'leg');
+    p.fill(and(arm, (cx, cy) => (cx + 0.5 - (x + s * (cy - 49) * 0.15)) * s > 0.6), 'leg', -1);
+    p.fill(and(arm, (cx, cy) => (cx + 0.5 - (x + s * (cy - 49) * 0.15)) * s < -0.6 && cy < 58), 'leg', 1);
+    // Three fingers, split by creases.
+    for (const dx of [-1, 1]) p.fill(rect(Math.round(x + s * 2.2 + dx * 1.5), 62, Math.round(x + s * 2.2 + dx * 1.5), 62), 'leg', -2);
+  }
+}
+
+/**
+ * After inking, lets the front legs' tops melt into the chest: leg cells
+ * above `y` lose their outline and become body, so the legs open upward.
+ */
+export function openShoulders(p: Pix, t: SnootTraits): void {
+  if (t.species === 'owl' || t.species === 'frog') return;
+  for (let y = 0; y < 50; y++)
+    for (let x = 0; x < p.w; x++) if (p.get(x, y) === 'leg') p.set(x, y, 'body', Math.max(-1, p.tone[y]?.[x] ?? 0));
 }
 
 /** Where a body's neck is, for collars and scarves. */
