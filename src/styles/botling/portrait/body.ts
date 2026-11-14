@@ -14,6 +14,8 @@ export function body(p: Pix, gear: Gear, light: boolean, neckTop: number): void 
       'fabric',
       1,
     );
+  // A hoodie goes on first, so the neck stands in front of its collar.
+  if (gear === 'hoodie') p.fill(and(chassis, not(hole)), 'fabric');
   p.fill(rect(CX - 4, Math.floor(neckTop) - 2, CX + 3, 50), 'shade');
   p.fill(
     and(rect(CX - 4, Math.floor(neckTop), CX + 3, 50), (_x, y) => y % 3 === 0),
@@ -21,7 +23,6 @@ export function body(p: Pix, gear: Gear, light: boolean, neckTop: number): void 
     -1,
   );
   if (gear === 'hoodie') {
-    p.fill(and(chassis, not(hole)), 'fabric');
     p.fill(or(rect(CX - 4, 51, CX - 4, 58), rect(CX + 3, 51, CX + 3, 58)), 'accent');
     return;
   }

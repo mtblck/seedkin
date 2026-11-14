@@ -49,6 +49,8 @@ function figure(seed: string, holiday: Holiday | undefined, _animate: boolean, o
   // Two in three horned robots get the avatar's ball-tipped stalks; a side generator keeps the rest of the draws put.
   const tips = createRng(`botling-portrait:${seed}:horns`)() < 0.67;
   if (s.hasTop) tag(p, 'top', () => drawTop(p, t, b, tips));
+  // A still copy behind the sides fills the row they uncover when they twitch up.
+  if (s.hasSides) drawSides(p, t.sides, b);
   if (s.hasSides) tag(p, 'sides', () => drawSides(p, t.sides, b));
   if (s.hasQuirk) drawQuirk(p, t, b, false);
   body(p, gear, t.hasChestLight, b.bottom);
