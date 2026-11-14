@@ -1,5 +1,5 @@
 import type { Shape } from '../../../core/portrait/canvas.js';
-import type { RoleGrid } from '../../../core/types.js';
+import { Role, type RoleGrid } from '../../../core/types.js';
 
 /** How the 15x15 avatar sits on the 64x64 portrait: `s` portrait cells per avatar cell, offset `ox`, `oy`. */
 export interface Fit {
@@ -79,4 +79,26 @@ export function clumps(g: RoleGrid, keep: (r: number, c: number) => boolean): [n
     }
   }
   return out;
+}
+
+/** Whether a screen cell's clump touches nothing but empty cells and accents: a planet's sparkle. */
+export function isolated(g: RoleGrid, r: number, c: number): boolean {
+  const seen = new Set<string>();
+  const todo: [number, number][] = [[r, c]];
+  while (todo.length > 0) {
+    const [cr, cc] = todo.pop() as [number, number];
+    if (seen.has(`${cr},${cc}`)) continue;
+    seen.add(`${cr},${cc}`);
+    for (const [nr, nc] of [
+      [cr - 1, cc],
+      [cr + 1, cc],
+      [cr, cc - 1],
+      [cr, cc + 1],
+    ] as const) {
+      const v = g[nr]?.[nc];
+      if (v === Role.Body || v === Role.Shade) return false;
+      if (v === Role.Screen) todo.push([nr, nc]);
+    }
+  }
+  return true;
 }

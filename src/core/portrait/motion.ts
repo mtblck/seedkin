@@ -2,8 +2,9 @@ import { createRng } from '../random.js';
 import { clocks, SPECS } from '../render/motion.js';
 import type { Pix } from './canvas.js';
 
-/** How a portrait's part moves: the avatar's four, a tail's wag, wings' flap, or a float. */
-export type Move = 'blink' | 'talk' | 'wobble' | 'twitch' | 'wag' | 'flap' | 'hover';
+/** How a portrait's part moves: the avatar's four, a tail's wag, wings' flap, a float, sparkles' twinkle or pebbles' hop. */
+export type Move = 'blink' | 'talk' | 'wobble' | 'twitch' | 'wag' | 'flap' | 'hover' | 'twinkle' | 'hop';
+type Extra = 'wag' | 'flap' | 'twinkle' | 'hop';
 
 /** One moving part's rule: keyframes, period and start in tenths of a second, and its pivot. */
 export interface Rule {
@@ -12,8 +13,8 @@ export interface Rule {
   offset: number;
   origin: string;
   timing: string;
-  /** How the right-hand piece of a pair moves, as the avatar's do: turned the other way, or a beat late. */
-  right?: 'mirror' | 'lag';
+  /** How the right-hand piece of a pair moves: turned the other way or a beat late, as the avatar's do, or half a loop apart. */
+  right?: 'mirror' | 'lag' | 'half';
 }
 
 /** What moves in one figure, by part name, plus a rule for the whole figure. */
@@ -22,7 +23,7 @@ export interface Motion {
   whole?: Rule;
 }
 
-const EXTRA: Record<'wag' | 'flap', { keyframes: string; period: [number, number] }> = {
+const EXTRA: Record<Extra, { keyframes: string; period: [number, number] }> = {
   wag: {
     keyframes: '0%,50%,100%{transform:none}8%,24%{transform:rotate(-12deg)}16%,32%{transform:rotate(9deg)}',
     period: [24, 36],
@@ -30,6 +31,16 @@ const EXTRA: Record<'wag' | 'flap', { keyframes: string; period: [number, number
   flap: {
     keyframes: '0%,70%,100%{transform:none}78%,92%{transform:scaleX(.82)}85%{transform:scaleX(1.04)}',
     period: [26, 40],
+  },
+  // Sparkles drift up a little and shrink, then settle back; no fading, so nothing flickers.
+  twinkle: {
+    keyframes: '0%,100%{transform:none}50%{transform:translateY(-2px) scale(.6)}',
+    period: [22, 32],
+  },
+  // Pebbles at a boulder's feet hop now and then.
+  hop: {
+    keyframes: '0%,76%,100%{transform:none}84%{transform:translateY(-3px)}92%{transform:translateY(-1px)}',
+    period: [20, 30],
   },
 };
 
@@ -54,7 +65,7 @@ export function motion(styleSeed: string, parts: Record<string, [Move, string]>,
   const clock = clocks(createRng(`${styleSeed}\u0000animate`));
   const own = createRng(`${styleSeed}\u0000portrait-motion`);
   const rule = (m: Move, origin: string): Rule => {
-    if (m === 'wag' || m === 'flap') {
+    if (m === 'wag' || m === 'flap' || m === 'twinkle' || m === 'hop') {
       const [lo, hi] = EXTRA[m].period;
       const period = lo + Math.floor(own() * (hi - lo));
       return {
@@ -63,6 +74,7 @@ export function motion(styleSeed: string, parts: Record<string, [Move, string]>,
         offset: Math.floor(own() * period),
         origin,
         timing: ' ease-in-out',
+        ...(m === 'twinkle' || m === 'hop' ? { right: 'half' as const } : {}),
       };
     }
     const c = clock[m];
@@ -134,6 +146,7 @@ export function css(
     // The avatar's right-hand top piece wobbles mirrored, and its right side piece twitches .2s late.
     if (r.right === 'mirror') right[name] = add(name, { ...r, keyframes: flipKeyframes(r.keyframes) });
     if (r.right === 'lag') right[name] = add(name, { ...r, offset: (r.offset + 2) % r.period });
+    if (r.right === 'half') right[name] = add(name, { ...r, offset: (r.offset + Math.floor(r.period / 2)) % r.period });
   }
   const whole = m.whole ? add('whole', m.whole) : '';
   return { cls, right, whole, style };

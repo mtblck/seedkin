@@ -1,4 +1,5 @@
 import { and, ellipse, not, or, type Pix, rect, type Shape } from '../../../core/portrait/canvas.js';
+import { tag } from '../../../core/portrait/motion.js';
 import type { RoleGrid } from '../../../core/types.js';
 import { Role } from '../../../core/types.js';
 import type { Anchor } from '../grid/draw.js';
@@ -66,35 +67,53 @@ function eye(p: Pix, f: Fit, kind: SpriteTraits['eyes'], c: number, r: number, i
  * `g` and `at` are already mirrored for a mirrored Sprite; the avatar draws its
  * face before mirroring, so a wink, a glance and a smirk turn the other way too.
  */
-export function face(p: Pix, g: RoleGrid, at: Anchor, t: SpriteTraits, f: Fit): void {
+export function face(p: Pix, g: RoleGrid, at: Anchor, t: SpriteTraits, f: Fit, blinks = false): void {
   const { x, dx, y } = at;
   const m = t.isMirrored ? -1 : 1;
   const inner = Math.max(dx - 1, 1);
   const shift = t.eyes === 'glance' ? glance(g, at, m) : 0;
-  for (const sd of [-1, 1]) {
-    const kind = t.eyes === 'wink' ? (sd * m < 0 ? 'dots' : 'sleepy') : t.eyes;
-    const col = kind === 'close' || kind === 'round' || kind === 'sleepy' ? inner : dx;
-    // Round and sleepy eyes are two cells wide, so their middles sit half a cell further out.
-    eye(p, f, kind === 'close' ? 'dots' : kind, x + sd * col + shift, y, sd);
-  }
+  const eyes = (): void => {
+    for (const sd of [-1, 1]) {
+      const kind = t.eyes === 'wink' ? (sd * m < 0 ? 'dots' : 'sleepy') : t.eyes;
+      const col = kind === 'close' || kind === 'round' || kind === 'sleepy' ? inner : dx;
+      // Round and sleepy eyes are two cells wide, so their middles sit half a cell further out.
+      eye(p, f, kind === 'close' ? 'dots' : kind, x + sd * col + shift, y, sd);
+    }
+  };
+  // A still Sprite's eyes blink, so it still looks alive.
+  if (blinks) tag(p, 'eyes', eyes);
+  else eyes();
   mouth(p, t, f, x, y + 3 + (at.mouthDy ?? 0), m);
   if (t.hasBlush)
     for (const sd of [-1, 1]) {
       const [bx, by] = point(f, x + sd * (dx + 2), y + 2);
-      p.fill(ellipse(bx, by, f.s * 0.6, f.s * 0.32), 'blush');
+      // Kept on the body, so a narrow crystal's cheeks don't stick out past its edge.
+      p.over(ellipse(bx, by, f.s * 0.6, f.s * 0.32), 'blush', ['body', 'shade', 'screen']);
     }
 }
 
-function mouth(p: Pix, t: SpriteTraits, f: Fit, c: number, r: number, m: number): void {
+function mouth(q: Pix, t: SpriteTraits, f: Fit, c: number, r: number, m: number): void {
   const [x, y] = point(f, c, r);
   const s = f.s;
+  // A mouth over a bright core is filled in dark, or the glow shows through it.
+  const glow = (shape: Shape): boolean => {
+    for (let yy = 0; yy < q.h; yy++)
+      for (let xx = 0; xx < q.w; xx++) if (shape(xx, yy) && q.get(xx, yy) === 'screen') return true;
+    return false;
+  };
+  const p = { fill: (shape: Shape, mat: string): void => q.fill(shape, glow(shape) ? 'ink' : mat) };
   const smile =
     (w: number, deep: number, tilt = 0): Shape =>
     (cx, cy) => {
       const dx = cx + 0.5 - x;
-      const curve = y - s * 0.3 + deep * (1 - (dx / w) ** 2) + tilt * dx;
-      return Math.abs(dx) <= w && Math.abs(cy + 0.5 - curve) <= 0.9;
+      const top = y - s * 0.3 + tilt * dx;
+      const curve = top + deep * (1 - (dx / w) ** 2);
+      const line = Math.abs(dx) <= w && Math.abs(cy + 0.5 - curve) <= 0.9;
+      // Over the core the whole smile is filled, from its corners down to the curve.
+      return line || (filled && Math.abs(dx) <= w && cy + 0.5 >= top && cy + 0.5 <= curve);
     };
+  let filled = false;
+  filled = glow(smile(s * 1.5, s * 0.9));
   switch (t.mouth) {
     case 'dot':
       p.fill(disc(x, y, 1.3), 'face');

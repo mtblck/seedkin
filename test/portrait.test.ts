@@ -198,6 +198,21 @@ describe('portrait motion matches the avatar', () => {
     expect(frames(sprite.portrait('a', { animate: true }))).toBe(4);
   });
 
+  it('holds a boulder and a crystal still, and moves only their eyes, sparkles and pebbles', () => {
+    for (const seed of ['boulder-9', 'crystal-4'])
+      expect(sprite.portrait(seed, { animate: true }), seed).not.toMatch(/p-f\d/);
+    expect(sprite.portrait('boulder-9', { animate: true })).toMatch(/class="p-pebbles-/);
+    expect(sprite.portrait('crystal-4', { animate: true })).toMatch(/class="p-motes-/);
+  });
+
+  it("keeps a swaying Sprite's sparkles in place between frames, so they twinkle rather than jump", () => {
+    const svg = sprite.portrait('drop-4', { animate: true });
+    const motes = [...svg.matchAll(/<g class="p-motes-[^"]+">(.*?)<\/g>/g)].map((m) => m[1]);
+    // One copy in each of the four frames, all alike.
+    expect(motes.length % 4).toBe(0);
+    expect(new Set(motes).size).toBe(motes.length / 4);
+  });
+
   it('turns rotations the other way for the flipped figure in a duet', () => {
     expect(flipKeyframes('8%{transform:rotate(-12deg)}16%{transform:rotate(9deg) translateX(1px)}')).toBe(
       '8%{transform:rotate(12deg)}16%{transform:rotate(-9deg) translateX(-1px)}',

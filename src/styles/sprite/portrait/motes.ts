@@ -1,11 +1,19 @@
 import { ellipse, or, type Pix, rect, type Shape } from '../../../core/portrait/canvas.js';
 import { Role, type RoleGrid } from '../../../core/types.js';
-import { clumps, type Fit, point } from './trace.js';
+import { clumps, type Fit, isolated, point } from './trace.js';
 
-/** The avatar's loose accent cells (embers, sparkles, drops) as small four-point twinkles, unoutlined. */
-export function motes(p: Pix, g: RoleGrid, f: Fit): void {
+/**
+ * The avatar's loose accent cells (embers, sparkles, drops), and a planet's
+ * loose screen sparkles, as four-point twinkles, unoutlined. `skip` holds
+ * cells drawn as something else, such as a boulder's sprout.
+ */
+export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>): void {
   const loose = (r: number, c: number): boolean => {
-    if (g[r]?.[c] !== Role.Accent) return false;
+    if (skip.has(`${r},${c}`)) return false;
+    const v = g[r]?.[c];
+    // Screen cells only as a sparkle of their own, such as a planet's, not a tree's roots.
+    if (v === Role.Screen) return isolated(g, r, c);
+    if (v !== Role.Accent) return false;
     return ![
       [r - 1, c],
       [r + 1, c],

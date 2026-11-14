@@ -67,7 +67,7 @@ function figureLayers(
     const c = `${id}-f${i}-${a}-${b}-${total}`;
     const show = a === 0 ? '0%{visibility:visible}' : `0%{visibility:hidden}${a}%{visibility:visible}`;
     extra += `@keyframes ${c}{${show}${b === 100 ? '' : `${b}%{visibility:hidden}`}}.${c}{animation:${c} ${total / 1000}s step-end infinite}`;
-    return { p: one(p), colours: f.colours, cls, behind, wrap: [whole, c], dx };
+    return { p: one(p), colours: f.colours, cls, behind, right: sides, wrap: [whole, c], dx };
   });
   // Without motion, only the first frame shows.
   const always = layers.map((l, i) => (i ? `.${l.wrap?.[1]}{visibility:hidden}` : '')).join('');
