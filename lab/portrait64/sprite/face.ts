@@ -133,14 +133,13 @@ const MARK: Record<Mark, [number, number][]> = {
   ],
 };
 
-/** The forehead mark, where the avatar puts it: two rows over the eyes, raised until it fits every frame; `down` lowers it, for a flame's pull. */
+/** The forehead mark, where the avatar puts it: two rows over the eyes, raised until it fits every frame. */
 export function mark(
   p: Pix,
   frames: readonly { g: RoleGrid; at: Anchor }[],
   at: Anchor,
   t: SpriteTraits,
   f: Fit,
-  down = 0,
 ): void {
   const cells = MARK[t.mark];
   if (cells.length === 0) return;
@@ -148,10 +147,7 @@ export function mark(
     frames.every((fr) => cells.every(([mx, my]) => fr.g[fr.at.y - 2 - n + my]?.[fr.at.x + mx] === Role.Body)),
   );
   if (lift === undefined) return;
-  const pts = cells.map(([mx, my]) => {
-    const [x, y] = point(f, at.x + mx, at.y - 2 - lift + my);
-    return [x, y + down] as [number, number];
-  });
+  const pts = cells.map(([mx, my]) => point(f, at.x + mx, at.y - 2 - lift + my));
   // Joined into one smooth mark: each cell a dot, neighbours bridged.
   const parts: Shape[] = pts.map(([px, py]) => disc(px, py, f.s * 0.45));
   for (let i = 0; i < pts.length; i++)

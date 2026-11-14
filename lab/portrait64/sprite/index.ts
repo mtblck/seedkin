@@ -27,6 +27,7 @@ import {
 import { type Figure, pair, single } from '../compose.js';
 import type { Scene } from '../scene.js';
 import { face, mark } from './face.js';
+import { core, streak } from './flame.js';
 import { clumps, type Fit, point, trace } from './trace.js';
 
 const FORMS: Record<string, Form> = { ...FIRE, ...WATER, ...EARTH, ...WIND, ...SPACE };
@@ -79,20 +80,6 @@ export function figure(seed: string, holiday?: Holiday): Figure {
   };
 }
 
-/**
- * A flame's core as a round glow over the avatar's core cells, its bottom
- * cut off by the flame's base; `k` grows it, the same all round, as it pulses.
- */
-function core(g: RoleGrid, k: number): Shape {
-  const cells = g.flatMap((row, r) => row.flatMap((v, c) => (v === Role.Screen ? [[r, c] as const] : [])));
-  const rs = cells.map(([r]) => r);
-  const cs = cells.map(([, c]) => c);
-  const [x0, y0] = point(FIT, Math.min(...cs) - 0.5, Math.min(...rs) - 0.5);
-  const [x1, y1] = point(FIT, Math.max(...cs) + 0.5, Math.max(...rs) + 0.5);
-  const r0 = ((x1 - x0) / 2) * 0.7;
-  return ellipse((x0 + x1) / 2, y1 - r0 * 0.55, r0 + k, r0 + k);
-}
-
 /** One frame of the portrait, traced from the same frame of the avatar. */
 function draw(
   t: ReturnType<typeof traits>,
@@ -106,23 +93,11 @@ function draw(
   const touches = (r: number, c: number): boolean =>
     solid(r - 1, c) || solid(r + 1, c) || solid(r, c - 1) || solid(r, c + 1);
   const onBody = (r: number, c: number): boolean => role(r, c) === Role.Accent && touches(r, c);
-  // A flame's core holds still and its streaks (the side licks and the forehead mark)
-  // draw in toward its middle and back, instead of the avatar's core flickering up.
+  // A flame's core keeps the avatar's still shape and pulses with streaks; see `core`.
   const flame = t.form === 'flame';
   const still = all[0]?.g ?? g;
-  const stillOn = (r: number, c: number): boolean =>
-    still[r]?.[c] === Role.Accent &&
-    [still[r - 1]?.[c], still[r + 1]?.[c], still[r]?.[c - 1], still[r]?.[c + 1]].some(
-      (v) => v === Role.Body || v === Role.Shade || v === Role.Screen,
-    );
-  const pull = flame ? ([0, 2, 3, 2][n] as number) : 0;
-  const [mx] = point(FIT, at.x, at.y);
-  const inward =
-    (s: Shape): Shape =>
-    (x, y) =>
-      s(x + Math.sign(x + 0.5 - mx) * pull, y);
   const p = createPix();
-  const body = trace(g, (r, c) => solid(r, c) || (flame ? stillOn(r, c) : onBody(r, c)), FIT, 0.85);
+  const body = trace(g, (r, c) => solid(r, c) || onBody(r, c), FIT, 0.85);
   p.fill(body, 'shade');
   p.fill(
     and(body, (x, y) => body(x - 2, y) && body(x + 2, y)),
@@ -132,20 +107,15 @@ function draw(
   const inner = (r: number, c: number): boolean =>
     role(r, c) === Role.Shade && solid(r - 1, c) && solid(r + 1, c) && solid(r, c - 1) && solid(r, c + 1);
   p.over(trace(g, inner, FIT, 0.42), 'shade', ['body'], -1);
-  p.over(
-    flame ? core(still, [0, 1, 2, 1][n] as number) : trace(g, (r, c) => role(r, c) === Role.Screen, FIT, 0.45),
-    'screen',
-    ['body', 'shade'],
-  );
-  p.over(flame ? inward(trace(still, stillOn, FIT, 0.42)) : trace(g, onBody, FIT, 0.42), 'accent', [
-    'body',
-    'shade',
-    'screen',
-  ]);
+  const flare = flame ? core(still, n, FIT) : undefined;
+  p.over(flare?.glow ?? trace(g, (r, c) => role(r, c) === Role.Screen, FIT, 0.45), 'screen', ['body', 'shade']);
+  p.over(trace(g, onBody, FIT, 0.42), 'accent', ['body', 'shade', 'screen']);
   face(p, g, at, t, FIT);
-  mark(p, all, at, t, FIT, pull);
+  mark(p, all, at, t, FIT);
   shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
   ink(p, FEATURES);
+  // Streaks go on after the ink, so a thin one stays bright instead of turning to line.
+  if (flare) streak(p, flare.streaks);
   motes(p, g);
   return p;
 }
