@@ -2,9 +2,9 @@ import { createRng } from '../random.js';
 import { clocks, SPECS } from '../render/motion.js';
 import type { Pix } from './canvas.js';
 
-/** How a portrait's part moves: the avatar's four, a tail's wag, wings' flap, a float, sparkles' twinkle or pebbles' hop. */
-export type Move = 'blink' | 'talk' | 'wobble' | 'twitch' | 'wag' | 'flap' | 'hover' | 'twinkle' | 'hop';
-type Extra = 'wag' | 'flap' | 'twinkle' | 'hop';
+/** How a portrait's part moves: the avatar's four, a tail's wag, wings' flap, a float, or a sparkle's twinkle, a rock's drift or an ember's rise. */
+export type Move = 'blink' | 'talk' | 'wobble' | 'twitch' | 'wag' | 'flap' | 'hover' | 'twinkle' | 'drift' | 'rise';
+type Extra = 'wag' | 'flap' | 'twinkle' | 'drift' | 'rise';
 
 /** One moving part's rule: keyframes, period and start in tenths of a second, and its pivot. */
 export interface Rule {
@@ -37,12 +37,20 @@ const EXTRA: Record<Extra, { keyframes: string; period: [number, number] }> = {
     keyframes: '0%,100%{transform:none}50%{transform:translateY(-2px) scale(.6)}',
     period: [22, 32],
   },
-  // Pebbles at a boulder's feet hop now and then.
-  hop: {
-    keyframes: '0%,76%,100%{transform:none}84%{transform:translateY(-3px)}92%{transform:translateY(-1px)}',
-    period: [20, 30],
+  // Rocks float round a boulder's top, bobbing slowly.
+  drift: {
+    keyframes: '0%,100%{transform:none}50%{transform:translate(1px,-3px)}',
+    period: [30, 44],
+  },
+  // Embers rise off a fire Sprite and away, shrinking to nothing as they go.
+  rise: {
+    keyframes: '0%{transform:none}100%{transform:translate(2px,-20px) scale(.25)}',
+    period: [14, 22],
   },
 };
+
+/** Whether a move is one of the portrait's own, timed apart from the avatar's clock. */
+const isExtra = (m: Move): m is Extra => m in EXTRA;
 
 /** Draws `fn` as part `name`: its cells move together, and what they cover is kept to show beneath. */
 export function tag(p: Pix, name: string, fn: () => void): void {
@@ -65,16 +73,17 @@ export function motion(styleSeed: string, parts: Record<string, [Move, string]>,
   const clock = clocks(createRng(`${styleSeed}\u0000animate`));
   const own = createRng(`${styleSeed}\u0000portrait-motion`);
   const rule = (m: Move, origin: string): Rule => {
-    if (m === 'wag' || m === 'flap' || m === 'twinkle' || m === 'hop') {
-      const [lo, hi] = EXTRA[m].period;
+    if (isExtra(m)) {
+      const x = EXTRA[m];
+      const [lo, hi] = x.period;
       const period = lo + Math.floor(own() * (hi - lo));
       return {
-        keyframes: EXTRA[m].keyframes,
+        keyframes: x.keyframes,
         period,
         offset: Math.floor(own() * period),
         origin,
-        timing: ' ease-in-out',
-        ...(m === 'twinkle' || m === 'hop' ? { right: 'half' as const } : {}),
+        timing: m === 'rise' ? ' ease-out' : ' ease-in-out',
+        ...(m === 'twinkle' || m === 'drift' || m === 'rise' ? { right: 'half' as const } : {}),
       };
     }
     const c = clock[m];

@@ -59,6 +59,7 @@ function figure(seed: string, holiday?: Holiday, animate = true): Figure {
     patch: pal.shade,
     tentacle: pal.shade,
     pebble: pal.shade,
+    facet: mix(pal.body, pal.shade, 0.55),
     sprout: pal.accent,
     screen: pal.screen,
     accent: pal.accent,
@@ -72,7 +73,13 @@ function figure(seed: string, holiday?: Holiday, animate = true): Figure {
   const moves = motion(`sprite:${seed}`, {
     eyes: ['blink', 'center'],
     motes: ['twinkle', 'center'],
-    pebbles: ['hop', '50% 100%'],
+    rocks: ['drift', 'center'],
+    sprout: ['wobble', '50% 100%'],
+    sparkles: ['twinkle', 'center'],
+    sparkles2: ['twinkle', 'center'],
+    ember0: ['rise', 'center'],
+    ember1: ['rise', 'center'],
+    ember2: ['rise', 'center'],
   });
   return {
     p: first as Figure['p'],

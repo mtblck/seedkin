@@ -1,11 +1,11 @@
-import { and, ellipse, or, type Pix, rect, type Shape } from '../../../core/portrait/canvas.js';
+import { ellipse, or, type Pix, type Shape } from '../../../core/portrait/canvas.js';
 import { Role, type RoleGrid } from '../../../core/types.js';
 import { type Fit, point } from './trace.js';
 
 const N8 = [-1, 0, 1].flatMap((dr) => [-1, 0, 1].map((dc) => [dr, dc] as const)).filter(([a, b]) => a || b);
 
 /** A rounded stroke from `a` to `b`, `r` wide either side. */
-const capsule =
+export const capsule =
   (a: [number, number], b: [number, number], r: number): Shape =>
   (x, y) => {
     const [qx, qy] = [x + 0.5 - a[0], y + 0.5 - a[1]];
@@ -14,15 +14,6 @@ const capsule =
     const k = len === 0 ? 0 : Math.max(0, Math.min(1, (qx * vx + qy * vy) / len));
     return Math.hypot(qx - k * vx, qy - k * vy) <= r;
   };
-
-/**
- * A crystal's two faces: light on the left with a shine, dark on the right,
- * split where the avatar splits them, rather than its shade cells drawn as patches.
- */
-export function facets(p: Pix, body: Shape, f: Fit): void {
-  p.over((x) => x >= f.ox + 8 * f.s, 'shade', ['body']);
-  p.over(and(body, rect(f.ox + 5 * f.s, f.oy + 3.5 * f.s, f.ox + 5 * f.s + 1, f.oy + 7 * f.s)), 'shine', ['body']);
-}
 
 /** The accent cells of a boulder's sprout: those joined, corners included, to one on top of the body. */
 export function sproutCells(g: RoleGrid): Set<string> {
@@ -71,23 +62,6 @@ export function sprout(p: Pix, g: RoleGrid, f: Fit): void {
     ),
     'sprout',
   );
-}
-
-/** Pebbles at a boulder's feet, two each side, small and smaller. */
-export function pebbles(p: Pix, g: RoleGrid, f: Fit): void {
-  const rows = g.map((row) => row.some((v) => v === Role.Body));
-  const last = rows.lastIndexOf(true);
-  const cols = (g[last] ?? []).flatMap((v, c) => (v === Role.Body || v === Role.Shade ? [c] : []));
-  const ground = f.oy + (last + 2) * f.s - 1;
-  const left = f.ox + Math.min(...cols) * f.s;
-  const right = f.ox + (Math.max(...cols) + 1) * f.s;
-  for (const [x, rx, ry] of [
-    [left - 5, 2.6, 2],
-    [left - 11, 1.8, 1.4],
-    [right + 5, 2.3, 1.8],
-    [right + 10, 1.6, 1.3],
-  ] as const)
-    p.fill(ellipse(x, ground + 2 - ry, rx, ry), 'pebble');
 }
 
 /** A jellyfish's tentacles: the avatar's shade cells under its bell, as thin strands. */

@@ -198,10 +198,10 @@ describe('portrait motion matches the avatar', () => {
     expect(frames(sprite.portrait('a', { animate: true }))).toBe(4);
   });
 
-  it('holds a boulder and a crystal still, and moves only their eyes, sparkles and pebbles', () => {
+  it('holds a boulder and a crystal still, and moves only their eyes, sprouts, sparkles and rocks', () => {
     for (const seed of ['boulder-9', 'crystal-4'])
       expect(sprite.portrait(seed, { animate: true }), seed).not.toMatch(/p-f\d/);
-    expect(sprite.portrait('boulder-9', { animate: true })).toMatch(/class="p-pebbles-/);
+    expect(sprite.portrait('boulder-9', { animate: true })).toMatch(/class="p-rocks-/);
     expect(sprite.portrait('crystal-4', { animate: true })).toMatch(/class="p-motes-/);
   });
 

@@ -3,9 +3,10 @@ import { tag } from '../../../core/portrait/motion.js';
 import { Role, type RoleGrid } from '../../../core/types.js';
 import type { Anchor } from '../grid/draw.js';
 import type { SpriteTraits } from '../types.js';
-import { facets, pebbles, sprout, sproutCells, tentacles } from './extras.js';
+import { sprout, sproutCells, tentacles } from './extras.js';
 import { face, mark } from './face.js';
 import { core, streak } from './flame.js';
+import { embers, faces, ring, ringRow, rocks, sparkles } from './fx.js';
 import { motes } from './motes.js';
 import { type Fit, isolated, trace } from './trace.js';
 
@@ -65,13 +66,14 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
   const flame = t.form === 'flame';
   const p = createPix();
   const body = trace(g, (r, c) => solid(r, c) || onBody(r, c), FIT, 0.85);
+  // A jellyfish's tentacles hang behind its bell.
+  if (tentacle) tentacle.draw(p);
   p.fill(body, 'shade');
   p.fill(
     and(body, (x, y) => body(x - 2, y) && body(x + 2, y)),
     'body',
   );
-  if (tentacle) tentacle.draw(p);
-  if (t.form === 'crystal') facets(p, body, FIT);
+  if (t.form === 'crystal') faces(p, body, FIT);
   else {
     // Shade inside the outline: a flame's tongues, a coal's cracks, a whirlwind's bands.
     const inner = (r: number, c: number): boolean =>
@@ -84,28 +86,47 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
     ]);
   }
   p.over(trace(g, onBody, FIT, 0.42), 'accent', ['body', 'shade', 'screen']);
-  if (t.form === 'boulder') sprout(p, g, FIT);
+  if (t.form === 'planet') ring(p, g, FIT);
+  if (t.form === 'boulder') tag(p, 'sprout', () => sprout(p, g, FIT));
   // The face and mark keep the still frame's shapes, moved by whole cells with the avatar's.
   const moved: Fit = { ...FIT, ox: FIT.ox + (at.x - still.at.x) * FIT.s, oy: FIT.oy + (at.y - still.at.y) * FIT.s };
   const blinks = STILL.includes(t.form) && !['happy', 'sleepy', 'wink'].includes(t.eyes);
   face(p, still.g, still.at, t, moved, blinks);
   mark(p, all, still.at, t, moved);
   if (flame) streak(p, core(still.g, n, FIT).streaks);
-  if (t.form === 'boulder') tag(p, 'pebbles', () => pebbles(p, still.g, FIT));
+  if (t.form === 'boulder') rocks(p, FIT);
   shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
   ink(p, [...FEATURES, ...(UNLINED_SHINES.includes(t.form) ? ['screen', 'accent'] : [])]);
-  // A comet's sparks stream down its tail frame by frame, as the avatar's do; other sparkles stay put and twinkle.
+  // A comet's sparks stream down its tail frame by frame, as the avatar's do; fire Sprites throw off
+  // rising embers; other sparkles stay put and twinkle, and a still crystal gets more of them.
   if (t.form === 'comet') motes(p, g, FIT, new Set());
-  else tag(p, 'motes', () => motes(p, still.g, FIT, t.form === 'boulder' ? sproutCells(still.g) : new Set()));
+  else if (FIRE.includes(t.form))
+    embers(
+      p,
+      trace(still.g, (r, c) => solid(r, c), FIT, 0.85),
+    );
+  else tag(p, 'motes', () => motes(p, still.g, FIT, skipped(t.form, still.g)));
+  if (t.form === 'crystal') sparkles(p, body);
   return p;
 }
 
 /** Drawn as lines already, or too small to ink. */
-const FEATURES = ['face', 'shine', 'blush', 'mote', 'mark', 'patch', 'ink', 'tentacle'];
+const FEATURES = ['face', 'shine', 'blush', 'mote', 'mark', 'patch', 'ink', 'tentacle', 'facet'];
 /** Forms whose dark patches are drawn without an outline. */
 const PATCHED = ['tornado', 'star'];
 /** Forms whose shines are drawn without an outline. */
-const UNLINED_SHINES = ['bubble', 'ember'];
+const UNLINED_SHINES = ['bubble', 'ember', 'drop'];
+/** Fire forms, whose sparks rise off them as embers. */
+const FIRE = ['flame', 'wisp', 'ember'];
+
+/** Accent cells drawn as something other than sparkles: a boulder's sprout, a planet's ring. */
+function skipped(form: string, g: RoleGrid): Set<string> {
+  if (form === 'boulder') return sproutCells(g);
+  const at = form === 'planet' ? ringRow(g) : undefined;
+  const out = new Set<string>();
+  if (at) for (let c = at.c0; c <= at.c1; c++) out.add(`${at.r},${c}`);
+  return out;
+}
 
 /** Whether a cell has a filled neighbour, so it's part of a body rather than a loose grain. */
 function touching(g: RoleGrid, r: number, c: number): boolean {
