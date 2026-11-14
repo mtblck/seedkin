@@ -50,17 +50,25 @@ export function snippet(state, name = 'botling') {
 /** Holiday keys are names; built-in palettes are numbers. */
 const isHoliday = (palette) => palette !== 'auto' && !/^\d+$/.test(palette);
 
+/** A style's own options that change who the character is, so a portrait takes them too. */
+const CHARACTER = ['element', 'skin'];
+
 /**
- * Options for a portrait from the playground state: only motion and a holiday palette
- * carry over, as a portrait's `animate` and `holiday`; the avatar's other options don't apply.
+ * Options for a portrait from the playground state: motion, the palette (a holiday's
+ * as `holiday`) and the character options carry over; shape, look and grid are the avatar's.
  *
- * @param {{ palette: string, motion?: string }} state - The playground's choices
+ * @param {{ palette: string, motion?: string, element?: string, skin?: string }} state - The playground's choices
  * @param {object} [extra] - Options to add, such as size
  * @returns {object} portrait() options
  */
 export function portraitOptions(state, extra = {}) {
   const o = { ...extra };
   if (isHoliday(state.palette)) o.holiday = state.palette;
+  else if (state.palette !== 'auto') o.palette = Number(state.palette);
+  for (const k of CHARACTER) {
+    const v = state[k];
+    if (v !== undefined && v !== 'auto') o[k] = /^\d+$/.test(v) ? Number(v) : v;
+  }
   if (state.motion === 'on') o.animate = true;
   return o;
 }

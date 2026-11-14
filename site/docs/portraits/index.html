@@ -52,6 +52,9 @@ const pair = duet(user.id, friend.id, { holiday: 'halloween' });
 <tr><td><code>size</code></td><td><code>256</code></td><td>Height in pixels; a portrait is square and a duet twice as wide. The picture is 64 cells tall, so multiples of 64 stay crisp.</td></tr>
 <tr><td><code>animate</code></td><td><code>false</code></td><td>Blinks, talks, wobbles, wags and flaps, in step with the seed's avatar. Holds still for anyone who prefers reduced motion.</td></tr>
 <tr><td><code>holiday</code></td><td>none</td><td><code>newYear</code>, <code>valentines</code>, <code>stPatricks</code>, <code>fourthOfJuly</code>, <code>halloween</code> or <code>christmas</code>: the style's holiday palette, and that holiday's scene behind.</td></tr>
+<tr><td><code>palette</code></td><td>the seed's</td><td>One of the style's <code>PALETTES</code>, by index, as the avatar's <code>palette</code>. A holiday wins over it; palette objects aren't taken yet.</td></tr>
+<tr><td><code>element</code></td><td>the seed's</td><td>Sprites only: <code>fire</code>, <code>water</code>, <code>earth</code>, <code>wind</code> or <code>space</code>, as the avatar's <code>element</code>.</td></tr>
+<tr><td><code>skin</code></td><td>the seed's</td><td>Noggins only: one of <code>SKIN_TONES</code>, by index, as the avatar's <code>skin</code>.</td></tr>
 <tr><td><code>title</code></td><td>e.g. <code>'Robot portrait'</code></td><td>Accessible name. <code>null</code> marks the image decorative.</td></tr>
 </tbody>
 </table>

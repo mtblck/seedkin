@@ -87,7 +87,7 @@ const svg = portrait(user.id, { size: 256, animate: true });
 const pair = duet(user.id, friend.id, { holiday: 'halloween' });
 ```
 
-They take `size` (the height in pixels, default 256; multiples of 64 stay crisp), `animate` (blinks and talks in step with the avatar), `holiday` (one of the six holiday keys: its palette and its scene) and `title`. Portraits are a Preview: a seed's portrait may change in a minor release, though its avatar never does. See [Portraits](https://seedkin.dev/docs/portraits/) and [ADR 0018](docs/adr/0018-portraits.md).
+They take `size` (the height in pixels, default 256; multiples of 64 stay crisp), `animate` (blinks and talks in step with the avatar), `holiday` (one of the six holiday keys: its palette and its scene), `title`, and the avatar's own `palette` index, Sprite `element` and Noggin `skin`, so a portrait can match an avatar drawn with them. Portraits are a Preview: a seed's portrait may change in a minor release, though its avatar never does. See [Portraits](https://seedkin.dev/docs/portraits/) and [ADR 0018](docs/adr/0018-portraits.md).
 
 ## Options
 

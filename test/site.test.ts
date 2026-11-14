@@ -13,14 +13,16 @@ const run = (code: string): string =>
   new Function('botling', 'HOLIDAY_PALETTES', `return ${code}`)(botling, HOLIDAY_PALETTES);
 
 describe('playground portrait snippet', () => {
-  it('carries over only motion and a holiday palette', () => {
+  it('carries over motion, the palette and the character, not the shape', () => {
     expect(portraitSnippet({ seed: 'abc', ...auto }, 'snoot')).toBe(
       "import { portrait } from 'seedkin/snoot/portrait';\n\nportrait('abc')",
     );
     const state = { seed: "it's", ...auto, shape: 'diamond', palette: 'halloween', motion: 'on' };
     expect(portraitOptions(state)).toEqual({ holiday: 'halloween', animate: true });
     expect(portraitSnippet(state, 'snoot')).toContain("portrait('it\\'s', { holiday: 'halloween', animate: true })");
-    expect(portraitOptions({ ...auto, palette: '3' })).toEqual({});
+    expect(portraitOptions({ ...auto, palette: '3' })).toEqual({ palette: 3 });
+    expect(portraitOptions({ ...auto, element: 'fire', skin: '2' })).toEqual({ element: 'fire', skin: 2 });
+    expect(portraitOptions({ ...auto, element: 'auto', look: 'flat' })).toEqual({});
   });
 
   it('draws the portrait on screen when pasted', () => {

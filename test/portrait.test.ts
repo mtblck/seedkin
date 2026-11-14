@@ -8,10 +8,12 @@ import { HOLIDAY_PALETTES as botlingHolidays } from '../src/styles/botling/index
 import * as botling from '../src/styles/botling/portrait/index.js';
 import { HOLIDAY_PALETTES as nogginHolidays } from '../src/styles/noggin/index.js';
 import * as noggin from '../src/styles/noggin/portrait/index.js';
+import { traits as nogginTraits } from '../src/styles/noggin/traits.js';
 import { HOLIDAY_PALETTES as snootHolidays } from '../src/styles/snoot/index.js';
 import * as snoot from '../src/styles/snoot/portrait/index.js';
 import { HOLIDAY_PALETTES as spriteHolidays } from '../src/styles/sprite/index.js';
 import * as sprite from '../src/styles/sprite/portrait/index.js';
+import { traits as spriteTraits } from '../src/styles/sprite/traits.js';
 
 const STYLES = { beastie, botling, noggin, snoot, sprite };
 const PALETTES = {
@@ -124,6 +126,29 @@ describe.each(Object.entries(STYLES))('%s portraits', (name, style) => {
     expect(() => style.portrait('a', { animate: 'yes' as unknown as boolean })).toThrow(RangeError);
     expect(() => style.portrait('a', { holiday: 'easter' as Holiday })).toThrow(`${name}: unknown holiday "easter"`);
     expect(() => style.duet('a', 'b', { title: 3 as unknown as string })).toThrow(RangeError);
+    expect(() => style.portrait('a', { palette: 99 })).toThrow(RangeError);
+    expect(() => style.portrait('a', { palette: {} as unknown as number })).toThrow(RangeError);
+  });
+
+  it("wears one of the avatar's palettes when asked, as the avatar does", () => {
+    const own = style.portrait('a');
+    const others = [0, 1].map((palette) => style.portrait('a', { palette }));
+    expect(others.some((svg) => svg !== own)).toBe(true);
+  });
+});
+
+describe("portraits take the avatar's own character options", () => {
+  it("draws a Sprite of the element asked for, and the seed's own by default", () => {
+    const own = spriteTraits('a').element;
+    expect(sprite.portrait('a', { element: own })).toBe(sprite.portrait('a'));
+    expect(sprite.portrait('a', { element: own === 'fire' ? 'water' : 'fire' })).not.toBe(sprite.portrait('a'));
+    expect(() => sprite.portrait('a', { element: 'ice' as 'fire' })).toThrow(RangeError);
+  });
+
+  it('draws a Noggin with the skin asked for', () => {
+    const own = nogginTraits('a').skin;
+    expect(noggin.portrait('a', { skin: own })).toBe(noggin.portrait('a'));
+    expect(noggin.portrait('a', { skin: (own + 2) % 6 })).not.toBe(noggin.portrait('a'));
   });
 });
 

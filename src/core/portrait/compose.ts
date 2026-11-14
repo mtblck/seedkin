@@ -93,8 +93,17 @@ export function pair(a: Figure, b: Figure, s: PortraitSettled): string {
   return toSvg([back, ...l.layers, ...r.layers], s.px, l.style + r.style, l.always + r.always, s.title);
 }
 
-/** How a style draws its figure for a seed, dressed for a holiday or not; `animate` says whether motion will show. */
-export type Draw = (seed: string, holiday?: Holiday, animate?: boolean) => Figure;
+/**
+ * How a style draws its figure for a seed, dressed for a holiday or not;
+ * `animate` says whether motion will show, and `opts` holds the caller's
+ * options, such as a palette, that change who the character is.
+ */
+export type Draw<O extends PortraitOptions = PortraitOptions> = (
+  seed: string,
+  holiday: Holiday | undefined,
+  animate: boolean,
+  opts: O,
+) => Figure;
 
 /**
  * A style's portrait of a seed, with its options checked.
@@ -105,20 +114,26 @@ export type Draw = (seed: string, holiday?: Holiday, animate?: boolean) => Figur
  * @param seed - Any string
  * @param opts - Caller options
  */
-export function portraitOf(style: string, title: string, draw: Draw, seed: string, opts: PortraitOptions): string {
+export function portraitOf<O extends PortraitOptions>(
+  style: string,
+  title: string,
+  draw: Draw<O>,
+  seed: string,
+  opts: O,
+): string {
   const s = settlePortrait(style, opts, title);
-  return single(draw(seed, s.holiday, s.animate), s);
+  return single(draw(seed, s.holiday, s.animate, opts), s);
 }
 
 /** Two of a style's portraits facing each other, with options checked as {@link portraitOf}'s. */
-export function duetOf(
+export function duetOf<O extends PortraitOptions>(
   style: string,
   title: string,
-  draw: Draw,
+  draw: Draw<O>,
   left: string,
   right: string,
-  opts: PortraitOptions,
+  opts: O,
 ): string {
   const s = settlePortrait(style, opts, title);
-  return pair(draw(left, s.holiday, s.animate), draw(right, s.holiday, s.animate), s);
+  return pair(draw(left, s.holiday, s.animate, opts), draw(right, s.holiday, s.animate, opts), s);
 }

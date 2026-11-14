@@ -22,8 +22,14 @@ export function options(
   holidays?: Readonly<Record<string, Palette>>,
 ): BotlingOptions;
 export function snippet(state: PlaygroundState, name?: string): string;
+/** What a portrait reads from the playground: the palette, motion and any of the style's own options. */
+export interface PortraitState {
+  palette: string;
+  motion?: string;
+  [option: string]: string | undefined;
+}
 export function portraitOptions(
-  state: Pick<PlaygroundState, 'palette' | 'motion'>,
+  state: PortraitState,
   extra?: Record<string, unknown>,
-): { animate?: boolean; holiday?: Holiday };
-export function portraitSnippet(state: Pick<PlaygroundState, 'seed' | 'palette' | 'motion'>, name?: string): string;
+): { animate?: boolean; holiday?: Holiday; palette?: number };
+export function portraitSnippet(state: PortraitState & { seed: string }, name?: string): string;

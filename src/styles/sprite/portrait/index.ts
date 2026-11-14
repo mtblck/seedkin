@@ -8,10 +8,11 @@
 import { type Colours, mix } from '../../../core/portrait/canvas.js';
 import { duetOf, type Figure, portraitOf } from '../../../core/portrait/compose.js';
 import { motion } from '../../../core/portrait/motion.js';
-import type { PortraitOptions } from '../../../core/portrait/options.js';
+import { only, type PortraitOptions } from '../../../core/portrait/options.js';
 
 export type { PortraitOptions } from '../../../core/portrait/options.js';
 export type { Holiday } from '../../../core/types.js';
+export type { Element } from '../types.js';
 
 import type { Scene } from '../../../core/portrait/scene.js';
 import { createRng } from '../../../core/random.js';
@@ -24,9 +25,15 @@ import { WATER } from '../grid/water.js';
 import { WIND } from '../grid/wind.js';
 import { HOLIDAY_PALETTES } from '../holidays.js';
 import { PALETTES } from '../palettes.js';
-import { traits } from '../traits.js';
-import type { Palette, SpriteTraits } from '../types.js';
+import { resolveTraits } from '../svg.js';
+import type { Element, Palette, SpriteTraits } from '../types.js';
 import { draw, type Frame, STILL, WATERY } from './draw.js';
+
+/** A Sprite portrait's options: the shared ones, and the avatar's `element`. */
+export interface SpritePortraitOptions extends PortraitOptions {
+  /** Draw the seed's Sprite of this element, as the avatar's `element` option. */
+  element?: Element;
+}
 
 const FORMS: Record<string, Form> = { ...FIRE, ...WATER, ...EARTH, ...WIND, ...SPACE };
 const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain'];
@@ -45,8 +52,8 @@ function frame(t: SpriteTraits, n: number): Frame {
  * redrawn. Everything comes from the avatar's traits and its frames; the
  * scene comes from a second generator salted `sprite-portrait:`.
  */
-function figure(seed: string, holiday?: Holiday, animate = true): Figure {
-  const t = traits(seed);
+function figure(seed: string, holiday: Holiday | undefined, animate: boolean, o: SpritePortraitOptions): Figure {
+  const t = resolveTraits(seed, only(o, ['palette', 'element']));
   const pal = holiday ? HOLIDAY_PALETTES[holiday] : (PALETTES[t.palette] as Palette);
   const rng = createRng(`sprite-portrait:${seed}`);
   const all = [0, 1, 2, 3].map((n) => frame(t, n));
@@ -111,10 +118,10 @@ function figure(seed: string, holiday?: Holiday, animate = true): Figure {
  * change in a minor release.
  *
  * @param seed - Any string, such as a user id
- * @param opts - Size, motion, holiday and title
+ * @param opts - Size, motion, holiday, title, palette and element
  * @returns A standalone SVG document
  */
-export function portrait(seed: string, opts: PortraitOptions = {}): string {
+export function portrait(seed: string, opts: SpritePortraitOptions = {}): string {
   return portraitOf('sprite', 'Sprite portrait', figure, seed, opts);
 }
 
@@ -123,10 +130,10 @@ export function portrait(seed: string, opts: PortraitOptions = {}): string {
  * Preview, as {@link portrait}.
  *
  * @param seed - Any string, such as a user id
- * @param opts - Size, motion, holiday and title
+ * @param opts - Size, motion, holiday, title, palette and element
  * @returns A `data:image/svg+xml` URI
  */
-export function portraitDataUri(seed: string, opts: PortraitOptions = {}): string {
+export function portraitDataUri(seed: string, opts: SpritePortraitOptions = {}): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(portrait(seed, opts))}`;
 }
 
@@ -136,9 +143,9 @@ export function portraitDataUri(seed: string, opts: PortraitOptions = {}): strin
  *
  * @param left - The seed on the left
  * @param right - The seed on the right, turned to face the left
- * @param opts - Size (the height; the width is twice it), motion, holiday and title
+ * @param opts - Size (the height; the width is twice it), motion, holiday, title, palette and element, for both
  * @returns A standalone SVG document
  */
-export function duet(left: string, right: string, opts: PortraitOptions = {}): string {
+export function duet(left: string, right: string, opts: SpritePortraitOptions = {}): string {
   return duetOf('sprite', 'Sprite portraits', figure, left, right, opts);
 }

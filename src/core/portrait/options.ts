@@ -17,6 +17,11 @@ export interface PortraitOptions {
   animate?: boolean;
   /** Dress for a holiday: its palette, and its scene behind. */
   holiday?: Holiday;
+  /**
+   * One of the style's `PALETTES`, by index, as the avatar's `palette`
+   * option; a holiday wins over it. Default: the seed's own.
+   */
+  palette?: number;
   /** Accessible name; `null` marks the image decorative. */
   title?: string | null;
 }
@@ -50,6 +55,9 @@ export function settlePortrait(style: string, opts: PortraitOptions, title: stri
   if (opts.holiday !== undefined && !HOLIDAYS.includes(opts.holiday)) {
     throw new RangeError(`${style}: unknown holiday "${String(opts.holiday)}"`);
   }
+  if (opts.palette !== undefined && typeof opts.palette !== 'number') {
+    throw new RangeError(`${style}: a portrait's palette must be an index into PALETTES`);
+  }
   if (opts.title !== undefined && opts.title !== null && typeof opts.title !== 'string') {
     throw new RangeError(`${style}: title must be a string or null`);
   }
@@ -59,4 +67,16 @@ export function settlePortrait(style: string, opts: PortraitOptions, title: stri
     holiday: opts.holiday,
     title: opts.title === undefined ? title : opts.title,
   };
+}
+
+/**
+ * The options among `keys` that the caller set, to hand on to the style's
+ * `resolveTraits` so the portrait shows the same character as the avatar.
+ *
+ * @param opts - Caller options
+ * @param keys - The options that change who the character is
+ * @returns Just those options
+ */
+export function only<T extends object, K extends keyof T>(opts: T, keys: readonly K[]): Pick<T, K> {
+  return Object.fromEntries(keys.filter((k) => opts[k] !== undefined).map((k) => [k, opts[k]])) as Pick<T, K>;
 }

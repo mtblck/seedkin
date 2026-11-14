@@ -8,7 +8,7 @@
 import { type Colours, createPix, ink, mix, shadeRuns } from '../../../core/portrait/canvas.js';
 import { duetOf, type Figure, portraitOf } from '../../../core/portrait/compose.js';
 import { motion } from '../../../core/portrait/motion.js';
-import type { PortraitOptions } from '../../../core/portrait/options.js';
+import { only, type PortraitOptions } from '../../../core/portrait/options.js';
 
 export type { PortraitOptions } from '../../../core/portrait/options.js';
 export type { Holiday } from '../../../core/types.js';
@@ -18,10 +18,16 @@ import { createRng, pick } from '../../../core/random.js';
 import type { Holiday } from '../../../core/types.js';
 import { HOLIDAY_PALETTES } from '../holidays.js';
 import { paletteFor } from '../palettes.js';
-import { traits } from '../traits.js';
+import { resolveTraits } from '../svg.js';
 import { body, CLOTHES, collar } from './clothes.js';
 import { eyewear, FEATURES, face, headwear, scarfBack } from './face.js';
 import { backHair, frontHair, head } from './hair.js';
+
+/** A Noggin portrait's options: the shared ones, and the avatar's `skin`. */
+export interface NogginPortraitOptions extends PortraitOptions {
+  /** One of `SKIN_TONES`, by index, as the avatar's `skin` option. */
+  skin?: number;
+}
 
 /**
  * Draws a Noggin as a 64x64 shoulders-up portrait. Who they are (skin,
@@ -29,8 +35,8 @@ import { backHair, frontHair, head } from './hair.js';
  * clothes and scene come from a second generator salted
  * `noggin-portrait:`, so no avatar changes.
  */
-function figure(seed: string, holiday?: Holiday): Figure {
-  const t = traits(seed);
+function figure(seed: string, holiday: Holiday | undefined, _animate: boolean, o: NogginPortraitOptions): Figure {
+  const t = resolveTraits(seed, only(o, ['palette', 'skin']));
   // A holiday outfit is worn with the seed's own skin and hair, as on the avatar.
   const base = paletteFor(t.palette, t.skin, t.hairColour);
   const pal = holiday ? { ...base, ...HOLIDAY_PALETTES[holiday] } : base;
@@ -92,10 +98,10 @@ function figure(seed: string, holiday?: Holiday): Figure {
  * change in a minor release.
  *
  * @param seed - Any string, such as a user id
- * @param opts - Size, motion, holiday and title
+ * @param opts - Size, motion, holiday, title, palette and skin
  * @returns A standalone SVG document
  */
-export function portrait(seed: string, opts: PortraitOptions = {}): string {
+export function portrait(seed: string, opts: NogginPortraitOptions = {}): string {
   return portraitOf('noggin', 'Person portrait', figure, seed, opts);
 }
 
@@ -104,10 +110,10 @@ export function portrait(seed: string, opts: PortraitOptions = {}): string {
  * Preview, as {@link portrait}.
  *
  * @param seed - Any string, such as a user id
- * @param opts - Size, motion, holiday and title
+ * @param opts - Size, motion, holiday, title, palette and skin
  * @returns A `data:image/svg+xml` URI
  */
-export function portraitDataUri(seed: string, opts: PortraitOptions = {}): string {
+export function portraitDataUri(seed: string, opts: NogginPortraitOptions = {}): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(portrait(seed, opts))}`;
 }
 
@@ -117,9 +123,9 @@ export function portraitDataUri(seed: string, opts: PortraitOptions = {}): strin
  *
  * @param left - The seed on the left
  * @param right - The seed on the right, turned to face the left
- * @param opts - Size (the height; the width is twice it), motion, holiday and title
+ * @param opts - Size (the height; the width is twice it), motion, holiday, title, palette and skin, for both
  * @returns A standalone SVG document
  */
-export function duet(left: string, right: string, opts: PortraitOptions = {}): string {
+export function duet(left: string, right: string, opts: NogginPortraitOptions = {}): string {
   return duetOf('noggin', 'Person portraits', figure, left, right, opts);
 }

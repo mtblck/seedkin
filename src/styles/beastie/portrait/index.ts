@@ -18,7 +18,7 @@ import {
 } from '../../../core/portrait/canvas.js';
 import { duetOf, type Figure, portraitOf } from '../../../core/portrait/compose.js';
 import { motion, tag } from '../../../core/portrait/motion.js';
-import type { PortraitOptions } from '../../../core/portrait/options.js';
+import { only, type PortraitOptions } from '../../../core/portrait/options.js';
 
 export type { PortraitOptions } from '../../../core/portrait/options.js';
 export type { Holiday } from '../../../core/types.js';
@@ -28,7 +28,7 @@ import { createRng, pick } from '../../../core/random.js';
 import type { Holiday } from '../../../core/types.js';
 import { HOLIDAY_PALETTES } from '../holidays.js';
 import { PALETTES } from '../palettes.js';
-import { traits } from '../traits.js';
+import { resolveTraits } from '../svg.js';
 import type { Palette } from '../types.js';
 import { type Beast, drawBody, feet, layout, limbs, spots, topPiece } from './body.js';
 import { eyes, mouth } from './face.js';
@@ -47,8 +47,8 @@ const FEATURES = ['white', 'pupil', 'shine', 'mouth', 'tongue'];
  * where it stands come from a second generator salted `beastie-portrait:`,
  * so no avatar changes.
  */
-function figure(seed: string, holiday?: Holiday): Figure {
-  const t = traits(seed);
+function figure(seed: string, holiday: Holiday | undefined, _animate: boolean, o: PortraitOptions): Figure {
+  const t = resolveTraits(seed, only(o, ['palette']));
   const pal = holiday ? HOLIDAY_PALETTES[holiday] : (PALETTES[t.palette] as Palette);
   const rng = createRng(`beastie-portrait:${seed}`);
   const gear = pick(rng, GEAR);
@@ -113,7 +113,7 @@ function wear(p: Pix, gear: Gear, b: Beast): void {
  * change in a minor release.
  *
  * @param seed - Any string, such as a user id
- * @param opts - Size, motion, holiday and title
+ * @param opts - Size, motion, holiday, title and palette
  * @returns A standalone SVG document
  */
 export function portrait(seed: string, opts: PortraitOptions = {}): string {
@@ -125,7 +125,7 @@ export function portrait(seed: string, opts: PortraitOptions = {}): string {
  * Preview, as {@link portrait}.
  *
  * @param seed - Any string, such as a user id
- * @param opts - Size, motion, holiday and title
+ * @param opts - Size, motion, holiday, title and palette
  * @returns A `data:image/svg+xml` URI
  */
 export function portraitDataUri(seed: string, opts: PortraitOptions = {}): string {
@@ -138,7 +138,7 @@ export function portraitDataUri(seed: string, opts: PortraitOptions = {}): strin
  *
  * @param left - The seed on the left
  * @param right - The seed on the right, turned to face the left
- * @param opts - Size (the height; the width is twice it), motion, holiday and title
+ * @param opts - Size (the height; the width is twice it), motion, holiday, title and palette, for both
  * @returns A standalone SVG document
  */
 export function duet(left: string, right: string, opts: PortraitOptions = {}): string {
