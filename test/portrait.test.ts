@@ -81,13 +81,34 @@ describe.each(Object.entries(STYLES))('%s portraits', (name, style) => {
     expect(moving).toContain('@media (prefers-reduced-motion:no-preference){');
   });
 
-  it('keeps two portraits on one page from sharing animation classes', () => {
-    const classes = (svg: string): Set<string> =>
-      new Set([...svg.matchAll(/class="([^"]+)"/g)].map((m) => m[1] as string));
-    const a = classes(style.portrait('a', { animate: true }));
-    const b = [...classes(style.portrait('b', { animate: true }))];
-    // Shared names are fine only where both define the same rule; names are hashed from their rules.
-    for (const c of b.filter((x) => a.has(x))) expect(c).toMatch(/-[0-9a-z]+$/);
+  it('keeps two portraits on one page from restyling each other', () => {
+    // Every class a page could share must mean the same rule in both portraits.
+    const rules = (svg: string): Map<string, string> =>
+      new Map(
+        [...svg.matchAll(/@keyframes ([\w-]+)\{((?:[^{}]|\{[^{}]*\})*)\}/g)].map((m) => [
+          m[1] as string,
+          m[2] as string,
+        ]),
+      );
+    const seeds = Array.from({ length: 8 }, (_, i) => `page-${i}`);
+    const seen = new Map<string, string>();
+    for (const x of seeds)
+      for (const [name, body] of rules(style.portrait(x, { animate: true }))) {
+        if (seen.has(name)) expect(body, name).toBe(seen.get(name));
+        seen.set(name, body);
+      }
+    expect(seen.size).toBeGreaterThan(0);
+  });
+
+  it('gives the two figures of a duet classes of their own', () => {
+    const [x, y] = ['a', 'b', 'c', 'd', 'e', 'f'].filter((z) =>
+      style.portrait(z, { animate: true }).includes('<g class'),
+    );
+    const svg = style.duet(x as string, y as string, { animate: true });
+    const classes = [...svg.matchAll(/class="([^"]+)"/g)].map((m) => m[1] as string);
+    expect(classes.some((c) => c.startsWith('pa-'))).toBe(true);
+    expect(classes.some((c) => c.startsWith('pb-'))).toBe(true);
+    expect(classes.every((c) => c.startsWith('pa-') || c.startsWith('pb-'))).toBe(true);
   });
 
   it.each(HOLIDAYS)('dresses for %s with that palette and scene', (holiday) => {
@@ -146,6 +167,25 @@ describe('portrait motion matches the avatar', () => {
         expect(/class="p-mouth-/.test(noggin.portrait(x, { animate: true })), x).toBe(false);
     }
   }, 30_000);
+
+  it('wags the flipped figure of a duet the mirrored way', () => {
+    // A Snoot with a wagging tail, on both sides of a duet.
+    const seed = Array.from({ length: 40 }, (_, i) => `wag-${i}`).find((x) =>
+      /-tail-/.test(snoot.portrait(x, { animate: true })),
+    ) as string;
+    const svg = snoot.duet(seed, seed, { animate: true });
+    const tail = (id: string): string =>
+      new RegExp(`@keyframes ${id}-tail-[\\w-]+\\{([^@]*?)\\}\\.`).exec(svg)?.[1] ?? '';
+    expect(tail('pa')).toContain('rotate(-12deg)');
+    expect(tail('pb')).toContain('rotate(12deg)');
+    expect(tail('pb')).not.toContain('rotate(-12deg)');
+  });
+
+  it('draws a still Sprite once, and an animated one in four frames', () => {
+    const frames = (svg: string): number => new Set(svg.match(/p-f\d/g)).size;
+    expect(frames(sprite.portrait('a'))).toBe(0);
+    expect(frames(sprite.portrait('a', { animate: true }))).toBe(4);
+  });
 
   it('turns rotations the other way for the flipped figure in a duet', () => {
     expect(flipKeyframes('8%{transform:rotate(-12deg)}16%{transform:rotate(9deg) translateX(1px)}')).toBe(
