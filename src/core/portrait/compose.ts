@@ -45,10 +45,16 @@ function figureLayers(
   if (!animate || !f.motion) {
     return { layers: [{ p: one(f.p), colours: f.colours, dx }], style: '', always: '' };
   }
-  const { cls, whole, style } = css(f.motion, id, flip);
+  const { cls, right, whole, style } = css(f.motion, id, flip);
   const behind = f.behind ?? [];
+  // Paired pieces move each on their own base, so two antennae stay on the head.
+  const sides = { cls: right, flipped: flip };
   if (!f.frames)
-    return { layers: [{ p: one(f.p), colours: f.colours, cls, behind, wrap: [whole], dx }], style, always: '' };
+    return {
+      layers: [{ p: one(f.p), colours: f.colours, cls, behind, right: sides, wrap: [whole], dx }],
+      style,
+      always: '',
+    };
   // Sprites: every frame's layer is hidden but for its own share of the loop, as the avatar's are.
   const ps = [f.p, ...f.frames.ps];
   const total = f.frames.beats.reduce((a, b) => a + b, 0);

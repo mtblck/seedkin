@@ -12,6 +12,8 @@ export interface Rule {
   offset: number;
   origin: string;
   timing: string;
+  /** How the right-hand piece of a pair moves, as the avatar's do: turned the other way, or a beat late. */
+  right?: 'mirror' | 'lag';
 }
 
 /** What moves in one figure, by part name, plus a rule for the whole figure. */
@@ -72,7 +74,15 @@ export function motion(styleSeed: string, parts: Record<string, [Move, string]>,
         : m === 'twitch'
           ? '0%,88%,93%,100%{transform:none}90%,96%{transform:translateY(-1px)}'
           : SPECS[c.name].keyframes;
-    return { keyframes, period: c.period, offset: c.offset, origin, timing: SPECS[c.name].timing ?? '' };
+    const right = m === 'wobble' ? 'mirror' : m === 'twitch' ? 'lag' : undefined;
+    return {
+      keyframes,
+      period: c.period,
+      offset: c.offset,
+      origin,
+      timing: SPECS[c.name].timing ?? '',
+      ...(right ? { right } : {}),
+    };
   };
   const out: Motion = { parts: {} };
   for (const [name, [m, origin]] of Object.entries(parts)) out.parts[name] = rule(m, origin);
@@ -100,14 +110,16 @@ export const flipKeyframes = (k: string): string =>
 /**
  * Class names and the `<style>` for a figure's moving parts. Names carry the
  * rule itself, so two figures in one picture, or two portraits on one page,
- * each keep their own clocks.
+ * each keep their own clocks. `right` holds the classes for the right-hand
+ * piece of a pair (left-hand, on a figure drawn flipped).
  */
 export function css(
   m: Motion,
   id: string,
   flipped: boolean,
-): { cls: Record<string, string>; whole: string; style: string } {
+): { cls: Record<string, string>; right: Record<string, string>; whole: string; style: string } {
   const cls: Record<string, string> = {};
+  const right: Record<string, string> = {};
   let style = '';
   const add = (name: string, r: Rule): string => {
     const origin = flipped ? flipOrigin(r.origin) : r.origin;
@@ -117,7 +129,12 @@ export function css(
     style += `@keyframes ${c}{${keyframes}}.${c}{transform-box:fill-box;transform-origin:${origin};animation:${c} ${r.period / 10}s${r.timing} ${-r.offset / 10}s infinite}`;
     return c;
   };
-  for (const [name, r] of Object.entries(m.parts)) cls[name] = add(name, r);
+  for (const [name, r] of Object.entries(m.parts)) {
+    cls[name] = add(name, r);
+    // The avatar's right-hand top piece wobbles mirrored, and its right side piece twitches .2s late.
+    if (r.right === 'mirror') right[name] = add(name, { ...r, keyframes: flipKeyframes(r.keyframes) });
+    if (r.right === 'lag') right[name] = add(name, { ...r, offset: (r.offset + 2) % r.period });
+  }
   const whole = m.whole ? add('whole', m.whole) : '';
-  return { cls, whole, style };
+  return { cls, right, whole, style };
 }

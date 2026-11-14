@@ -9,6 +9,11 @@ export interface Layer {
   cls?: Record<string, string>;
   /** Moving parts drawn beneath the still ones rather than over them. */
   behind?: readonly string[];
+  /**
+   * Classes for the right-hand piece of a paired part (its left-hand one when
+   * the figure is drawn `flipped`); each piece of such a part moves on its own.
+   */
+  right?: { cls: Record<string, string>; flipped: boolean };
   /** Classes around the whole layer, outermost first, each its own group. */
   wrap?: string[];
   /** Cells to shift right. */
@@ -29,6 +34,45 @@ function runs(w: number, y: number, colourAt: (x: number) => string, dx: number)
   return out;
 }
 
+/** Splits a part's cells into its pieces: groups of cells touching, corners included. */
+function pieces(w: number, h: number, isPart: (x: number, y: number) => boolean): boolean[][][] {
+  const seen = Array.from({ length: h }, () => new Array<boolean>(w).fill(false));
+  const out: boolean[][][] = [];
+  for (let y0 = 0; y0 < h; y0++)
+    for (let x0 = 0; x0 < w; x0++) {
+      if (seen[y0]?.[x0] || !isPart(x0, y0)) continue;
+      const mask = Array.from({ length: h }, () => new Array<boolean>(w).fill(false));
+      const stack: [number, number][] = [[x0, y0]];
+      (seen[y0] as boolean[])[x0] = true;
+      while (stack.length > 0) {
+        const [x, y] = stack.pop() as [number, number];
+        (mask[y] as boolean[])[x] = true;
+        for (let dy = -1; dy <= 1; dy++)
+          for (let dx = -1; dx <= 1; dx++) {
+            const [nx, ny] = [x + dx, y + dy];
+            if (nx < 0 || ny < 0 || nx >= w || ny >= h || seen[ny]?.[nx] || !isPart(nx, ny)) continue;
+            (seen[ny] as boolean[])[nx] = true;
+            stack.push([nx, ny]);
+          }
+      }
+      out.push(mask);
+    }
+  return out;
+}
+
+/** Whether a piece's cells sit mostly right of the canvas's middle. */
+function onRight(mask: boolean[][], w: number): boolean {
+  let sum = 0;
+  let n = 0;
+  for (const row of mask)
+    for (let x = 0; x < w; x++)
+      if (row[x]) {
+        sum += x;
+        n++;
+      }
+  return sum / n > (w - 1) / 2;
+}
+
 /**
  * Renders layers (first at the back) to an SVG, merging each row's runs of
  * one colour into a single rect. A figure's moving parts each get a group
@@ -46,7 +90,7 @@ export function toSvg(layers: Layer[], px = 4, style = '', always = '', title: s
   const w = Math.max(...layers.map((l) => l.p.w + (l.dx ?? 0)));
   const h = layers[0]?.p.h ?? 0;
   let body = '';
-  for (const { p, colours, cls = {}, behind = [], wrap = [], dx = 0 } of layers) {
+  for (const { p, colours, cls = {}, behind = [], right, wrap = [], dx = 0 } of layers) {
     const colour = (x: number, y: number): string => {
       const m = p.get(x, y);
       return m === '' ? '' : colourOf(colours[m] ?? '#ff00ff', (p.tone[y] as number[])[x] as number);
@@ -70,11 +114,17 @@ export function toSvg(layers: Layer[], px = 4, style = '', always = '', title: s
     let parts = '';
     let back = '';
     for (const [part, c] of Object.entries(cls)) {
-      let rects = '';
-      for (let y = 0; y < h; y++) rects += runs(p.w, y, (x) => (moving(x, y) === part ? colour(x, y) : ''), dx);
-      if (!rects) continue;
-      if (behind.includes(part)) back += `<g class="${c}">${rects}</g>`;
-      else parts += `<g class="${c}">${rects}</g>`;
+      const isPart = (x: number, y: number): boolean => moving(x, y) === part;
+      const paired = right?.cls[part];
+      for (const mask of paired ? pieces(p.w, h, isPart) : [null]) {
+        const k = mask && paired && onRight(mask, p.w) !== right.flipped ? paired : c;
+        let rects = '';
+        for (let y = 0; y < h; y++)
+          rects += runs(p.w, y, (x) => (isPart(x, y) && (!mask || mask[y]?.[x]) ? colour(x, y) : ''), dx);
+        if (!rects) continue;
+        if (behind.includes(part)) back += `<g class="${k}">${rects}</g>`;
+        else parts += `<g class="${k}">${rects}</g>`;
+      }
     }
     body += wrap.filter(Boolean).reduceRight((inner, c) => `<g class="${c}">${inner}</g>`, back + still + parts);
   }

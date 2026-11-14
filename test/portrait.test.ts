@@ -181,6 +181,17 @@ describe('portrait motion matches the avatar', () => {
     expect(tail('pb')).not.toContain('rotate(-12deg)');
   });
 
+  it('turns each of two antennae on its own base, the right one mirrored as the avatar does', () => {
+    const tops = (svg: string): string[] => [...svg.matchAll(/<g class="(p-top-[^"]+)"/g)].map((m) => m[1] as string);
+    const svg = botling.portrait('jolly-sprocket-65', { animate: true });
+    const [left, right] = tops(svg);
+    expect(tops(svg)).toHaveLength(2);
+    expect(left).not.toBe(right);
+    const body = (c: string): string => new RegExp(`@keyframes ${c}\\{([^@]*?)\\}\\.`).exec(svg)?.[1] ?? '';
+    expect(body(left as string)).toContain('rotate(-18deg)');
+    expect(body(right as string)).toContain('rotate(18deg)');
+  });
+
   it('draws a still Sprite once, and an animated one in four frames', () => {
     const frames = (svg: string): number => new Set(svg.match(/p-f\d/g)).size;
     expect(frames(sprite.portrait('a'))).toBe(0);
