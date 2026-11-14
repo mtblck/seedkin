@@ -5,7 +5,6 @@
  * @packageDocumentation
  */
 
-export type { PortraitOptions } from '../../core/portrait/options.js';
 export { FRAMES } from '../../core/render/frame.js';
 export { LOOKS } from '../../core/render/look.js';
 export { randomSeed } from '../../core/seed.js';
@@ -13,7 +12,6 @@ export { CENTER, GRID_SIZE, grid, SMALL_GRID_SIZE, smallGrid } from './grid/inde
 export { HOLIDAY_PALETTES, type Holiday } from './holidays.js';
 export { HAIR_COLOURS, PALETTES, paletteFor, SKIN_TONES } from './palettes.js';
 export { EYES, EYEWEAR, FACIAL, HAIRS, HEADWEAR, MOUTHS, SHAPES } from './parts.js';
-export { duet, portrait } from './portrait/index.js';
 export { noggin, nogginDataUri, resolveTraits } from './svg.js';
 export { traits } from './traits.js';
 export type {

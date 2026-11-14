@@ -32,21 +32,41 @@
       "types": "./dist/styles/botling/index.d.ts",
       "default": "./dist/styles/botling/index.js"
     },
+    "./botling/portrait": {
+      "types": "./dist/styles/botling/portrait/index.d.ts",
+      "default": "./dist/styles/botling/portrait/index.js"
+    },
     "./snoot": {
       "types": "./dist/styles/snoot/index.d.ts",
       "default": "./dist/styles/snoot/index.js"
+    },
+    "./snoot/portrait": {
+      "types": "./dist/styles/snoot/portrait/index.d.ts",
+      "default": "./dist/styles/snoot/portrait/index.js"
     },
     "./beastie": {
       "types": "./dist/styles/beastie/index.d.ts",
       "default": "./dist/styles/beastie/index.js"
     },
+    "./beastie/portrait": {
+      "types": "./dist/styles/beastie/portrait/index.d.ts",
+      "default": "./dist/styles/beastie/portrait/index.js"
+    },
     "./noggin": {
       "types": "./dist/styles/noggin/index.d.ts",
       "default": "./dist/styles/noggin/index.js"
     },
+    "./noggin/portrait": {
+      "types": "./dist/styles/noggin/portrait/index.d.ts",
+      "default": "./dist/styles/noggin/portrait/index.js"
+    },
     "./sprite": {
       "types": "./dist/styles/sprite/index.d.ts",
       "default": "./dist/styles/sprite/index.js"
+    },
+    "./sprite/portrait": {
+      "types": "./dist/styles/sprite/portrait/index.d.ts",
+      "default": "./dist/styles/sprite/portrait/index.js"
     },
     "./package.json": "./package.json"
   },

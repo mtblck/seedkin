@@ -1,13 +1,26 @@
 import { createHash } from 'node:crypto';
+import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { Holiday } from '../src/core/types.js';
-import * as beastie from '../src/styles/beastie/index.js';
-import * as botling from '../src/styles/botling/index.js';
-import * as noggin from '../src/styles/noggin/index.js';
-import * as snoot from '../src/styles/snoot/index.js';
-import * as sprite from '../src/styles/sprite/index.js';
+import { HOLIDAY_PALETTES as beastieHolidays } from '../src/styles/beastie/index.js';
+import * as beastie from '../src/styles/beastie/portrait/index.js';
+import { HOLIDAY_PALETTES as botlingHolidays } from '../src/styles/botling/index.js';
+import * as botling from '../src/styles/botling/portrait/index.js';
+import { HOLIDAY_PALETTES as nogginHolidays } from '../src/styles/noggin/index.js';
+import * as noggin from '../src/styles/noggin/portrait/index.js';
+import { HOLIDAY_PALETTES as snootHolidays } from '../src/styles/snoot/index.js';
+import * as snoot from '../src/styles/snoot/portrait/index.js';
+import { HOLIDAY_PALETTES as spriteHolidays } from '../src/styles/sprite/index.js';
+import * as sprite from '../src/styles/sprite/portrait/index.js';
 
 const STYLES = { beastie, botling, noggin, snoot, sprite };
+const PALETTES = {
+  beastie: beastieHolidays,
+  botling: botlingHolidays,
+  noggin: nogginHolidays,
+  snoot: snootHolidays,
+  sprite: spriteHolidays,
+};
 const HOLIDAYS: Holiday[] = ['newYear', 'valentines', 'stPatricks', 'fourthOfJuly', 'halloween', 'christmas'];
 const digest = (parts: Iterable<string>): string => {
   const h = createHash('sha256');
@@ -17,6 +30,12 @@ const digest = (parts: Iterable<string>): string => {
 const fills = (svg: string): Set<string> => new Set([...svg.matchAll(/fill="([^"]+)"/g)].map((m) => m[1] as string));
 
 describe.each(Object.entries(STYLES))('%s portraits', (name, style) => {
+  it('has an entry point of its own, so apps drawing only avatars never load it', () => {
+    const exports = JSON.parse(fs.readFileSync('package.json', 'utf8')).exports;
+    expect(exports[`./${name}/portrait`].default).toBe(`./dist/styles/${name}/portrait/index.js`);
+    expect(fs.readFileSync(`src/styles/${name}/index.ts`, 'utf8')).not.toContain('portrait');
+  });
+
   it('draws the same portrait for a seed every time, and another for another seed', () => {
     expect(style.portrait('mtblck')).toBe(style.portrait('mtblck'));
     expect(style.portrait('mtblck')).not.toBe(style.portrait('botcollector'));
@@ -34,6 +53,12 @@ describe.each(Object.entries(STYLES))('%s portraits', (name, style) => {
       expect(svg).not.toMatch(/<script|href|url\(|@import/i);
       expect(svg.match(/http/g)).toHaveLength(1);
     }
+  });
+
+  it('comes as a data: URI too, for an <img src>', () => {
+    expect(
+      decodeURIComponent(style.portraitDataUri('a', { size: 64 }).replace(/^data:image\/svg\+xml;charset=utf-8,/, '')),
+    ).toBe(style.portrait('a', { size: 64 }));
   });
 
   it('is named for screen readers, or hidden when decorative', () => {
@@ -63,7 +88,9 @@ describe.each(Object.entries(STYLES))('%s portraits', (name, style) => {
     const svg = style.portrait('a', { holiday });
     expect(svg).not.toBe(style.portrait('a'));
     const used = fills(svg);
-    const palette = Object.values(style.HOLIDAY_PALETTES[holiday]).filter((v) => v.startsWith('#'));
+    const palette = Object.values(PALETTES[name as keyof typeof PALETTES][holiday] as Record<string, string>).filter(
+      (v) => v.startsWith('#'),
+    );
     expect(palette.some((c) => used.has(c))).toBe(true);
   });
 

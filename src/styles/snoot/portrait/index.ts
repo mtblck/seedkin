@@ -1,3 +1,10 @@
+/**
+ * seedkin/snoot/portrait: the Snoots as 64x64 game-style portraits, the
+ * same Snoot a seed draws as an avatar, drawn fuller in a seeded scene.
+ * A Preview: a seed's portrait may change in a minor release (ADR 0018).
+ *
+ * @packageDocumentation
+ */
 import {
   and,
   type Colours,
@@ -14,6 +21,10 @@ import {
 import { duetOf, type Figure, portraitOf } from '../../../core/portrait/compose.js';
 import { motion, tag } from '../../../core/portrait/motion.js';
 import type { PortraitOptions } from '../../../core/portrait/options.js';
+
+export type { PortraitOptions } from '../../../core/portrait/options.js';
+export type { Holiday } from '../../../core/types.js';
+
 import type { Scene } from '../../../core/portrait/scene.js';
 import { createRng, pick } from '../../../core/random.js';
 import type { Holiday } from '../../../core/types.js';
@@ -25,7 +36,7 @@ import { body, neckY, openShoulders } from './body.js';
 import { extra, face, markings } from './face.js';
 import { dogEars, drawHead, ears, layout } from './head.js';
 
-export type Gear = 'bare' | 'scarf' | 'bandana' | 'collar';
+type Gear = 'bare' | 'scarf' | 'bandana' | 'collar';
 const GEAR: readonly Gear[] = ['bare', 'scarf', 'bandana', 'collar'];
 const FABRICS = ['#c84a4a', '#3a6ab0', '#e0a526', '#4f9a4a', '#7c5cd6', '#2bb3a3', '#e07aa0'];
 const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain'];
@@ -40,7 +51,7 @@ const FEATURES = ['glow', 'shine', 'cheek', 'whisker', 'tongue', 'white'];
  * it wears and where it sits come from a second generator salted
  * `snoot-portrait:`, so no avatar changes.
  */
-export function figure(seed: string, holiday?: Holiday): Figure {
+function figure(seed: string, holiday?: Holiday): Figure {
   const t = traits(seed);
   const pal = holiday ? HOLIDAY_PALETTES[holiday] : (PALETTES[t.palette] as Palette);
   const rng = createRng(`snoot-portrait:${seed}`);
@@ -120,6 +131,18 @@ function wear(p: Pix, gear: Gear, y: number): void {
  */
 export function portrait(seed: string, opts: PortraitOptions = {}): string {
   return portraitOf('snoot', 'Animal portrait', figure, seed, opts);
+}
+
+/**
+ * The seed's portrait as a `data:` URI, for an `<img src>` or CSS `url()`.
+ * Preview, as {@link portrait}.
+ *
+ * @param seed - Any string, such as a user id
+ * @param opts - Size, motion, holiday and title
+ * @returns A `data:image/svg+xml` URI
+ */
+export function portraitDataUri(seed: string, opts: PortraitOptions = {}): string {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(portrait(seed, opts))}`;
 }
 
 /**

@@ -6,17 +6,22 @@
 import { writeFileSync } from 'node:fs';
 import type { Holiday } from '../../src/core/types.js';
 import * as beastie from '../../src/styles/beastie/index.js';
+import * as beastieP from '../../src/styles/beastie/portrait/index.js';
 import * as botling from '../../src/styles/botling/index.js';
+import * as botlingP from '../../src/styles/botling/portrait/index.js';
 import * as noggin from '../../src/styles/noggin/index.js';
+import * as nogginP from '../../src/styles/noggin/portrait/index.js';
 import * as snoot from '../../src/styles/snoot/index.js';
+import * as snootP from '../../src/styles/snoot/portrait/index.js';
 import * as sprite from '../../src/styles/sprite/index.js';
+import * as spriteP from '../../src/styles/sprite/portrait/index.js';
 
 const STYLES = {
-  beastie: { avatar: beastie.beastie, ...beastie },
-  botling: { avatar: botling.botling, ...botling },
-  noggin: { avatar: noggin.noggin, ...noggin },
-  snoot: { avatar: snoot.snoot, ...snoot },
-  sprite: { avatar: sprite.sprite, ...sprite },
+  beastie: { avatar: beastie.beastie, ...beastieP },
+  botling: { avatar: botling.botling, ...botlingP },
+  noggin: { avatar: noggin.noggin, ...nogginP },
+  snoot: { avatar: snoot.snoot, ...snootP },
+  sprite: { avatar: sprite.sprite, ...spriteP },
 };
 const name = (process.argv[2] ?? 'noggin') as keyof typeof STYLES;
 const style = STYLES[name];

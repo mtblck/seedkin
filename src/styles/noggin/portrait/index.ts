@@ -1,7 +1,18 @@
+/**
+ * seedkin/noggin/portrait: the Noggins as 64x64 game-style portraits, the
+ * same Noggin a seed draws as an avatar, drawn fuller in a seeded scene.
+ * A Preview: a seed's portrait may change in a minor release (ADR 0018).
+ *
+ * @packageDocumentation
+ */
 import { type Colours, createPix, ink, mix, shadeRuns } from '../../../core/portrait/canvas.js';
 import { duetOf, type Figure, portraitOf } from '../../../core/portrait/compose.js';
 import { motion } from '../../../core/portrait/motion.js';
 import type { PortraitOptions } from '../../../core/portrait/options.js';
+
+export type { PortraitOptions } from '../../../core/portrait/options.js';
+export type { Holiday } from '../../../core/types.js';
+
 import { HOME_SCENES } from '../../../core/portrait/scene.js';
 import { createRng, pick } from '../../../core/random.js';
 import type { Holiday } from '../../../core/types.js';
@@ -18,7 +29,7 @@ import { backHair, frontHair, head } from './hair.js';
  * clothes and scene come from a second generator salted
  * `noggin-portrait:`, so no avatar changes.
  */
-export function figure(seed: string, holiday?: Holiday): Figure {
+function figure(seed: string, holiday?: Holiday): Figure {
   const t = traits(seed);
   // A holiday outfit is worn with the seed's own skin and hair, as on the avatar.
   const base = paletteFor(t.palette, t.skin, t.hairColour);
@@ -82,6 +93,18 @@ export function figure(seed: string, holiday?: Holiday): Figure {
  */
 export function portrait(seed: string, opts: PortraitOptions = {}): string {
   return portraitOf('noggin', 'Person portrait', figure, seed, opts);
+}
+
+/**
+ * The seed's portrait as a `data:` URI, for an `<img src>` or CSS `url()`.
+ * Preview, as {@link portrait}.
+ *
+ * @param seed - Any string, such as a user id
+ * @param opts - Size, motion, holiday and title
+ * @returns A `data:image/svg+xml` URI
+ */
+export function portraitDataUri(seed: string, opts: PortraitOptions = {}): string {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(portrait(seed, opts))}`;
 }
 
 /**

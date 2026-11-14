@@ -1,3 +1,10 @@
+/**
+ * seedkin/beastie/portrait: the Beasties as 64x64 game-style portraits, the
+ * same Beastie a seed draws as an avatar, drawn fuller in a seeded scene.
+ * A Preview: a seed's portrait may change in a minor release (ADR 0018).
+ *
+ * @packageDocumentation
+ */
 import {
   type Colours,
   createPix,
@@ -12,6 +19,10 @@ import {
 import { duetOf, type Figure, portraitOf } from '../../../core/portrait/compose.js';
 import { motion, tag } from '../../../core/portrait/motion.js';
 import type { PortraitOptions } from '../../../core/portrait/options.js';
+
+export type { PortraitOptions } from '../../../core/portrait/options.js';
+export type { Holiday } from '../../../core/types.js';
+
 import type { Scene } from '../../../core/portrait/scene.js';
 import { createRng, pick } from '../../../core/random.js';
 import type { Holiday } from '../../../core/types.js';
@@ -22,7 +33,7 @@ import type { Palette } from '../types.js';
 import { type Beast, drawBody, feet, layout, limbs, spots, topPiece } from './body.js';
 import { eyes, mouth } from './face.js';
 
-export type Gear = 'bare' | 'bowtie' | 'bandana';
+type Gear = 'bare' | 'bowtie' | 'bandana';
 const GEAR: readonly Gear[] = ['bare', 'bare', 'bowtie', 'bandana'];
 const FABRICS = ['#c84a4a', '#3a6ab0', '#e0a526', '#4f9a4a', '#7c5cd6', '#2bb3a3', '#e07aa0'];
 const SCENES: readonly Scene[] = ['room', 'shelf', 'sky', 'sky', 'plain'];
@@ -36,7 +47,7 @@ const FEATURES = ['white', 'pupil', 'shine', 'mouth', 'tongue'];
  * where it stands come from a second generator salted `beastie-portrait:`,
  * so no avatar changes.
  */
-export function figure(seed: string, holiday?: Holiday): Figure {
+function figure(seed: string, holiday?: Holiday): Figure {
   const t = traits(seed);
   const pal = holiday ? HOLIDAY_PALETTES[holiday] : (PALETTES[t.palette] as Palette);
   const rng = createRng(`beastie-portrait:${seed}`);
@@ -107,6 +118,18 @@ function wear(p: Pix, gear: Gear, b: Beast): void {
  */
 export function portrait(seed: string, opts: PortraitOptions = {}): string {
   return portraitOf('beastie', 'Monster portrait', figure, seed, opts);
+}
+
+/**
+ * The seed's portrait as a `data:` URI, for an `<img src>` or CSS `url()`.
+ * Preview, as {@link portrait}.
+ *
+ * @param seed - Any string, such as a user id
+ * @param opts - Size, motion, holiday and title
+ * @returns A `data:image/svg+xml` URI
+ */
+export function portraitDataUri(seed: string, opts: PortraitOptions = {}): string {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(portrait(seed, opts))}`;
 }
 
 /**
