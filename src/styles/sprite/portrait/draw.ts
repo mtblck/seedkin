@@ -13,15 +13,11 @@ import { LIFT, leaves, shift, sway, trunkRow } from './place.js';
 import { clumps, type Fit, isolated, trace } from './trace.js';
 
 /**
- * Where the 15x15 avatar sits: four portrait pixels to an avatar cell, so a
- * part that moves a whole cell between frames moves four whole pixels and
- * keeps its exact shape, rather than being redrawn a little differently.
+ * Where the 15x15 avatar sits: four portrait pixels to an avatar cell, so a part that
+ * moves a cell between frames moves four whole pixels and keeps its exact shape.
  */
 export const FIT: Fit = { s: 4, ox: 2, oy: 3 };
-/**
- * Forms whose traced body holds still, as Matt asked: only their eyes blink and their sparkles or
- * pebbles move. A bubble squashes and a treetop sways smoothly instead of swapping traced shapes.
- */
+/** Forms whose traced body holds still: a bubble squashes and a treetop sways as one shape instead. */
 export const STILL = ['boulder', 'crystal', 'bubble', 'tree'];
 
 /** One frame of the avatar, with its anchor. */

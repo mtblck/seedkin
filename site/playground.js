@@ -5,6 +5,7 @@
 import { highlight } from '/highlight.js';
 import { pickAcross } from '/pick.js';
 import { portraitPlay } from '/portrait-play.js';
+import { save, sayer } from '/save.js';
 import { options as optionsFor, snippet as snippetFor } from '/snippet.js';
 import { track } from '/track.js';
 
@@ -68,6 +69,7 @@ export function playground(style) {
   const state = { seed: '', ...DEFAULTS };
   const options = (extra) => optionsFor(state, extra, holidays);
   const snippet = () => snippetFor(state, name);
+  const say = sayer($('status'));
   const portrait = portraitPlay(name, () => state);
 
   // Safari throttles history calls (about 100 per 30s), so typing updates the hash in a debounce.
@@ -212,12 +214,6 @@ export function playground(style) {
     say('Options reset to what the seed picks');
   });
 
-  let statusTimer;
-  function say(text) {
-    $('status').textContent = text;
-    clearTimeout(statusTimer);
-    statusTimer = setTimeout(() => ($('status').textContent = ''), 2500);
-  }
   async function copy(text, what) {
     try {
       await navigator.clipboard.writeText(text);
@@ -287,11 +283,6 @@ export function playground(style) {
   $('copy-code').addEventListener('click', () => copy(snippet(), 'Code'));
   $('copy-svg').addEventListener('click', () => copy(drawStyle(state.seed, options()), 'SVG'));
 
-  function save(blob, file) {
-    const url = URL.createObjectURL(blob);
-    Object.assign(document.createElement('a'), { href: url, download: file }).click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
   /**
    * The image as a file. PNG and JPG are the still avatar at 512px; a 256px GIF moves if
    * Motion is on. Their code loads on first use, so the page doesn't carry a GIF encoder

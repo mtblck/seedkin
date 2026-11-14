@@ -57,7 +57,7 @@ function grow(seed, selector = '[data-avatar]:not([data-seed])') {
 }
 
 // The landing page's portraits of the seed. Each style's portrait code loads on first use, and
-// a portrait takes a few to 50ms to draw, so typing redraws them in a debounce, not every key.
+// a portrait takes 5 to 100ms to draw, so typing redraws them in a debounce, not every key.
 const portraits = [...document.querySelectorAll('img[data-portrait]')];
 const PORTRAIT = {};
 let portraitTimer;

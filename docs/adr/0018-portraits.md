@@ -42,6 +42,7 @@ of apps and site pages that only draw avatars. Portraits can keep improving (mor
 major version, and a digest test makes each change deliberate. Apps that need a
 fixed picture should wait for Stable or pin the version. This exception to ADR 0001
 covers portraits only: avatars stay frozen as before. A portrait is about
-60-140 KB of SVG and takes 5-50 ms to draw, against an avatar's few KB, so they
+25-120 KB of SVG and takes 5-45 ms to draw (an animated Sprite up to about 220 KB
+and 100 ms), against an avatar's few KB, so they
 suit a profile page or a game screen rather than a list of hundreds. They are not
 in the image URL API (ADR 0017) yet. Marking them Stable means a new ADR.

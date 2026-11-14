@@ -155,10 +155,12 @@ export const flipOrigin = (o: string): string => o.replace(/^(\d+)%/, (_m, x: st
 
 /** Mirrors keyframes left to right: turns and sideways moves go the other way. */
 export const flipKeyframes = (k: string): string =>
-  k.replace(
-    /(rotate|translateX|skewX)\((-?[\d.]+)(deg|px)\)/g,
-    (_m, f: string, n: string, u: string) => `${f}(${-Number(n)}${u})`,
-  );
+  k
+    .replace(
+      /(rotate|translateX|skewX)\((-?[\d.]+)(deg|px)\)/g,
+      (_m, f: string, n: string, u: string) => `${f}(${-Number(n)}${u})`,
+    )
+    .replace(/translate\((-?[\d.]+)px,/g, (_m, n: string) => `translate(${-Number(n)}px,`);
 
 /**
  * Class names and the `<style>` for a figure's moving parts. Names carry the
