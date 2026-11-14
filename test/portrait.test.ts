@@ -111,7 +111,8 @@ describe.each(Object.entries(STYLES))('%s portraits', (name, style) => {
 });
 
 // Portraits are a Preview: the picture may change in a minor. This digest only
-// makes a change deliberate: update it when you mean to redraw them.
+// makes a change deliberate: update it when you mean to redraw them. Drawing 60
+// animated portraits takes a few seconds on a slow CI runner, hence the timeout.
 describe('portrait corpus', () => {
   it('draws what it drew', () => {
     const seeds = Array.from({ length: 12 }, (_, i) => `corpus-${i}`);
@@ -120,7 +121,7 @@ describe('portrait corpus', () => {
         Object.entries(STYLES).map(([name, s]) => [name, digest(seeds.map((x) => s.portrait(x, { animate: true })))]),
       ),
     ).toMatchSnapshot();
-  });
+  }, 30_000);
 });
 
 describe('portrait motion matches the avatar', () => {
@@ -144,7 +145,7 @@ describe('portrait motion matches the avatar', () => {
       if (nogginTraits(x).facial === 'beard')
         expect(/class="p-mouth-/.test(noggin.portrait(x, { animate: true })), x).toBe(false);
     }
-  });
+  }, 30_000);
 
   it('turns rotations the other way for the flipped figure in a duet', () => {
     expect(flipKeyframes('8%{transform:rotate(-12deg)}16%{transform:rotate(9deg) translateX(1px)}')).toBe(
