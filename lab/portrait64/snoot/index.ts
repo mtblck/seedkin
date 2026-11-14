@@ -82,7 +82,8 @@ export function figure(seed: string, holiday?: Holiday): Figure {
   const moves = motion(`snoot:${seed}`, {
     eyes: ['blink', 'center'],
     ears: ['twitch', 'center'],
-    tail: ['wag', '0% 100%'],
+    // Tails wag from their base: a side tail's lower left, a cat's tip from its lower right.
+    tail: ['wag', t.species === 'cat' ? '100% 100%' : '0% 100%'],
     wings: ['flap', 'center'],
   });
   return { p, colours, rng, bg: pal.bg, scenes: holiday ? [holiday] : SCENES, motion: moves };

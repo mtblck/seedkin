@@ -23,7 +23,7 @@ function tail(p: Pix, t: SnootTraits): void {
   switch (t.species) {
     case 'cat':
       // Curled round the side to lie in front of the paws, as a sitting cat's does.
-      return p.fill(tube([CX + 12, 50], [CX + 19, 56], [CX + 15, 61], 1.6), 'body');
+      return p.fill(tube([CX + 12, 50], [CX + 21, 55], [CX + 16, 60], 1.7), 'body');
     case 'fox':
       p.fill(tube([CX + 8, 58], [CX + 23, 61], [CX + 21, 45], 3.6), 'body');
       return p.fill(tube([CX + 8, 58], [CX + 23, 61], [CX + 21, 45], 3.6, 0.75), 'screen');
@@ -45,7 +45,9 @@ function sitting(p: Pix, t: SnootTraits): void {
   // Haunches are their own material so the ink pass draws the thigh's line where the body overlaps it.
   const limb = 'haunch';
   const bunny = t.species === 'bunny';
-  tag(p, 'tail', () => tail(p, t));
+  // A cat's tail lies round its paws and only the tip flicks; every other tail wags whole.
+  if (t.species === 'cat') tail(p, t);
+  else tag(p, 'tail', () => tail(p, t));
   p.fill(
     pair((s) => ellipse(CX + s * 8.5, 51, 8, 9.5)),
     limb,
@@ -66,7 +68,11 @@ function sitting(p: Pix, t: SnootTraits): void {
     p.fill(rect(Math.round(x), 61, Math.round(x), 61), 'paw', -2);
   }
   forelegs(p);
-  if (t.species === 'cat') p.fill(tube([CX + 15, 61], [CX + 12, 63.5], [CX + 2, 62.6], 1.5), 'body');
+  if (t.species === 'cat') {
+    // From behind the right haunch, across the front of both paws, to a tip curled up on the left.
+    p.fill(tube([CX + 16, 60], [CX + 3, 63], [CX - 11, 60.4], 1.7), 'body');
+    tag(p, 'tail', () => p.fill(tube([CX - 11, 60.4], [CX - 17.5, 60.5], [CX - 16, 54], 1.6), 'body'));
+  }
 }
 
 /**
