@@ -54,7 +54,7 @@ export function figure(seed: string, holiday?: Holiday): Figure {
   const pal = holiday ? HOLIDAY_PALETTES[holiday] : (PALETTES[t.palette] as Palette);
   const rng = createRng(`sprite-portrait:${seed}`);
   const all = [0, 1, 2, 3].map((n) => frame(t, n));
-  const [first, ...rest] = all.map(({ g, at }) => draw(t, g, at, all));
+  const [first, ...rest] = all.map(({ g, at }, n) => draw(t, g, at, all, n));
   const colours: Colours = {
     body: pal.body,
     shade: pal.shade,
@@ -80,14 +80,35 @@ export function figure(seed: string, holiday?: Holiday): Figure {
 }
 
 /** One frame of the portrait, traced from the same frame of the avatar. */
-function draw(t: ReturnType<typeof traits>, g: RoleGrid, at: Anchor, all: { g: RoleGrid; at: Anchor }[]): Pix {
+function draw(
+  t: ReturnType<typeof traits>,
+  g: RoleGrid,
+  at: Anchor,
+  all: { g: RoleGrid; at: Anchor }[],
+  n: number,
+): Pix {
   const role = (r: number, c: number): number => g[r]?.[c] ?? Role.Empty;
   const solid = (r: number, c: number): boolean => [Role.Body, Role.Shade, Role.Screen].includes(role(r, c) as 1);
   const touches = (r: number, c: number): boolean =>
     solid(r - 1, c) || solid(r + 1, c) || solid(r, c - 1) || solid(r, c + 1);
   const onBody = (r: number, c: number): boolean => role(r, c) === Role.Accent && touches(r, c);
+  // A flame's core holds still and its streaks (the side licks and the forehead mark)
+  // draw in toward its middle and back, instead of the avatar's core flickering up.
+  const flame = t.form === 'flame';
+  const still = all[0]?.g ?? g;
+  const stillOn = (r: number, c: number): boolean =>
+    still[r]?.[c] === Role.Accent &&
+    [still[r - 1]?.[c], still[r + 1]?.[c], still[r]?.[c - 1], still[r]?.[c + 1]].some(
+      (v) => v === Role.Body || v === Role.Shade || v === Role.Screen,
+    );
+  const pull = flame ? ([0, 2, 3, 2][n] as number) : 0;
+  const [mx] = point(FIT, at.x, at.y);
+  const inward =
+    (s: Shape): Shape =>
+    (x, y) =>
+      s(x + Math.sign(x + 0.5 - mx) * pull, y);
   const p = createPix();
-  const body = trace(g, (r, c) => solid(r, c) || onBody(r, c), FIT, 0.85);
+  const body = trace(g, (r, c) => solid(r, c) || (flame ? stillOn(r, c) : onBody(r, c)), FIT, 0.85);
   p.fill(body, 'shade');
   p.fill(
     and(body, (x, y) => body(x - 2, y) && body(x + 2, y)),
@@ -98,13 +119,17 @@ function draw(t: ReturnType<typeof traits>, g: RoleGrid, at: Anchor, all: { g: R
     role(r, c) === Role.Shade && solid(r - 1, c) && solid(r + 1, c) && solid(r, c - 1) && solid(r, c + 1);
   p.over(trace(g, inner, FIT, 0.42), 'shade', ['body'], -1);
   p.over(
-    trace(g, (r, c) => role(r, c) === Role.Screen, FIT, 0.45),
+    trace(flame ? still : g, (r, c) => (flame ? still[r]?.[c] : role(r, c)) === Role.Screen, FIT, 0.45),
     'screen',
     ['body', 'shade'],
   );
-  p.over(trace(g, onBody, FIT, 0.42), 'accent', ['body', 'shade', 'screen']);
+  p.over(flame ? inward(trace(still, stillOn, FIT, 0.42)) : trace(g, onBody, FIT, 0.42), 'accent', [
+    'body',
+    'shade',
+    'screen',
+  ]);
   face(p, g, at, t, FIT);
-  mark(p, all, at, t, FIT);
+  mark(p, all, at, t, FIT, pull);
   shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
   ink(p, FEATURES);
   motes(p, g);
