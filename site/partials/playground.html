@@ -49,6 +49,26 @@
       </div>
     </section>
 
+    <!-- The seed as a portrait; site/portrait-play.js fills it and shows it once its code loads. -->
+    <section class="portrait-play wrap" id="portrait" aria-labelledby="portrait-h" hidden>
+      <div class="portrait-art card"><img id="portrait-img" width="256" height="256" alt="" /></div>
+      <div class="portrait-side">
+        <p class="kicker">New</p>
+        <h2 id="portrait-h">As a portrait <span class="badge">Preview</span></h2>
+        <p>The same {{label}}, drawn bigger in a scene of its own. Animate and holiday colours carry over from above; the other options are the avatar's own.</p>
+        <pre class="code" data-nocopy><code id="portrait-code"></code></pre>
+        <div class="actions">
+          <button class="btn" type="button" id="copy-portrait">Copy code</button>
+          <fieldset class="downloads" id="portrait-downloads" aria-label="Download the portrait as">
+            <button class="btn" type="button" data-format="svg">SVG</button>
+            <button class="btn" type="button" data-format="png">PNG</button>
+          </fieldset>
+        </div>
+        <p class="status" id="portrait-status" role="status" aria-live="polite"></p>
+        <p><a href="/docs/portraits/">How portraits work</a></p>
+      </div>
+    </section>
+
     <section class="crowd wrap" aria-labelledby="crowd-h">
       <div class="head">
         <h2 id="crowd-h">Same options, more seeds</h2>

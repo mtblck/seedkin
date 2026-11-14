@@ -811,6 +811,16 @@ ol.features > li::before {
   color: var(--ink);
   border-bottom-color: var(--accent);
 }
+/* Five tabs don't fit a phone at full padding: tighten them, and wrap rather than push the page wide. */
+@media (max-width: 480px) {
+  .style-tabs {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .style-tabs a {
+    padding: 10px 8px;
+  }
+}
 .play {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
@@ -1132,6 +1142,94 @@ ol.features > li::before {
   top: 20px;
   right: 20px;
 }
+/* The playground's portrait card: the portrait, then its code and downloads beside it. */
+.portrait-play {
+  padding: 56px 0 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.portrait-play[hidden] {
+  display: none;
+}
+.portrait-art {
+  padding: 16px;
+}
+.portrait-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  image-rendering: pixelated;
+}
+.portrait-play .portrait-side h2 {
+  font-size: 2rem;
+  margin: 0 0 12px;
+}
+.portrait-side .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.portrait-side .downloads {
+  display: flex;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.portrait-side .status:empty {
+  display: none;
+}
+@media (max-width: 720px) {
+  .portrait-play {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The landing page's portraits of the seed, one per style. */
+.portraits {
+  padding: 40px 0 8px;
+}
+.portraits.wrap h2 {
+  font-size: 2rem;
+  margin: 0 0 12px;
+}
+.portrait-row {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 12px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+ul.portrait-row li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.portrait-row img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: var(--paper-sunk);
+  image-rendering: pixelated;
+}
+@media (max-width: 900px) {
+  .portrait-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .portrait-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* The image URL docs' row of live avatars, one per style. */
 .api-demo {
   display: flex;

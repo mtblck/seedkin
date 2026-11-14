@@ -1,4 +1,5 @@
 // Types for snippet.js, so test/site.test.ts type-checks against the plain-JS site module.
+import type { Holiday } from '../src/core/types.js';
 import type { BotlingOptions, Palette } from '../src/index.js';
 
 export interface PlaygroundState {
@@ -21,3 +22,8 @@ export function options(
   holidays?: Readonly<Record<string, Palette>>,
 ): BotlingOptions;
 export function snippet(state: PlaygroundState, name?: string): string;
+export function portraitOptions(
+  state: Pick<PlaygroundState, 'palette' | 'motion'>,
+  extra?: Record<string, unknown>,
+): { animate?: boolean; holiday?: Holiday };
+export function portraitSnippet(state: Pick<PlaygroundState, 'seed' | 'palette' | 'motion'>, name?: string): string;

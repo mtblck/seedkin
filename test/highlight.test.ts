@@ -67,7 +67,7 @@ describe('highlightPage', () => {
     const files = fs.readdirSync('site', { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.html'));
     for (const file of [...files.map((f) => path.join('site', f)), 'scripts/styles.mjs']) {
       for (const [tag] of fs.readFileSync(file, 'utf8').matchAll(/<pre\b[^>]*>\s*<code\b[^>]*>/g)) {
-        if (tag.includes('id="code"')) continue; // the playground's, highlighted as it's written
+        if (/id="(portrait-)?code"/.test(tag)) continue; // the playground's, highlighted as it's written
         expect(tag, file).toMatch(/class="language-/);
       }
     }

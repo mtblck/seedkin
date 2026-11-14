@@ -31,6 +31,7 @@
   <img data-style="sprite" width="192" height="192" alt="The Sprite for this seed as a portrait" />
 </div>
 <p class="callout">Portraits are a Preview: a seed's portrait may change in a minor release, noted in the changelog, while its avatar never does. Pin the version if you need a portrait to stay put.</p>
+<p>Every style's playground shows the seed's portrait under the avatar, with its code and downloads: try <a href="/styles/botling/">Botling</a>, <a href="/styles/snoot/">Snoot</a>, <a href="/styles/noggin/">Noggin</a>, <a href="/styles/beastie/">Beastie</a> or <a href="/styles/sprite/">Sprite</a>.</p>
 <h2 id="use">Use</h2>
 <p>Each style has a portrait entry point of its own, so an app that only draws avatars never loads the portrait code.</p>
 <pre><code class="language-ts">import { duet, portrait, portraitDataUri } from 'seedkin/botling/portrait';
@@ -56,7 +57,7 @@ const pair = duet(user.id, friend.id, { holiday: 'halloween' });
 </table>
 <p>Bad options throw a <code>RangeError</code>, as the avatars' do.</p>
 <h2 id="size">Size and weight</h2>
-<p>A portrait has far more detail than an avatar: about 60 to 140 KB of SVG, and a few to 50 milliseconds to draw (Sprites, with four frames, are the heaviest). That suits a profile page, a card or a game screen. For a list of hundreds of users, draw avatars.</p>
+<p>A portrait has far more detail than an avatar: about 25 to 120 KB of SVG, and 5 to 45 milliseconds to draw. An animated Sprite is the heaviest, since it draws four frames: up to about 220 KB, and around 100 milliseconds. That suits a profile page, a card or a game screen. For a list of hundreds of users, draw avatars.</p>
 {{pager}}
     </article>
     {{toc}}

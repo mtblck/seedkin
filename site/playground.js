@@ -4,6 +4,7 @@
 // server or analytics: seeds stay in the browser.
 import { highlight } from '/highlight.js';
 import { pickAcross } from '/pick.js';
+import { portraitPlay } from '/portrait-play.js';
 import { options as optionsFor, snippet as snippetFor } from '/snippet.js';
 import { track } from '/track.js';
 
@@ -67,6 +68,7 @@ export function playground(style) {
   const state = { seed: '', ...DEFAULTS };
   const options = (extra) => optionsFor(state, extra, holidays);
   const snippet = () => snippetFor(state, name);
+  const portrait = portraitPlay(name, () => state);
 
   // Safari throttles history calls (about 100 per 30s), so typing updates the hash in a debounce.
   let hashTimer;
@@ -98,6 +100,7 @@ export function playground(style) {
     $('big').setAttribute('aria-label', style.describe(state.seed, options()));
     $('sizes').innerHTML = [96, 48, 32, 24].map((size) => `<li>${avatar(size)}<span>${size}px</span></li>`).join('');
     $('code').innerHTML = highlight(snippet(), 'js');
+    portrait();
     arrange();
     $('animate').setAttribute('aria-pressed', String(state.motion === 'on'));
     for (const input of document.querySelectorAll('.choices input')) input.checked = state[input.name] === input.value;

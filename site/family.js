@@ -1,6 +1,6 @@
-// The family pages: the landing page's seed box, which grows one seed in every style, and
-// the style strips on /styles/. Packaged styles come from the package build (/lib); the
-// lab ones from lab/preview.ts, bundled to /preview.js. Seeds stay in the URL hash.
+// The family pages: the landing page's seed box, which grows one seed in every style and as
+// portraits, and the style strips on /styles/. Packaged styles come from the package build
+// (/lib); the lab ones from lab/preview.ts, bundled to /preview.js. Seeds stay in the URL hash.
 
 import { beastie, beastieDataUri } from '/lib/styles/beastie/index.js';
 import { botling, botlingDataUri, randomSeed } from '/lib/styles/botling/index.js';
@@ -56,6 +56,34 @@ function grow(seed, selector = '[data-avatar]:not([data-seed])') {
   }
 }
 
+// The landing page's portraits of the seed. Each style's portrait code loads on first use, and
+// a portrait takes a few to 50ms to draw, so typing redraws them in a debounce, not every key.
+const portraits = [...document.querySelectorAll('img[data-portrait]')];
+const PORTRAIT = {};
+let portraitTimer;
+function paint(seed) {
+  clearTimeout(portraitTimer);
+  portraitTimer = setTimeout(() => {
+    for (const img of portraits) {
+      const name = img.dataset.portrait;
+      PORTRAIT[name] ??= import(`/lib/styles/${name}/portrait/index.js`);
+      PORTRAIT[name]
+        .then(({ portraitDataUri }) => {
+          img.src = portraitDataUri(seed, { size: 192, animate, title: null });
+          img.alt = `The ${name[0].toUpperCase()}${name.slice(1)} for this seed as a portrait`;
+        })
+        // A module that fails to load leaves no broken image behind.
+        .catch(() => img.closest('li')?.remove());
+    }
+  }, 250);
+}
+
+/** Grows the seed box's row, and its portraits. */
+function update(seed) {
+  grow(seed);
+  if (portraits.length) paint(seed);
+}
+
 // Safari throttles history calls, so typing updates the hash in a debounce.
 let hashTimer;
 function saveHash(seed) {
@@ -76,16 +104,16 @@ const input = $('seed');
 if (input) {
   const readHash = () => {
     input.value = new URLSearchParams(location.hash.slice(1)).get('seed')?.replace(/[\r\n]+/g, '') ?? randomSeed();
-    grow(input.value);
+    update(input.value);
   };
   input.addEventListener('input', () => {
-    grow(input.value);
+    update(input.value);
     saveHash(input.value);
   });
   $('seed-form').addEventListener('submit', (e) => e.preventDefault());
   $('random').addEventListener('click', () => {
     input.value = randomSeed();
-    grow(input.value);
+    update(input.value);
     saveHash(input.value);
   });
   $('sticker')?.addEventListener('click', (e) => {
@@ -96,7 +124,7 @@ if (input) {
   $('animate')?.addEventListener('click', (e) => {
     animate = !animate;
     e.currentTarget.setAttribute('aria-pressed', String(animate));
-    grow(input.value);
+    update(input.value);
   });
   window.addEventListener('hashchange', readHash);
   readHash();

@@ -35,8 +35,8 @@ const logo = botling(LOGO_SEED, { ...LOGO, size: 32 });
 const icon = botling(LOGO_SEED, { ...LOGO, size: 64, detail: 'small' });
 
 // Preload every module of the package, so the browser fetches them together rather than
-// finding each import only after the one before it has loaded. Portraits are left out: only
-// their own docs page loads them.
+// finding each import only after the one before it has loaded. Portraits are left out: they're
+// heavy, so the pages that show them load them when they draw.
 const preloads = fs
   .readdirSync(dist, { recursive: true })
   .filter((f) => f.endsWith('.js') && !f.split(path.sep).includes('portrait'))

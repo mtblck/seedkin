@@ -49,3 +49,33 @@ export function snippet(state, name = 'botling') {
 
 /** Holiday keys are names; built-in palettes are numbers. */
 const isHoliday = (palette) => palette !== 'auto' && !/^\d+$/.test(palette);
+
+/**
+ * Options for a portrait from the playground state: only motion and a holiday palette
+ * carry over, as a portrait's `animate` and `holiday`; the avatar's other options don't apply.
+ *
+ * @param {{ palette: string, motion?: string }} state - The playground's choices
+ * @param {object} [extra] - Options to add, such as size
+ * @returns {object} portrait() options
+ */
+export function portraitOptions(state, extra = {}) {
+  const o = { ...extra };
+  if (isHoliday(state.palette)) o.holiday = state.palette;
+  if (state.motion === 'on') o.animate = true;
+  return o;
+}
+
+/**
+ * The call a developer would write for the portrait on screen.
+ *
+ * @param {{ seed: string, palette: string, motion?: string }} state - The playground's choices
+ * @param {string} [name] - The style's name, such as snoot
+ * @returns {string} An import and a portrait(...) call, in single-quoted JavaScript
+ */
+export function portraitSnippet(state, name = 'botling') {
+  const args = Object.entries(portraitOptions(state)).map(
+    ([k, v]) => `${k}: ${JSON.stringify(v).replaceAll('"', "'")}`,
+  );
+  const seed = JSON.stringify(state.seed).replaceAll("'", "\\'").replace(/^"|"$/g, "'");
+  return `import { portrait } from 'seedkin/${name}/portrait';\n\nportrait(${seed}${args.length ? `, { ${args.join(', ')} }` : ''})`;
+}
