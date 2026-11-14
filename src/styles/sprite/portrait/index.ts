@@ -36,6 +36,8 @@ export interface SpritePortraitOptions extends PortraitOptions {
 }
 
 const FORMS: Record<string, Form> = { ...FIRE, ...WATER, ...EARTH, ...WIND, ...SPACE };
+/** Forms that move as a whole. */
+const WHOLE: Record<string, 'squash' | 'hover'> = { bubble: 'squash', planet: 'hover' };
 const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain'];
 
 /** Frame `n` of the seed's form, before its face, flipped when the Sprite is mirrored. */
@@ -99,7 +101,8 @@ function figure(seed: string, holiday: Holiday | undefined, animate: boolean, o:
       crown: ['sway', '50% 100%'],
       leaves: ['fall', 'center'],
     },
-    t.form === 'bubble' && animate ? 'squash' : undefined,
+    // A bubble squashes; a planet hovers, as it has no other move of its own.
+    animate ? WHOLE[t.form] : undefined,
   );
   return {
     p: first as Figure['p'],

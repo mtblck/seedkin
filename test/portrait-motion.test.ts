@@ -77,6 +77,13 @@ describe('portrait motion matches the avatar', () => {
     expect(tree).toMatch(/class="p-leaves-/);
   });
 
+  it('hovers a planet gently, as it has no other move of its own', () => {
+    expect(sprite.portrait('p14', { animate: true })).toMatch(
+      /@keyframes p-whole-[\w-]+\{50%\{transform:translateY\(-1px\)\}\}/,
+    );
+    expect(sprite.portrait('p14')).not.toMatch(/p-whole-/);
+  });
+
   it('draws the sparkles round a drop or a bubble as little bubbles, with see-through middles', () => {
     for (const seed of ['drop-4', 'bubble-5']) expect(sprite.portrait(seed), seed).toMatch(/fill="#[0-9a-f]{6}55"/);
     expect(sprite.portrait('crystal-4')).not.toMatch(/fill="#[0-9a-f]{6}55"/);
