@@ -79,13 +79,19 @@ export function figure(seed: string, holiday?: Holiday): Figure {
   };
 }
 
-/** A shape grown by `k` cells up and to both sides, but not down: a flame's core pulsing outward. */
-const swell =
-  (s: Shape, k: number): Shape =>
-  (x, y) => {
-    for (let d = 0; d <= k; d++) if (s(x, y + d) || s(x - d, y) || s(x + d, y)) return true;
-    return false;
-  };
+/**
+ * A flame's core as a round glow over the avatar's core cells, its bottom
+ * cut off by the flame's base; `k` grows it, the same all round, as it pulses.
+ */
+function core(g: RoleGrid, k: number): Shape {
+  const cells = g.flatMap((row, r) => row.flatMap((v, c) => (v === Role.Screen ? [[r, c] as const] : [])));
+  const rs = cells.map(([r]) => r);
+  const cs = cells.map(([, c]) => c);
+  const [x0, y0] = point(FIT, Math.min(...cs) - 0.5, Math.min(...rs) - 0.5);
+  const [x1, y1] = point(FIT, Math.max(...cs) + 0.5, Math.max(...rs) + 0.5);
+  const r0 = ((x1 - x0) / 2) * 0.7;
+  return ellipse((x0 + x1) / 2, y1 - r0 * 0.55, r0 + k, r0 + k);
+}
 
 /** One frame of the portrait, traced from the same frame of the avatar. */
 function draw(
@@ -127,12 +133,7 @@ function draw(
     role(r, c) === Role.Shade && solid(r - 1, c) && solid(r + 1, c) && solid(r, c - 1) && solid(r, c + 1);
   p.over(trace(g, inner, FIT, 0.42), 'shade', ['body'], -1);
   p.over(
-    flame
-      ? swell(
-          trace(still, (r, c) => still[r]?.[c] === Role.Screen, FIT, 0.45),
-          [0, 1, 2, 1][n] as number,
-        )
-      : trace(g, (r, c) => role(r, c) === Role.Screen, FIT, 0.45),
+    flame ? core(still, [0, 1, 2, 1][n] as number) : trace(g, (r, c) => role(r, c) === Role.Screen, FIT, 0.45),
     'screen',
     ['body', 'shade'],
   );
