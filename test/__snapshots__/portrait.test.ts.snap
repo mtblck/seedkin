@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`portrait corpus > draws what it drew 1`] = `
+{
+  "beastie": "e4c194f111fbb7b7",
+  "botling": "9f8a581ff9d07a30",
+  "noggin": "ce017a077b062b4f",
+  "snoot": "478ff6622687351c",
+  "sprite": "cb6adf8cdb89a19d",
+}
+`;

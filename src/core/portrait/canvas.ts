@@ -30,6 +30,7 @@ export interface Pix {
   over: (shape: Shape, m: string, when: readonly string[], tone?: number) => void;
 }
 
+/** A blank canvas, 64x64 unless asked otherwise. */
 export function createPix(w = 64, h = 64): Pix {
   const grid = <T>(v: T): T[][] => Array.from({ length: h }, () => new Array<T>(w).fill(v));
   let layer = 0;
@@ -81,14 +82,17 @@ export const rect =
   (x, y) =>
     x >= x0 && x <= x1 && y >= y0 && y <= y1;
 
+/** Cells inside every one of the shapes. */
 export const and =
   (...s: Shape[]): Shape =>
   (x, y) =>
     s.every((f) => f(x, y));
+/** Cells inside any of the shapes. */
 export const or =
   (...s: Shape[]): Shape =>
   (x, y) =>
     s.some((f) => f(x, y));
+/** Cells outside the shape. */
 export const not =
   (s: Shape): Shape =>
   (x, y) =>

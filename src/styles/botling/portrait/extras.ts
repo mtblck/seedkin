@@ -19,11 +19,13 @@ export function drawTop(p: Pix, t: Traits, b: Bot, hornTips = false): void {
   switch (t.top) {
     case 'antenna':
       p.fill(stalk(b.cx, top + 1, 9), 'shade');
-      return ball(b.cx, top - 9.5);
+      ball(b.cx, top - 9.5);
+      return;
     case 'twin':
       p.fill(or(stalk(b.cx - 5, top + 1, 8, 0.3), stalk(b.cx + 5, top + 1, 8, -0.3)), 'shade');
       ball(b.cx - 7.6, top - 8);
-      return ball(b.cx + 7.6, top - 8);
+      ball(b.cx + 7.6, top - 8);
+      return;
     case 'horns':
       if (hornTips) {
         // Like the avatar: stalks leaning out from the head's top corners, each with a ball.
@@ -33,22 +35,26 @@ export function drawTop(p: Pix, t: Traits, b: Bot, hornTips = false): void {
             y >= top - 6 && y <= top + 1 && Math.abs(x + 0.5 - (b.cx + sd * (b.hx - 3 + (top + 1 - y) * 0.8))) < 1;
         p.fill(or(lean(-1), lean(1)), 'body');
         ball(b.cx - b.hx - 2.6, top - 6.5);
-        return ball(b.cx + b.hx + 2.6, top - 6.5);
+        ball(b.cx + b.hx + 2.6, top - 6.5);
+        return;
       }
-      return p.fill((x, y) => {
+      p.fill((x, y) => {
         if (y < top - 7 || y > top + 1) return false;
         const off = b.hx - 4 + (top - y) * 0.5;
         const half = (y - (top - 7)) * 0.35 + 0.4;
         return Math.abs(Math.abs(x + 0.5 - b.cx) - off) <= half;
       }, 'shade');
+      return;
     case 'fin':
-      return p.fill(
+      p.fill(
         and(ellipse(b.cx, top + 1, 2.6, 9), (_x, y) => y < top + 2),
         'accent',
       );
+      return;
     case 'bolt':
       p.fill(rect(b.cx - 1, top - 3, b.cx, top + 1), 'shade');
-      return p.fill(rounded(b.cx, top - 4, 3.6, 2, 1), 'accent');
+      p.fill(rounded(b.cx, top - 4, 3.6, 2, 1), 'accent');
+      return;
     case 'dish':
       p.fill(rect(b.cx - 1, top - 6, b.cx, top + 1), 'shade');
       p.fill(
@@ -56,7 +62,8 @@ export function drawTop(p: Pix, t: Traits, b: Bot, hornTips = false): void {
         'accent',
       );
       p.fill(rect(b.cx - 1, top - 11, b.cx, top - 7), 'shade');
-      return ball(b.cx, top - 12);
+      ball(b.cx, top - 12);
+      return;
     default:
       return;
   }
@@ -119,10 +126,12 @@ export function drawAccessory(p: Pix, t: Traits, b: Bot): void {
         ),
         'accent',
       );
-      return p.fill(or(rounded(b.cx - b.hx - 1.5, b.cy, 3, 5, 2), rounded(b.cx + b.hx + 1.5, b.cy, 3, 5, 2)), 'accent');
+      p.fill(or(rounded(b.cx - b.hx - 1.5, b.cy, 3, 5, 2), rounded(b.cx + b.hx + 1.5, b.cy, 3, 5, 2)), 'accent');
+      return;
     case 'visor':
       p.fill(rounded(b.cx, b.eyeY, b.hx + 1, 3.2, 1.5), 'visor');
-      return p.fill(rect(b.cx - b.ex - 2, b.eyeY, b.cx + b.ex + 1, b.eyeY), 'glow');
+      p.fill(rect(b.cx - b.ex - 2, b.eyeY, b.cx + b.ex + 1, b.eyeY), 'glow');
+      return;
     case 'bow': {
       const x = b.cx + b.hx - 5;
       const lobe =
@@ -132,14 +141,16 @@ export function drawAccessory(p: Pix, t: Traits, b: Bot): void {
           return dx > 0 && dx < 5.5 && Math.abs(cy + 0.5 - top) <= dx * 0.6 + 0.5;
         };
       p.fill(or(lobe(1), lobe(-1)), 'accent');
-      return p.fill(ellipse(x, top, 1.4, 1.4), 'accent', -1);
+      p.fill(ellipse(x, top, 1.4, 1.4), 'accent', -1);
+      return;
     }
     case 'cap':
       p.fill(
         and(ellipse(b.cx, top + 6, b.hx + 1.5, 9), (_x, y) => y <= top + 5),
         'accent',
       );
-      return p.fill(rect(b.cx, top + 4, b.cx + b.hx + 6, top + 5), 'accent', -1);
+      p.fill(rect(b.cx, top + 4, b.cx + b.hx + 6, top + 5), 'accent', -1);
+      return;
     default:
       return;
   }

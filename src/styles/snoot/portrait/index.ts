@@ -9,7 +9,6 @@ import {
   or,
   type Pix,
   rect,
-  rounded,
   shadeRuns,
 } from '../../../core/portrait/canvas.js';
 import { duetOf, type Figure, portraitOf } from '../../../core/portrait/compose.js';

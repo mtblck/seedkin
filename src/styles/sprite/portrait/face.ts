@@ -88,20 +88,26 @@ function mouth(p: Pix, t: SpriteTraits, f: Fit, c: number, r: number): void {
     };
   switch (t.mouth) {
     case 'dot':
-      return p.fill(disc(x, y, 1.3), 'face');
+      p.fill(disc(x, y, 1.3), 'face');
+      return;
     case 'smile':
-      return p.fill(smile(s * 1.2, s * 0.9), 'face');
+      p.fill(smile(s * 1.2, s * 0.9), 'face');
+      return;
     case 'grin':
-      return p.fill(smile(s * 1.5, s * 0.35), 'face');
+      p.fill(smile(s * 1.5, s * 0.35), 'face');
+      return;
     case 'open':
-      return p.fill(
+      p.fill(
         and(ellipse(x, y, s * 1.3, s * 1.2), (_x, cy) => cy + 0.5 >= y - s * 0.2),
         'face',
       );
+      return;
     case 'smirk':
-      return p.fill(smile(s * 1.2, s * 0.4, -0.3), 'face');
+      p.fill(smile(s * 1.2, s * 0.4, -0.3), 'face');
+      return;
     case 'oh':
-      return p.fill(ellipse(x, y + s * 0.5, s * 0.55, s * 0.85), 'face');
+      p.fill(ellipse(x, y + s * 0.5, s * 0.55, s * 0.85), 'face');
+      return;
     default:
       return;
   }

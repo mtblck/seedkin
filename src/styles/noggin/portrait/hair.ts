@@ -56,38 +56,46 @@ export function backHair(p: Pix, style: Hair, h: Head): void {
     case 'short':
     case 'spiky':
     case 'sidepart':
-      return hair(cap);
+      hair(cap);
+      return;
     case 'bun':
       hair(ellipse(h.cx, 9, 5.5, 5));
-      return hair(cap);
+      hair(cap);
+      return;
     case 'mohawk':
-      return hair(and(ellipse(h.cx, 20, 3.6, 17), above(22)));
+      hair(and(ellipse(h.cx, 20, 3.6, 17), above(22)));
+      return;
     case 'bob':
-      return hair(and(ellipse(h.cx, h.cy, h.rx + 3.2, h.ry + 2), above(44)));
+      hair(and(ellipse(h.cx, h.cy, h.rx + 3.2, h.ry + 2), above(44)));
+      return;
     case 'long':
-      return hair(
+      hair(
         or(
           and(ellipse(h.cx, h.cy, h.rx + 3.2, h.ry + 2), above(h.cy)),
           and(rect(h.cx - h.rx - 3.5, h.cy - 1, h.cx + h.rx + 2.5, 60), not(ellipse(h.cx, 63, 8, 6))),
         ),
       );
+      return;
     case 'curly':
-      return hair(or(cap, curls(h, 4, 1.5, Math.PI * 0.85, Math.PI * 2.15)));
+      hair(or(cap, curls(h, 4, 1.5, Math.PI * 0.85, Math.PI * 2.15)));
+      return;
     case 'afro':
-      return hair((x, y) => {
+      hair((x, y) => {
         const dx = x + 0.5 - h.cx;
         const dy = y + 0.5 - (h.cy - 3);
         const a = Math.atan2(dy, dx);
         return Math.hypot(dx / (h.rx + 9), dy / (h.ry + 6)) <= 1 + 0.06 * Math.sin(a * 9);
       });
+      return;
     case 'locs':
       hair(cap);
-      return hair(
+      hair(
         and(
           (x) => Math.abs(x + 0.5 - h.cx) > h.rx - 3 && (x + 1) % 3 !== 0,
           rect(h.cx - h.rx - 4, h.cy - 4, h.cx + h.rx + 3, 56),
         ),
       );
+      return;
     default:
       return;
   }
@@ -106,16 +114,18 @@ export function frontHair(p: Pix, style: Hair, h: Head): void {
   const top = h.cy - h.ry;
   switch (style) {
     case 'buzz':
-      return onHead(or(above(top + 7), and(above(h.cy - 1), outer(h, 1.5))), 'buzz');
+      onHead(or(above(top + 7), and(above(h.cy - 1), outer(h, 1.5))), 'buzz');
+      return;
     case 'short':
     case 'bun':
-      return onHead(
+      onHead(
         or(
           above(top + 6),
           and(above(top + 8), (x) => x % 6 < 3),
           and(above(h.cy), outer(h, 2)),
         ),
       );
+      return;
     case 'spiky': {
       onHead(
         or(
@@ -129,12 +139,12 @@ export function frontHair(p: Pix, style: Hair, h: Head): void {
         const ay = 5 + Math.abs(i) * 2;
         return (x, y) => y >= ay && y <= top + 4 && Math.abs(x + 0.5 - ax) <= (y - ay) * 0.55 + 0.5;
       });
-      return p.fill(or(...spikes), 'hair');
+      p.fill(or(...spikes), 'hair');
+      return;
     }
     case 'sidepart':
-      return onHead(
-        or(above(top + 5), (x, y) => y < top + 11 - (x - (h.cx - h.rx)) * 0.45, and(above(h.cy), outer(h, 2))),
-      );
+      onHead(or(above(top + 5), (x, y) => y < top + 11 - (x - (h.cx - h.rx)) * 0.45, and(above(h.cy), outer(h, 2))));
+      return;
     case 'mohawk':
       onHead(
         and(
@@ -143,20 +153,25 @@ export function frontHair(p: Pix, style: Hair, h: Head): void {
         ),
         'buzz',
       );
-      return onHead(and(above(top + 7), (x) => Math.abs(x + 0.5 - h.cx) < 4));
+      onHead(and(above(top + 7), (x) => Math.abs(x + 0.5 - h.cx) < 4));
+      return;
     case 'bob':
-      return onHead(or(above(top + 9), outer(h, 2.5)));
+      onHead(or(above(top + 9), outer(h, 2.5)));
+      return;
     case 'long':
       onHead(or((x, y) => y < top + 3 + Math.abs(x + 0.5 - h.cx) * 0.7, outer(h, 2.5)));
-      return p.fill(
+      p.fill(
         sym(and(rect(h.cx - h.rx - 4, 45, h.cx - h.rx + 1, 58), not(ellipse(h.cx - h.rx + 1, 59, 2.5, 2.5)))),
         'hair',
       );
+      return;
     case 'curly':
       onHead(above(top + 5));
-      return p.fill(and(curls(h, 2.6, -3, Math.PI * 1.05, Math.PI * 1.95), above(top + 9)), 'hair');
+      p.fill(and(curls(h, 2.6, -3, Math.PI * 1.05, Math.PI * 1.95), above(top + 9)), 'hair');
+      return;
     case 'afro':
-      return onHead((x, y) => y < top + 5 + ((x + 0.5 - h.cx) / h.rx) ** 2 * 5);
+      onHead((x, y) => y < top + 5 + ((x + 0.5 - h.cx) / h.rx) ** 2 * 5);
+      return;
     case 'locs':
       onHead(
         or(
@@ -164,7 +179,8 @@ export function frontHair(p: Pix, style: Hair, h: Head): void {
           and((x, y) => (x + 1) % 3 !== 0 && y < top + 9 + ((x * 7) % 3), above(top + 12)),
         ),
       );
-      return p.fill(sym(and((x) => (x + 1) % 3 !== 0, rect(h.cx - h.rx - 4, 45, h.cx - h.rx + 1, 57))), 'hair');
+      p.fill(sym(and((x) => (x + 1) % 3 !== 0, rect(h.cx - h.rx - 4, 45, h.cx - h.rx + 1, 57))), 'hair');
+      return;
     default:
       return;
   }

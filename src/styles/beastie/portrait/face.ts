@@ -27,14 +27,17 @@ export function eyes(p: Pix, t: BeastieTraits, b: Beast): void {
   const two = b.s * 1.05;
   switch (t.eyes) {
     case 'one':
-      return eye(p, ...at(b, 0, 2), b.s * 1.55);
+      eye(p, ...at(b, 0, 2), b.s * 1.55);
+      return;
     case 'two':
       eye(p, ...at(b, -2.5, 2.5), two);
-      return eye(p, ...at(b, 2.5, 2.5), two);
+      eye(p, ...at(b, 2.5, 2.5), two);
+      return;
     case 'three':
       eye(p, ...at(b, -3.5, 2.5), two * 0.9);
       eye(p, ...at(b, 0, 1.5), two);
-      return eye(p, ...at(b, 3.5, 2.5), two * 0.9);
+      eye(p, ...at(b, 3.5, 2.5), two * 0.9);
+      return;
     case 'tiny': {
       const c = Math.min(2, t.halfWidth - 2);
       for (const sd of [-1, 1]) {

@@ -23,20 +23,27 @@ function tail(p: Pix, t: SnootTraits): void {
   switch (t.species) {
     case 'cat':
       // Curled round the side to lie in front of the paws, as a sitting cat's does.
-      return p.fill(tube([CX + 12, 50], [CX + 21, 55], [CX + 16, 60], 1.7), 'body');
+      p.fill(tube([CX + 12, 50], [CX + 21, 55], [CX + 16, 60], 1.7), 'body');
+      return;
     case 'fox':
       p.fill(tube([CX + 8, 58], [CX + 23, 61], [CX + 21, 45], 3.6), 'body');
-      return p.fill(tube([CX + 8, 58], [CX + 23, 61], [CX + 21, 45], 3.6, 0.75), 'screen');
+      p.fill(tube([CX + 8, 58], [CX + 23, 61], [CX + 21, 45], 3.6, 0.75), 'screen');
+      return;
     case 'dog':
-      return p.fill(tube([CX + 9, 55], [CX + 18, 53], [CX + 19, 43], 2), 'body');
+      p.fill(tube([CX + 9, 55], [CX + 18, 53], [CX + 19, 43], 2), 'body');
+      return;
     case 'mouse':
-      return p.fill(tube([CX + 10, 61], [CX + 27, 63], [CX + 25, 50], 1), 'accent');
+      p.fill(tube([CX + 10, 61], [CX + 27, 63], [CX + 25, 50], 1), 'accent');
+      return;
     case 'pig':
-      return p.fill(and(ellipse(CX + 12, 50, 2.4, 2.4), not(ellipse(CX + 12, 50, 1.1, 1.1))), 'body');
+      p.fill(and(ellipse(CX + 12, 50, 2.4, 2.4), not(ellipse(CX + 12, 50, 1.1, 1.1))), 'body');
+      return;
     case 'bunny':
-      return p.fill(ellipse(CX + 11, 57, 3.6, 3.4), 'screen');
+      p.fill(ellipse(CX + 11, 57, 3.6, 3.4), 'screen');
+      return;
     default:
-      return p.fill(ellipse(CX + 10, 57, 2.4, 2.2), t.species === 'panda' ? 'shade' : 'body');
+      p.fill(ellipse(CX + 10, 57, 2.4, 2.2), t.species === 'panda' ? 'shade' : 'body');
+      return;
   }
 }
 

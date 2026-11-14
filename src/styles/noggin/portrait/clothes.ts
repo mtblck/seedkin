@@ -1,6 +1,7 @@
 import { and, ellipse, not, or, type Pix, rect, type Shape, sym } from '../../../core/portrait/canvas.js';
 
 export type Clothes = 'tee' | 'vneck' | 'hoodie' | 'jacket' | 'turtleneck' | 'scarf' | 'apron';
+/** Every top a Noggin portrait can wear. */
 export const CLOTHES: readonly Clothes[] = ['tee', 'vneck', 'hoodie', 'jacket', 'turtleneck', 'scarf', 'apron'];
 
 const CX = 32;

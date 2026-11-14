@@ -1,4 +1,4 @@
-import { and, ellipse, not, or, type Pix, rounded, type Shape, tri } from '../../../core/portrait/canvas.js';
+import { and, ellipse, or, type Pix, rounded, type Shape, tri } from '../../../core/portrait/canvas.js';
 import type { SnootTraits } from '../types.js';
 
 /** Where a Snoot's head and face sit on the 64x64 canvas. */
@@ -65,19 +65,26 @@ function round(p: Pix, h: Head, size: number, at: number, dy: number, lining: nu
 export function ears(p: Pix, t: SnootTraits, h: Head): void {
   switch (t.species) {
     case 'cat':
-      return pointed(p, h, 9, 9, 0.6, 2, true);
+      pointed(p, h, 9, 9, 0.6, 2, true);
+      return;
     case 'fox':
-      return pointed(p, h, 10, 12, 0.6, 2.5, true);
+      pointed(p, h, 10, 12, 0.6, 2.5, true);
+      return;
     case 'owl':
-      return pointed(p, h, 6, 6, 0.72, 2, false);
+      pointed(p, h, 6, 6, 0.72, 2, false);
+      return;
     case 'pig':
-      return pointed(p, h, 7, 6, 0.62, 3.5, true);
+      pointed(p, h, 7, 6, 0.62, 3.5, true);
+      return;
     case 'bear':
-      return round(p, h, 4.6, 0.68, 1.5, 2.4);
+      round(p, h, 4.6, 0.68, 1.5, 2.4);
+      return;
     case 'panda':
-      return round(p, h, 4.6, 0.68, 1.5, 0);
+      round(p, h, 4.6, 0.68, 1.5, 0);
+      return;
     case 'mouse':
-      return round(p, h, 7, 0.86, 1, 4.4);
+      round(p, h, 7, 0.86, 1, 4.4);
+      return;
     case 'bunny':
       for (const s of [-1, 1]) {
         p.fill(ellipse(h.cx + s * h.hx * 0.38, h.top - 7 * h.k, 3.4 * h.k, 10.5 * h.k), 'shade');

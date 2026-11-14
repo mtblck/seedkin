@@ -106,13 +106,14 @@ function muzzle(p: Pix, t: SnootTraits, h: Head): void {
   const tongue = t.mouth === 'tongue';
   switch (t.species) {
     case 'owl':
-      return p.fill(
+      p.fill(
         and(
           (x, y) => y >= mY - 4 && Math.abs(x + 0.5 - cx) <= (mY + 1 - y) * 0.45,
           (_x, y) => y <= mY + 1,
         ),
         'accent',
       );
+      return;
     case 'pig':
       p.fill(ellipse(cx, mY, 4.6 * h.k, 3.2 * h.k), 'accent');
       p.fill(or(rect(cx - 3, mY - 1, cx - 2, mY), rect(cx + 1, mY - 1, cx + 2, mY)), 'glow');
