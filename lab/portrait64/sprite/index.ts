@@ -79,6 +79,14 @@ export function figure(seed: string, holiday?: Holiday): Figure {
   };
 }
 
+/** A shape grown by `k` cells up and to both sides, but not down: a flame's core pulsing outward. */
+const swell =
+  (s: Shape, k: number): Shape =>
+  (x, y) => {
+    for (let d = 0; d <= k; d++) if (s(x, y + d) || s(x - d, y) || s(x + d, y)) return true;
+    return false;
+  };
+
 /** One frame of the portrait, traced from the same frame of the avatar. */
 function draw(
   t: ReturnType<typeof traits>,
@@ -119,7 +127,12 @@ function draw(
     role(r, c) === Role.Shade && solid(r - 1, c) && solid(r + 1, c) && solid(r, c - 1) && solid(r, c + 1);
   p.over(trace(g, inner, FIT, 0.42), 'shade', ['body'], -1);
   p.over(
-    trace(flame ? still : g, (r, c) => (flame ? still[r]?.[c] : role(r, c)) === Role.Screen, FIT, 0.45),
+    flame
+      ? swell(
+          trace(still, (r, c) => still[r]?.[c] === Role.Screen, FIT, 0.45),
+          [0, 1, 2, 1][n] as number,
+        )
+      : trace(g, (r, c) => role(r, c) === Role.Screen, FIT, 0.45),
     'screen',
     ['body', 'shade'],
   );
