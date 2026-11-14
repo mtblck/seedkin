@@ -26,6 +26,14 @@ export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>, bu
       return v === Role.Body || v === Role.Shade || v === Role.Screen;
     });
   };
+  // Whether a bubble at (bx, by) is out in the air, judged from the still frame so every frame draws the same.
+  const air = (bx: number, by: number): boolean => {
+    const [c, r] = [Math.floor((bx - f.ox) / f.s), Math.floor((by - f.oy) / f.s)];
+    const inside = bx > 3 && by > 3 && bx < p.w - 3 && by < p.h - 3;
+    const open = (v: number | undefined): boolean => !v || v === Role.Accent;
+    return inside && [-1, 0, 1].every((dr) => [-1, 0, 1].every((dc) => open(g[r + dr]?.[c + dc])));
+  };
+  const placed: [number, number][] = [];
   for (const clump of clumps(g, loose)) {
     const [x, y] = point(
       f,
@@ -34,19 +42,9 @@ export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>, bu
     );
     const k = clump.length > 1 ? 1.4 : 1;
     if (bubbles) {
-      // A bubble with a smaller one beside it, out in the air (judged from the still frame, so every
-      // frame draws the same), and a third, tiny one when there's room.
-      const air = (bx: number, by: number): boolean => {
-        const [c, r] = [Math.floor((bx - f.ox) / f.s), Math.floor((by - f.oy) / f.s)];
-        const inside = bx > 3 && by > 3 && bx < p.w - 3 && by < p.h - 3;
-        return (
-          inside &&
-          [-1, 0, 1].every((dr) =>
-            [-1, 0, 1].every((dc) => !g[r + dr]?.[c + dc] || g[r + dr]?.[c + dc] === Role.Accent),
-          )
-        );
-      };
+      // A bubble with a smaller one beside it out in the air, and a third, tiny one when there's room.
       bubble(p, x, y, 3);
+      placed.push([x, y]);
       const spots = SIDES.map(([dx, dy]) => [x + dx * k, y + dy * k] as const);
       const [bx, by] = spots.find(([sx, sy]) => air(sx, sy)) ?? (spots[0] as readonly [number, number]);
       bubble(p, bx, by, 2);
@@ -62,6 +60,27 @@ export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>, bu
     // A sparkle takes its cell's colour in the avatar: a planet's are its bright screen colour.
     p.fill(star, clump.some(([r, c]) => g[r]?.[c] === Role.Screen) ? 'spark' : 'mote');
   }
+  if (bubbles && placed.length > 0) balance(p, g, f, placed, air);
+}
+
+/**
+ * When every bubble is on one side of the Sprite, adds one on the other
+ * side, mirrored across its middle, so they rise all round it.
+ */
+function balance(
+  p: Pix,
+  g: RoleGrid,
+  f: Fit,
+  placed: [number, number][],
+  air: (x: number, y: number) => boolean,
+): void {
+  const cols = g.flatMap((row) => row.flatMap((v, c) => ([Role.Body, Role.Shade].includes(v as 1) ? [c] : [])));
+  const mid = f.ox + ((Math.min(...cols) + Math.max(...cols)) / 2 + 0.5) * f.s;
+  if (new Set(placed.map(([x]) => x < mid)).size > 1) return;
+  const [x0, y0] = placed[0] as [number, number];
+  const x = 2 * mid - x0;
+  const y = [y0 + 8, y0 + 14, y0, y0 + 20, y0 - 6].find((cy) => air(x, cy));
+  if (y !== undefined) bubble(p, x, y, 2);
 }
 
 /** Where a bubble's smaller companion may go, in order: below and to the side first, as if it trailed. */
