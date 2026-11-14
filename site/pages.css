@@ -1141,3 +1141,14 @@ ol.features > li::before {
 .api-demo img {
   border-radius: 10px;
 }
+
+.portrait-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.portrait-demo img {
+  border-radius: 10px;
+  background: var(--paper-sunk);
+  image-rendering: pixelated;
+}

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portraits · Seedkin docs</title>
+  <meta name="description" content="Seedkin portraits: any seed's avatar drawn as a 64x64 game-style portrait in a seeded scene, animated and dressed for the holidays." />
+  <link rel="canonical" href="https://seedkin.dev/docs/portraits/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://seedkin.dev/docs/portraits/" />
+  <meta property="og:title" content="Portraits · Seedkin docs" />
+  <meta property="og:description" content="Seedkin portraits: any seed's avatar drawn as a 64x64 game-style portrait in a seeded scene, animated and dressed for the holidays." />
+  {{head}}
+  <script type="module" src="/docs.js"></script>
+  <script type="module" src="/portraits.js"></script>
+</head>
+<body>
+  <a class="skip" href="#doc">Skip to the docs</a>
+  {{header}}
+
+  <main id="main" class="docs wrap">
+    {{docsnav}}
+    <article id="doc" class="prose" tabindex="-1">
+<h1>Portraits <span class="badge">Preview</span></h1>
+<p class="lede">Any seed's avatar, drawn as a 64x64 game-style portrait in a seeded scene: robots and people from the shoulders up with arms and clothes, animals sitting, monsters waving, and Sprites traced smooth. Each one is the same character as the seed's avatar.</p>
+<div class="portrait-demo" data-seed="jolly-sprocket-65">
+  <img data-style="botling" width="192" height="192" alt="The Botling for this seed as a portrait" />
+  <img data-style="snoot" width="192" height="192" alt="The Snoot for this seed as a portrait" />
+  <img data-style="noggin" width="192" height="192" alt="The Noggin for this seed as a portrait" />
+  <img data-style="beastie" width="192" height="192" alt="The Beastie for this seed as a portrait" />
+  <img data-style="sprite" width="192" height="192" alt="The Sprite for this seed as a portrait" />
+</div>
+<p class="callout">Portraits are a Preview: a seed's portrait may change in a minor release, noted in the changelog, while its avatar never does. Pin the version if you need a portrait to stay put.</p>
+<h2 id="use">Use</h2>
+<p>Each style has a portrait entry point of its own, so an app that only draws avatars never loads the portrait code.</p>
+<pre><code class="language-ts">import { duet, portrait, portraitDataUri } from 'seedkin/botling/portrait';
+
+const svg = portrait(user.id, { animate: true });
+const src = portraitDataUri(user.id, { size: 128 });
+
+// Two seeds face to face in one 128x64 scene.
+const pair = duet(user.id, friend.id, { holiday: 'halloween' });
+</code></pre>
+<p>Swap <code>botling</code> for <code>snoot</code>, <code>noggin</code>, <code>beastie</code> or <code>sprite</code>. A portrait reads the same traits as the seed's avatar; what the avatar doesn't say, such as clothes, gear and the scene, comes from the same seed salted another way, so it is the same every time too.</p>
+<h2 id="options">Options</h2>
+<table>
+<thead>
+<tr><th>Option</th><th>Default</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>size</code></td><td><code>256</code></td><td>Height in pixels; a portrait is square and a duet twice as wide. The picture is 64 cells tall, so multiples of 64 stay crisp.</td></tr>
+<tr><td><code>animate</code></td><td><code>false</code></td><td>Blinks, talks, wobbles, wags and flaps, in step with the seed's avatar. Holds still for anyone who prefers reduced motion.</td></tr>
+<tr><td><code>holiday</code></td><td>none</td><td><code>newYear</code>, <code>valentines</code>, <code>stPatricks</code>, <code>fourthOfJuly</code>, <code>halloween</code> or <code>christmas</code>: the style's holiday palette, and that holiday's scene behind.</td></tr>
+<tr><td><code>title</code></td><td>e.g. <code>'Robot portrait'</code></td><td>Accessible name. <code>null</code> marks the image decorative.</td></tr>
+</tbody>
+</table>
+<p>Bad options throw a <code>RangeError</code>, as the avatars' do.</p>
+<h2 id="size">Size and weight</h2>
+<p>A portrait has far more detail than an avatar: about 60 to 140 KB of SVG, and a few to 50 milliseconds to draw (Sprites, with four frames, are the heaviest). That suits a profile page, a card or a game screen. For a list of hundreds of users, draw avatars.</p>
+{{pager}}
+    </article>
+    {{toc}}
+  </main>
+
+  {{footer}}
+</body>
+</html>

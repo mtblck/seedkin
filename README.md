@@ -76,6 +76,19 @@ Little elemental spirits of fire, water, earth, wind and space: flames, drops, g
 
 Each style salts the seed, so one user's robot, animal and monster don't share colours or features.
 
+### Portraits (Preview)
+
+Every style can also draw a seed as a 64x64 game-style portrait, from its own entry point (`seedkin/<style>/portrait`, so apps that only draw avatars never load it): the same robot, animal, person, monster or Sprite as its avatar, drawn fuller (arms, clothes, a whole sitting animal) in a seeded scene. `duet()` puts two seeds face to face in one 128x64 scene.
+
+```ts
+import { duet, portrait, portraitDataUri } from 'seedkin/snoot/portrait';
+
+const svg = portrait(user.id, { size: 256, animate: true });
+const pair = duet(user.id, friend.id, { holiday: 'halloween' });
+```
+
+They take `size` (the height in pixels, default 256; multiples of 64 stay crisp), `animate` (blinks and talks in step with the avatar), `holiday` (one of the six holiday keys: its palette and its scene) and `title`. Portraits are a Preview: a seed's portrait may change in a minor release, though its avatar never does. See [Portraits](https://seedkin.dev/docs/portraits/) and [ADR 0018](docs/adr/0018-portraits.md).
+
 ## Options
 
 Every style takes the same options. The seed picks the shape and palette unless you pass them; the rest are yours to set.

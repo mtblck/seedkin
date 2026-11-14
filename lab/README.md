@@ -13,6 +13,8 @@ Snoot, Noggin, Beastie and Sprite all started here and now live in
 - `render.ts`: renders a family with `src/core/render`'s cells and frames.
 - `npx tsx lab/sheet.ts out.html [count]`: a quick contact sheet of every family.
 - `node lab/page.mjs out.html`: the interactive comparison page (seed box, shapes, walls, plan).
+- `npx tsx lab/portrait64/sheet.ts <style> out.html [count] [size] [animate] [holiday]`: a contact sheet of
+  one style's portraits (`portrait()` and `duet()`, which live in `src/core/portrait/` and each style's `portrait/`).
 
 Seeds are salted per family (`animal:` + seed). The dinosaurs' art is unfrozen: change anything. The
 other kinds draw shipped, Stable art, so change those in `src/styles/`.
