@@ -87,8 +87,8 @@ export function pair(a: Figure, b: Figure, s: PortraitSettled): string {
   return toSvg([back, ...l.layers, ...r.layers], s.px, l.style + r.style, l.always + r.always, s.title);
 }
 
-/** How a style draws its figure for a seed, dressed for a holiday or not. */
-export type Draw = (seed: string, holiday?: Holiday) => Figure;
+/** How a style draws its figure for a seed, dressed for a holiday or not; `animate` says whether motion will show. */
+export type Draw = (seed: string, holiday?: Holiday, animate?: boolean) => Figure;
 
 /**
  * A style's portrait of a seed, with its options checked.
@@ -101,7 +101,7 @@ export type Draw = (seed: string, holiday?: Holiday) => Figure;
  */
 export function portraitOf(style: string, title: string, draw: Draw, seed: string, opts: PortraitOptions): string {
   const s = settlePortrait(style, opts, title);
-  return single(draw(seed, s.holiday), s);
+  return single(draw(seed, s.holiday, s.animate), s);
 }
 
 /** Two of a style's portraits facing each other, with options checked as {@link portraitOf}'s. */
@@ -114,5 +114,5 @@ export function duetOf(
   opts: PortraitOptions,
 ): string {
   const s = settlePortrait(style, opts, title);
-  return pair(draw(left, s.holiday), draw(right, s.holiday), s);
+  return pair(draw(left, s.holiday, s.animate), draw(right, s.holiday, s.animate), s);
 }

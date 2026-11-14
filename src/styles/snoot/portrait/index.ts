@@ -90,8 +90,9 @@ function figure(seed: string, holiday?: Holiday): Figure {
     bar: pal.shade,
     ink: '#1a1018',
   };
+  // As the avatar, sleepy eyes are already shut and don't blink.
   const moves = motion(`snoot:${seed}`, {
-    eyes: ['blink', 'center'],
+    ...(t.eyes === 'sleepy' ? {} : { eyes: ['blink', 'center'] as const }),
     ears: ['twitch', 'center'],
     // Tails wag from their base: a side tail's lower left, a cat's tip from its lower right.
     tail: ['wag', t.species === 'cat' ? '100% 100%' : '0% 100%'],

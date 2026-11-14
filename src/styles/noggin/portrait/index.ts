@@ -78,7 +78,11 @@ function figure(seed: string, holiday?: Holiday): Figure {
     lens: '#18141c',
     ink: '#1a1018',
   };
-  const moves = motion(`noggin:${seed}`, { eyes: ['blink', 'center'], mouth: ['talk', 'center'] });
+  // As the avatar: shut eyes and shades don't blink, and a mouth inside a beard doesn't talk.
+  const moves = motion(`noggin:${seed}`, {
+    ...(t.eyes === 'closed' || t.eyewear === 'shades' ? {} : { eyes: ['blink', 'center'] as const }),
+    ...(t.facial === 'beard' ? {} : { mouth: ['talk', 'center'] as const }),
+  });
   return { p, colours, rng, bg: pal.bg, scenes: holiday ? [holiday] : HOME_SCENES, motion: moves };
 }
 

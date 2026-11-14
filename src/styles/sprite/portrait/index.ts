@@ -5,19 +5,7 @@
  *
  * @packageDocumentation
  */
-import {
-  and,
-  type Colours,
-  createPix,
-  ellipse,
-  ink,
-  mix,
-  or,
-  type Pix,
-  rect,
-  type Shape,
-  shadeRuns,
-} from '../../../core/portrait/canvas.js';
+import { and, type Colours, createPix, ink, mix, type Pix, shadeRuns } from '../../../core/portrait/canvas.js';
 import { duetOf, type Figure, portraitOf } from '../../../core/portrait/compose.js';
 import type { PortraitOptions } from '../../../core/portrait/options.js';
 
@@ -40,7 +28,8 @@ import { traits } from '../traits.js';
 import type { Palette } from '../types.js';
 import { face, mark } from './face.js';
 import { core, streak } from './flame.js';
-import { clumps, type Fit, point, trace } from './trace.js';
+import { motes } from './motes.js';
+import { type Fit, trace } from './trace.js';
 
 const FORMS: Record<string, Form> = { ...FIRE, ...WATER, ...EARTH, ...WIND, ...SPACE };
 const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain'];
@@ -62,12 +51,13 @@ function frame(t: ReturnType<typeof traits>, n: number): { g: RoleGrid; at: Anch
  * redrawn. Everything comes from the avatar's traits and its still frame;
  * the scene comes from a second generator salted `sprite-portrait:`.
  */
-function figure(seed: string, holiday?: Holiday): Figure {
+function figure(seed: string, holiday?: Holiday, animate = true): Figure {
   const t = traits(seed);
   const pal = holiday ? HOLIDAY_PALETTES[holiday] : (PALETTES[t.palette] as Palette);
   const rng = createRng(`sprite-portrait:${seed}`);
   const all = [0, 1, 2, 3].map((n) => frame(t, n));
-  const [first, ...rest] = all.map(({ g, at }, n) => draw(t, g, at, all, n));
+  // Still, only the first frame shows, so only it is drawn.
+  const [first, ...rest] = (animate ? all : all.slice(0, 1)).map(({ g, at }, n) => draw(t, g, at, all, n));
   const colours: Colours = {
     body: pal.body,
     shade: pal.shade,
@@ -88,7 +78,7 @@ function figure(seed: string, holiday?: Holiday): Figure {
     bg: pal.bg,
     scenes: holiday ? [holiday] : SCENES,
     motion: { parts: {} },
-    frames: { ps: rest, beats: t.beats },
+    ...(animate ? { frames: { ps: rest, beats: t.beats } } : {}),
   };
 }
 
@@ -127,38 +117,8 @@ function draw(
   if (flare) streak(p, flare.streaks);
   shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
   ink(p, FEATURES);
-  motes(p, g);
+  motes(p, g, FIT);
   return p;
-}
-
-/** The avatar's loose accent cells (embers, sparkles, drops) as small four-point twinkles, unoutlined. */
-function motes(p: Pix, g: RoleGrid): void {
-  const loose = (r: number, c: number): boolean => {
-    if (g[r]?.[c] !== Role.Accent) return false;
-    return ![
-      [r - 1, c],
-      [r + 1, c],
-      [r, c - 1],
-      [r, c + 1],
-    ].some(([rr, cc]) => {
-      const v = g[rr as number]?.[cc as number];
-      return v === Role.Body || v === Role.Shade || v === Role.Screen;
-    });
-  };
-  for (const clump of clumps(g, loose)) {
-    const [x, y] = point(
-      FIT,
-      clump.reduce((a, [, c]) => a + c, 0) / clump.length,
-      clump.reduce((a, [r]) => a + r, 0) / clump.length,
-    );
-    const k = clump.length > 1 ? 1.4 : 1;
-    const star: Shape = or(
-      rect(Math.round(x), Math.round(y - 2 * k), Math.round(x), Math.round(y + 2 * k)),
-      rect(Math.round(x - 2 * k), Math.round(y), Math.round(x + 2 * k), Math.round(y)),
-      ellipse(x, y, 1.2 * k, 1.2 * k),
-    );
-    p.fill(star, 'mote');
-  }
 }
 
 /**

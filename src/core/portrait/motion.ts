@@ -90,6 +90,13 @@ const hash = (s: string): string => {
 /** Flips a pivot left to right, for a figure drawn facing the other way. */
 export const flipOrigin = (o: string): string => o.replace(/^(\d+)%/, (_m, x: string) => `${100 - Number(x)}%`);
 
+/** Mirrors keyframes left to right: turns and sideways moves go the other way. */
+export const flipKeyframes = (k: string): string =>
+  k.replace(
+    /(rotate|translateX|skewX)\((-?[\d.]+)(deg|px)\)/g,
+    (_m, f: string, n: string, u: string) => `${f}(${-Number(n)}${u})`,
+  );
+
 /**
  * Class names and the `<style>` for a figure's moving parts. Names carry the
  * rule itself, so two figures in one picture, or two portraits on one page,
@@ -104,9 +111,10 @@ export function css(
   let style = '';
   const add = (name: string, r: Rule): string => {
     const origin = flipped ? flipOrigin(r.origin) : r.origin;
+    const keyframes = flipped ? flipKeyframes(r.keyframes) : r.keyframes;
     // Named for everything in the rule, so portraits on one page never restyle each other.
-    const c = `${id}-${name}-${hash(r.keyframes + origin + r.timing)}-${r.period}-${r.offset}`;
-    style += `@keyframes ${c}{${r.keyframes}}.${c}{transform-box:fill-box;transform-origin:${origin};animation:${c} ${r.period / 10}s${r.timing} ${-r.offset / 10}s infinite}`;
+    const c = `${id}-${name}-${hash(keyframes + origin + r.timing)}-${r.period}-${r.offset}`;
+    style += `@keyframes ${c}{${keyframes}}.${c}{transform-box:fill-box;transform-origin:${origin};animation:${c} ${r.period / 10}s${r.timing} ${-r.offset / 10}s infinite}`;
     return c;
   };
   for (const [name, r] of Object.entries(m.parts)) cls[name] = add(name, r);

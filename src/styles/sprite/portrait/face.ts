@@ -2,15 +2,19 @@ import { and, ellipse, not, or, type Pix, rect, type Shape } from '../../../core
 import type { RoleGrid } from '../../../core/types.js';
 import { Role } from '../../../core/types.js';
 import type { Anchor } from '../grid/draw.js';
-import type { Mark, SpriteTraits } from '../types.js';
+import { CELLS } from '../grid/mark.js';
+import type { SpriteTraits } from '../types.js';
 import { type Fit, point } from './trace.js';
 
 const disc = (x: number, y: number, r: number): Shape => ellipse(x, y, r, r);
 
-/** Glancing eyes look one column over when both still land on the Sprite, as the avatar's do. */
-function glance(g: RoleGrid, at: Anchor): number {
+/**
+ * Glancing eyes look one column over (`m`: right, or left on a mirrored
+ * Sprite) when both still land on the Sprite, as the avatar's do.
+ */
+function glance(g: RoleGrid, at: Anchor, m: number): number {
   const ok = (c: number, r: number): boolean => g[r]?.[c] === Role.Body || g[r]?.[c] === Role.Screen;
-  return [-1, 1].every((sd) => ok(at.x + sd * at.dx + 1, at.y) && ok(at.x + sd * at.dx + 1, at.y + 1)) ? 1 : 0;
+  return [-1, 1].every((sd) => ok(at.x + sd * at.dx + m, at.y) && ok(at.x + sd * at.dx + m, at.y + 1)) ? m : 0;
 }
 
 /** One eye of a kind, centred on avatar column `c`, with its two rows starting at `r`. */
@@ -57,18 +61,23 @@ function eye(p: Pix, f: Fit, kind: SpriteTraits['eyes'], c: number, r: number, i
   }
 }
 
-/** The avatar's eyes, mouth and cheeks, drawn smooth at the portrait's size. */
+/**
+ * The avatar's eyes, mouth and cheeks, drawn smooth at the portrait's size.
+ * `g` and `at` are already mirrored for a mirrored Sprite; the avatar draws its
+ * face before mirroring, so a wink, a glance and a smirk turn the other way too.
+ */
 export function face(p: Pix, g: RoleGrid, at: Anchor, t: SpriteTraits, f: Fit): void {
   const { x, dx, y } = at;
+  const m = t.isMirrored ? -1 : 1;
   const inner = Math.max(dx - 1, 1);
-  const shift = t.eyes === 'glance' ? glance(g, at) : 0;
+  const shift = t.eyes === 'glance' ? glance(g, at, m) : 0;
   for (const sd of [-1, 1]) {
-    const kind = t.eyes === 'wink' ? (sd < 0 ? 'dots' : 'sleepy') : t.eyes;
+    const kind = t.eyes === 'wink' ? (sd * m < 0 ? 'dots' : 'sleepy') : t.eyes;
     const col = kind === 'close' || kind === 'round' || kind === 'sleepy' ? inner : dx;
     // Round and sleepy eyes are two cells wide, so their middles sit half a cell further out.
     eye(p, f, kind === 'close' ? 'dots' : kind, x + sd * col + shift, y, sd);
   }
-  mouth(p, t, f, x, y + 3 + (at.mouthDy ?? 0));
+  mouth(p, t, f, x, y + 3 + (at.mouthDy ?? 0), m);
   if (t.hasBlush)
     for (const sd of [-1, 1]) {
       const [bx, by] = point(f, x + sd * (dx + 2), y + 2);
@@ -76,7 +85,7 @@ export function face(p: Pix, g: RoleGrid, at: Anchor, t: SpriteTraits, f: Fit): 
     }
 }
 
-function mouth(p: Pix, t: SpriteTraits, f: Fit, c: number, r: number): void {
+function mouth(p: Pix, t: SpriteTraits, f: Fit, c: number, r: number, m: number): void {
   const [x, y] = point(f, c, r);
   const s = f.s;
   const smile =
@@ -103,7 +112,7 @@ function mouth(p: Pix, t: SpriteTraits, f: Fit, c: number, r: number): void {
       );
       return;
     case 'smirk':
-      p.fill(smile(s * 1.2, s * 0.4, -0.3), 'face');
+      p.fill(smile(s * 1.2, s * 0.4, -0.3 * m), 'face');
       return;
     case 'oh':
       p.fill(ellipse(x, y + s * 0.5, s * 0.55, s * 0.85), 'face');
@@ -113,32 +122,6 @@ function mouth(p: Pix, t: SpriteTraits, f: Fit, c: number, r: number): void {
   }
 }
 
-const MARK: Record<Mark, [number, number][]> = {
-  none: [],
-  dot: [[0, 0]],
-  bar: [
-    [-1, 0],
-    [0, 0],
-    [1, 0],
-  ],
-  chevron: [
-    [-1, -1],
-    [0, 0],
-    [1, -1],
-  ],
-  plus: [
-    [0, -1],
-    [-1, 0],
-    [0, 0],
-    [1, 0],
-    [0, 1],
-  ],
-  twin: [
-    [-1, 0],
-    [1, 0],
-  ],
-};
-
 /** The forehead mark, where the avatar puts it: two rows over the eyes, raised until it fits every frame. */
 export function mark(
   p: Pix,
@@ -147,7 +130,7 @@ export function mark(
   t: SpriteTraits,
   f: Fit,
 ): void {
-  const cells = MARK[t.mark];
+  const cells = CELLS[t.mark];
   if (cells.length === 0) return;
   const lift = [0, 1, 2].find((n) =>
     frames.every((fr) => cells.every(([mx, my]) => fr.g[fr.at.y - 2 - n + my]?.[fr.at.x + mx] === Role.Body)),

@@ -1,3 +1,4 @@
+import { escapeXml } from '../render/svg.js';
 import { type Colours, colourOf, type Pix } from './canvas.js';
 
 /** A canvas to draw, its colours, and (for a figure) the classes its moving parts take. */
@@ -13,8 +14,6 @@ export interface Layer {
   /** Cells to shift right. */
   dx?: number;
 }
-
-const escapeXml = (s: string): string => s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
 
 /** One row's runs of one colour as rects; cells whose colour is `''` are left out. */
 function runs(w: number, y: number, colourAt: (x: number) => string, dx: number): string {

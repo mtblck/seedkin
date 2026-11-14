@@ -8,7 +8,7 @@ if (demo) {
   for (const name of STYLES) {
     import(`/lib/styles/${name}/portrait/index.js`).then(({ portraitDataUri }) => {
       const img = demo.querySelector(`img[data-style="${name}"]`);
-      if (img) img.src = portraitDataUri(seed, { size: 160, animate, title: null });
+      if (img) img.src = portraitDataUri(seed, { size: 192, animate, title: null });
     });
   }
 }

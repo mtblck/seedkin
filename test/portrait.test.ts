@@ -1,15 +1,19 @@
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { flipKeyframes } from '../src/core/portrait/motion.js';
 import type { Holiday } from '../src/core/types.js';
 import { HOLIDAY_PALETTES as beastieHolidays } from '../src/styles/beastie/index.js';
 import * as beastie from '../src/styles/beastie/portrait/index.js';
 import { HOLIDAY_PALETTES as botlingHolidays } from '../src/styles/botling/index.js';
 import * as botling from '../src/styles/botling/portrait/index.js';
+import { traits as botlingTraits } from '../src/styles/botling/traits.js';
 import { HOLIDAY_PALETTES as nogginHolidays } from '../src/styles/noggin/index.js';
 import * as noggin from '../src/styles/noggin/portrait/index.js';
+import { traits as nogginTraits } from '../src/styles/noggin/traits.js';
 import { HOLIDAY_PALETTES as snootHolidays } from '../src/styles/snoot/index.js';
 import * as snoot from '../src/styles/snoot/portrait/index.js';
+import { traits as snootTraits } from '../src/styles/snoot/traits.js';
 import { HOLIDAY_PALETTES as spriteHolidays } from '../src/styles/sprite/index.js';
 import * as sprite from '../src/styles/sprite/portrait/index.js';
 
@@ -70,9 +74,11 @@ describe.each(Object.entries(STYLES))('%s portraits', (name, style) => {
 
   it('moves only when asked, and holds still for reduced motion', () => {
     expect(style.portrait('a')).not.toContain('@keyframes');
-    const moving = style.portrait('a', { animate: true });
+    // Some seeds hold still where their avatar does (shut eyes, a beard), but not every one.
+    const moving = ['a', 'b', 'c', 'd']
+      .map((x) => style.portrait(x, { animate: true }))
+      .find((svg) => svg.includes('<g class'));
     expect(moving).toContain('@media (prefers-reduced-motion:no-preference){');
-    expect(moving).toMatch(/<g class="[^"]+">/);
   });
 
   it('keeps two portraits on one page from sharing animation classes', () => {
@@ -114,5 +120,38 @@ describe('portrait corpus', () => {
         Object.entries(STYLES).map(([name, s]) => [name, digest(seeds.map((x) => s.portrait(x, { animate: true })))]),
       ),
     ).toMatchSnapshot();
+  });
+});
+
+describe('portrait motion matches the avatar', () => {
+  const seeds = Array.from({ length: 60 }, (_, i) => `still-${i}`);
+  const blinks = (svg: string): boolean => /class="p-eyes-/.test(svg);
+
+  it("doesn't blink eyes that are shut or behind shades, or talk through a beard", () => {
+    const never = (svgs: [boolean, string][]): void => {
+      for (const [shut, svg] of svgs) if (shut) expect(blinks(svg)).toBe(false);
+      expect(svgs.some(([, svg]) => blinks(svg))).toBe(true);
+    };
+    never(
+      seeds.map((x) => [
+        ['closed'].includes(nogginTraits(x).eyes) || nogginTraits(x).eyewear === 'shades',
+        noggin.portrait(x, { animate: true }),
+      ]),
+    );
+    never(seeds.map((x) => [botlingTraits(x).eyes === 'sleepy', botling.portrait(x, { animate: true })]));
+    never(seeds.map((x) => [snootTraits(x).eyes === 'sleepy', snoot.portrait(x, { animate: true })]));
+    for (const x of seeds) {
+      if (nogginTraits(x).facial === 'beard')
+        expect(/class="p-mouth-/.test(noggin.portrait(x, { animate: true })), x).toBe(false);
+    }
+  });
+
+  it('turns rotations the other way for the flipped figure in a duet', () => {
+    expect(flipKeyframes('8%{transform:rotate(-12deg)}16%{transform:rotate(9deg) translateX(1px)}')).toBe(
+      '8%{transform:rotate(12deg)}16%{transform:rotate(-9deg) translateX(-1px)}',
+    );
+    expect(flipKeyframes('50%{transform:translateY(-1px) scaleX(.8)}')).toBe(
+      '50%{transform:translateY(-1px) scaleX(.8)}',
+    );
   });
 });
