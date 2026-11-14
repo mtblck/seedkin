@@ -67,7 +67,7 @@ export function bat(p: Pix, cx: number, cy: number): void {
   );
 }
 
-/** A decorated tree in a pot, standing on `base`. */
+/** A decorated Christmas tree on a trunk, standing on `base`. */
 export function tree(p: Pix, cx: number, base: number): void {
   p.fill(rect(cx - 1, base - 4, cx + 1, base), 'bark');
   for (const [y, half] of [
