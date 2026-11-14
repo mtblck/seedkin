@@ -33,9 +33,10 @@ export function shadeRuns(p: Pix, mats: readonly string[], dark = 0.3, light = 0
 /**
  * Inks the edges between parts: a cell painted over a different material
  * (not one of `skip`) turns into a line in its own colour. Then an outer
- * outline goes into the empty cells around the figure.
+ * outline goes into the empty cells around the figure, except beside the
+ * `bare` materials (a wisp's haze, which fades out rather than ending in a line).
  */
-export function ink(p: Pix, skip: readonly string[]): void {
+export function ink(p: Pix, skip: readonly string[], bare: readonly string[] = []): void {
   const lines: [number, number][] = [];
   for (let y = 0; y < p.h; y++) {
     for (let x = 0; x < p.w; x++) {
@@ -61,8 +62,8 @@ export function ink(p: Pix, skip: readonly string[]): void {
   for (let y = 0; y < p.h; y++) {
     for (let x = 0; x < p.w; x++) {
       if (p.get(x, y) !== '') continue;
-      if ([p.get(x - 1, y), p.get(x + 1, y), p.get(x, y - 1), p.get(x, y + 1)].some((n) => n !== '' && n !== 'ink'))
-        edge.push([x, y]);
+      const lined = (n: string): boolean => n !== '' && n !== 'ink' && !bare.includes(n);
+      if ([p.get(x - 1, y), p.get(x + 1, y), p.get(x, y - 1), p.get(x, y + 1)].some(lined)) edge.push([x, y]);
     }
   }
   // An outline cell moves with its part when only that part touches it.
@@ -72,7 +73,7 @@ export function ink(p: Pix, skip: readonly string[]): void {
       [x + 1, y],
       [x, y - 1],
       [x, y + 1],
-    ].filter(([nx, ny]) => p.get(nx as number, ny as number) !== '' && p.get(nx as number, ny as number) !== 'ink');
+    ].filter(([nx, ny]) => !['', 'ink', ...bare].includes(p.get(nx as number, ny as number)));
     const parts = new Set(near.map(([nx, ny]) => (p.part[ny as number] as string[])[nx as number]));
     const was = p.current;
     p.current = parts.size === 1 ? ([...parts][0] as string) : '';

@@ -2,9 +2,24 @@ import { createRng } from '../random.js';
 import { clocks, SPECS } from '../render/motion.js';
 import type { Pix } from './canvas.js';
 
-/** How a portrait's part moves: the avatar's four, a tail's wag, wings' flap, a float, or a sparkle's twinkle, a rock's drift or an ember's rise. */
-export type Move = 'blink' | 'talk' | 'wobble' | 'twitch' | 'wag' | 'flap' | 'hover' | 'twinkle' | 'drift' | 'rise';
-type Extra = 'wag' | 'flap' | 'twinkle' | 'drift' | 'rise';
+/**
+ * How a portrait's part moves: the avatar's four, a tail's wag, wings' flap, a float, a sparkle's
+ * twinkle, a rock's drift, an ember's rise, a bubble's squash or a treetop's sway.
+ */
+export type Move =
+  | 'blink'
+  | 'talk'
+  | 'wobble'
+  | 'twitch'
+  | 'wag'
+  | 'flap'
+  | 'hover'
+  | 'twinkle'
+  | 'drift'
+  | 'rise'
+  | 'squash'
+  | 'sway';
+type Extra = 'wag' | 'flap' | 'twinkle' | 'drift' | 'rise' | 'squash' | 'sway';
 
 /** One moving part's rule: keyframes, period and start in tenths of a second, and its pivot. */
 export interface Rule {
@@ -46,6 +61,16 @@ const EXTRA: Record<Extra, { keyframes: string; period: [number, number] }> = {
   rise: {
     keyframes: '0%{transform:none}100%{transform:translate(2px,-20px) scale(.25)}',
     period: [14, 22],
+  },
+  // A bubble squashes and stretches smoothly, rather than swapping between two traced shapes.
+  squash: {
+    keyframes: '0%,100%{transform:none}50%{transform:scale(1.06,.94)}',
+    period: [16, 24],
+  },
+  // A treetop leans one way and the other over its trunk.
+  sway: {
+    keyframes: '0%,100%{transform:none}25%{transform:skewX(-4deg)}75%{transform:skewX(4deg)}',
+    period: [36, 50],
   },
 };
 

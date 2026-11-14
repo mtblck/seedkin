@@ -1,4 +1,4 @@
-import { and, createPix, ink, type Pix, shadeRuns } from '../../../core/portrait/canvas.js';
+import { and, createPix, ink, or, type Pix, type Shape, shadeRuns } from '../../../core/portrait/canvas.js';
 import { tag } from '../../../core/portrait/motion.js';
 import { Role, type RoleGrid } from '../../../core/types.js';
 import type { Anchor } from '../grid/draw.js';
@@ -7,8 +7,9 @@ import { sprout, sproutCells, tentacles } from './extras.js';
 import { face, mark } from './face.js';
 import { core, streak } from './flame.js';
 import { embers, faces, ring, ringRow, rocks, sparkles } from './fx.js';
+import { barRow, front, HAZE, haze, plusAt, tongue } from './layers.js';
 import { motes } from './motes.js';
-import { type Fit, isolated, trace } from './trace.js';
+import { clumps, type Fit, isolated, trace } from './trace.js';
 
 /**
  * Where the 15x15 avatar sits: four portrait pixels to an avatar cell, so a
@@ -16,8 +17,11 @@ import { type Fit, isolated, trace } from './trace.js';
  * keeps its exact shape, rather than being redrawn a little differently.
  */
 export const FIT: Fit = { s: 4, ox: 2, oy: 3 };
-/** Forms whose body holds still, as Matt asked: only their eyes blink and their sparkles or pebbles move. */
-export const STILL = ['boulder', 'crystal'];
+/**
+ * Forms whose traced body holds still, as Matt asked: only their eyes blink and their sparkles or
+ * pebbles move. A bubble squashes and a treetop sways smoothly instead of swapping traced shapes.
+ */
+export const STILL = ['boulder', 'crystal', 'bubble', 'tree'];
 
 /** One frame of the avatar, with its anchor. */
 export interface Frame {
@@ -64,39 +68,72 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
   const onBody = (r: number, c: number): boolean =>
     role(r, c) === Role.Accent && touches(r, c) && !open(r, c) && kept(r, c);
   const flame = t.form === 'flame';
+  // Small bright spots on the body are shines, flat white; a fire's core and a tree's trunk aren't.
+  const spots = new Set(
+    FIRE_CORE.includes(t.form)
+      ? []
+      : clumps(g, (r, c) => role(r, c) === Role.Screen && solid(r, c))
+          .filter((k) => k.length <= 4)
+          .flatMap((k) => k.map(([r, c]) => `${r},${c}`)),
+  );
+
   const p = createPix();
-  const body = trace(g, (r, c) => solid(r, c) || onBody(r, c), FIT, 0.85);
+  const trunk = trace(g, (r, c) => t.form === 'tree' && role(r, c) === Role.Screen && solid(r, c), FIT, 0.45);
+  // A tree's leaves stop where its trunk starts, rather than filling in behind it.
+  const crown = (_x: number, y: number): boolean => t.form !== 'tree' || y < FIT.oy + trunkRow(g) * FIT.s;
+  const traced = trace(
+    g,
+    (r, c) => (solid(r, c) || onBody(r, c)) && !(t.form === 'tree' && role(r, c) === Role.Screen),
+    FIT,
+    0.85,
+  );
+  const whole: Shape = or(and(traced, crown), trunk);
+  // A fire Sprite with a bar across its brow burns bright below it and rises as haze above it.
+  const bar = barRow(t, all, still.at);
+  const cut =
+    bar === undefined ? undefined : FIT.oy + (bar + 0.5 + (t.form === 'ember' ? 0 : at.y - still.at.y)) * FIT.s;
+  const body = cut === undefined ? whole : front(whole, cut, FIT.ox + (at.x + 0.5) * FIT.s);
+  if (cut !== undefined) haze(p, whole, body, cut);
+  const shiny = (r: number, c: number): boolean => spots.has(`${r},${c}`) && (bar === undefined || r > bar);
   // A jellyfish's tentacles hang behind its bell.
   if (tentacle) tentacle.draw(p);
   p.fill(body, 'shade');
   p.fill(
-    and(body, (x, y) => body(x - 2, y) && body(x + 2, y)),
+    and(body, (x, y) => whole(x - 2, y) && whole(x + 2, y)),
     'body',
   );
   if (t.form === 'crystal') faces(p, body, FIT);
   else {
     // Shade inside the outline: a flame's tongues, a coal's cracks, a whirlwind's bands.
     const inner = (r: number, c: number): boolean =>
-      role(r, c) === Role.Shade && solid(r - 1, c) && solid(r + 1, c) && solid(r, c - 1) && solid(r, c + 1);
+      role(r, c) === Role.Shade &&
+      (bar === undefined || r > bar) &&
+      solid(r - 1, c) &&
+      solid(r + 1, c) &&
+      solid(r, c - 1) &&
+      solid(r, c + 1);
     p.over(trace(g, inner, FIT, 0.42), PATCHED.includes(t.form) ? 'patch' : 'shade', ['body'], -1);
     const flare = flame ? core(still.g, n, FIT) : undefined;
-    p.over(flare?.glow ?? trace(g, (r, c) => role(r, c) === Role.Screen && solid(r, c), FIT, 0.45), 'screen', [
-      'body',
-      'shade',
-    ]);
+    const glow = (r: number, c: number): boolean =>
+      role(r, c) === Role.Screen && solid(r, c) && (bar === undefined || r > bar);
+    p.over(flare?.glow ?? trace(g, (r, c) => glow(r, c) && !shiny(r, c), FIT, 0.45), 'screen', ['body', 'shade']);
+    p.over(trace(g, shiny, FIT, 0.45), 'shine', ['body', 'shade']);
   }
   p.over(trace(g, onBody, FIT, 0.42), 'accent', ['body', 'shade', 'screen']);
   if (t.form === 'planet') ring(p, g, FIT);
   if (t.form === 'boulder') tag(p, 'sprout', () => sprout(p, g, FIT));
   // The face and mark keep the still frame's shapes, moved by whole cells with the avatar's.
   const moved: Fit = { ...FIT, ox: FIT.ox + (at.x - still.at.x) * FIT.s, oy: FIT.oy + (at.y - still.at.y) * FIT.s };
-  const blinks = STILL.includes(t.form) && !['happy', 'sleepy', 'wink'].includes(t.eyes);
+  // A tree's eyes sway with its crown, so only the others blink.
+  const blinks = STILL.includes(t.form) && t.form !== 'tree' && !['happy', 'sleepy', 'wink'].includes(t.eyes);
   face(p, still.g, still.at, t, moved, blinks);
-  mark(p, all, still.at, t, moved);
+  const plus = FIRE.includes(t.form) ? plusAt(t, all, still.at, moved) : undefined;
+  if (plus) tongue(p, ...plus, FIT.s);
+  else if (cut === undefined) mark(p, all, still.at, t, moved);
   if (flame) streak(p, core(still.g, n, FIT).streaks);
   if (t.form === 'boulder') rocks(p, FIT);
   shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
-  ink(p, [...FEATURES, ...(UNLINED_SHINES.includes(t.form) ? ['screen', 'accent'] : [])]);
+  ink(p, FEATURES, HAZE.slice(1));
   // A comet's sparks stream down its tail frame by frame, as the avatar's do; fire Sprites throw off
   // rising embers; other sparkles stay put and twinkle, and a still crystal gets more of them.
   if (t.form === 'comet') motes(p, g, FIT, new Set());
@@ -107,17 +144,30 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
     );
   else tag(p, 'motes', () => motes(p, still.g, FIT, skipped(t.form, still.g)));
   if (t.form === 'crystal') sparkles(p, body);
+  if (t.form === 'tree') crownPart(p, FIT.oy + trunkRow(g) * FIT.s);
   return p;
 }
 
 /** Drawn as lines already, or too small to ink. */
-const FEATURES = ['face', 'shine', 'blush', 'mote', 'mark', 'patch', 'ink', 'tentacle', 'facet'];
+const FEATURES = ['face', 'shine', 'blush', 'mote', 'mark', 'flare', 'patch', 'ink', 'tentacle', 'facet', ...HAZE];
 /** Forms whose dark patches are drawn without an outline. */
 const PATCHED = ['tornado', 'star'];
-/** Forms whose shines are drawn without an outline. */
-const UNLINED_SHINES = ['bubble', 'ember', 'drop'];
 /** Fire forms, whose sparks rise off them as embers. */
 const FIRE = ['flame', 'wisp', 'ember'];
+/** Forms whose bright cells are a fire's core, never a shine. */
+const FIRE_CORE = ['flame', 'wisp'];
+
+/** Makes everything above a tree's trunk one part, its crown, so the crown sways over the trunk. */
+function crownPart(p: Pix, y0: number): void {
+  for (let y = 0; y < y0; y++)
+    for (let x = 0; x < p.w; x++) if (p.get(x, y) !== '' && p.part[y]?.[x] === '') (p.part[y] as string[])[x] = 'crown';
+}
+
+/** The first avatar row of a tree's trunk. */
+function trunkRow(g: RoleGrid): number {
+  const r = g.findIndex((row) => row.includes(Role.Screen));
+  return r < 0 ? g.length : r;
+}
 
 /** Accent cells drawn as something other than sparkles: a boulder's sprout, a planet's ring. */
 function skipped(form: string, g: RoleGrid): Set<string> {

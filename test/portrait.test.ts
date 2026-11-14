@@ -205,6 +205,20 @@ describe('portrait motion matches the avatar', () => {
     expect(sprite.portrait('crystal-4', { animate: true })).toMatch(/class="p-motes-/);
   });
 
+  it('squashes a bubble and sways a treetop smoothly, rather than swapping traced shapes', () => {
+    const bubble = sprite.portrait('bubble-5', { animate: true });
+    const tree = sprite.portrait('tree-6', { animate: true });
+    for (const svg of [bubble, tree]) expect(svg).not.toMatch(/p-f\d/);
+    expect(bubble).toMatch(/class="p-whole-/);
+    expect(tree).toMatch(/class="p-crown-/);
+  });
+
+  it('layers a barred flame: a bright front with its haze rising behind it, and no bar mark', () => {
+    // wisp-49 has a bar mark and ember-2 a band of shade; the haze fades out, so it's see-through at the top.
+    for (const seed of ['wisp-49', 'ember-2']) expect(sprite.portrait(seed), seed).toMatch(/fill="#[0-9a-f]{6}70"/);
+    expect(sprite.portrait('flame-4')).not.toMatch(/fill="#[0-9a-f]{6}70"/);
+  });
+
   it("keeps a swaying Sprite's sparkles in place between frames, so they twinkle rather than jump", () => {
     const svg = sprite.portrait('drop-4', { animate: true });
     const motes = [...svg.matchAll(/<g class="p-motes-[^"]+">(.*?)<\/g>/g)].map((m) => m[1]);

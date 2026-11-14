@@ -141,7 +141,21 @@ function mouth(q: Pix, t: SpriteTraits, f: Fit, c: number, r: number, m: number)
   }
 }
 
-/** The forehead mark, where the avatar puts it: two rows over the eyes, raised until it fits every frame. */
+/** The avatar row the forehead mark is centred on: two rows over the eyes, raised until it fits every frame. */
+export function markRow(
+  frames: readonly { g: RoleGrid; at: Anchor }[],
+  at: Anchor,
+  t: SpriteTraits,
+): number | undefined {
+  const cells = CELLS[t.mark];
+  if (cells.length === 0) return undefined;
+  const lift = [0, 1, 2].find((n) =>
+    frames.every((fr) => cells.every(([mx, my]) => fr.g[fr.at.y - 2 - n + my]?.[fr.at.x + mx] === Role.Body)),
+  );
+  return lift === undefined ? undefined : at.y - 2 - lift;
+}
+
+/** The forehead mark, where the avatar puts it (see {@link markRow}). */
 export function mark(
   p: Pix,
   frames: readonly { g: RoleGrid; at: Anchor }[],
@@ -149,13 +163,9 @@ export function mark(
   t: SpriteTraits,
   f: Fit,
 ): void {
-  const cells = CELLS[t.mark];
-  if (cells.length === 0) return;
-  const lift = [0, 1, 2].find((n) =>
-    frames.every((fr) => cells.every(([mx, my]) => fr.g[fr.at.y - 2 - n + my]?.[fr.at.x + mx] === Role.Body)),
-  );
-  if (lift === undefined) return;
-  const pts = cells.map(([mx, my]) => point(f, at.x + mx, at.y - 2 - lift + my));
+  const row = markRow(frames, at, t);
+  if (row === undefined) return;
+  const pts = CELLS[t.mark].map(([mx, my]) => point(f, at.x + mx, row + my));
   // Joined into one smooth mark: each cell a dot, neighbours bridged.
   const parts: Shape[] = pts.map(([px, py]) => disc(px, py, f.s * 0.45));
   for (let i = 0; i < pts.length; i++)
