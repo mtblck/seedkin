@@ -1,0 +1,141 @@
+import { createRng } from '../../../src/core/random.js';
+import { Role, type RoleGrid } from '../../../src/core/types.js';
+import type { Anchor, Form } from '../../../src/styles/sprite/grid/draw.js';
+import { EARTH } from '../../../src/styles/sprite/grid/earth.js';
+import { FIRE } from '../../../src/styles/sprite/grid/fire.js';
+import { SPACE } from '../../../src/styles/sprite/grid/space.js';
+import { WATER } from '../../../src/styles/sprite/grid/water.js';
+import { WIND } from '../../../src/styles/sprite/grid/wind.js';
+import { PALETTES } from '../../../src/styles/sprite/palettes.js';
+import { traits } from '../../../src/styles/sprite/traits.js';
+import type { Palette } from '../../../src/styles/sprite/types.js';
+import {
+  and,
+  type Colours,
+  createPix,
+  ellipse,
+  ink,
+  mix,
+  or,
+  type Pix,
+  rect,
+  type Shape,
+  shadeRuns,
+} from '../canvas.js';
+import { type Figure, pair, single } from '../compose.js';
+import type { Scene } from '../scene.js';
+import { face, mark } from './face.js';
+import { clumps, type Fit, point, trace } from './trace.js';
+
+const FORMS: Record<string, Form> = { ...FIRE, ...WATER, ...EARTH, ...WIND, ...SPACE };
+const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain'];
+const FIT: Fit = { s: 3.8, ox: 32 - 7.5 * 3.8, oy: 32 - 7.5 * 3.8 + 1 };
+/** Drawn as lines already, or too small to ink. */
+const FEATURES = ['face', 'shine', 'blush', 'mote', 'mark'];
+
+/** Frame `n` of the seed's form, before its face, flipped when the Sprite is mirrored. */
+function frame(t: ReturnType<typeof traits>, n: number): { g: RoleGrid; at: Anchor } {
+  const { c, at } = (FORMS[t.form] as Form).full(n);
+  if (!t.isMirrored) return { g: c.cells, at };
+  return { g: c.cells.map((row) => [...row].reverse()), at: { ...at, x: c.cells.length - 1 - at.x } };
+}
+
+/**
+ * Draws a Sprite as a 64x64 portrait: its avatar's form traced smooth at
+ * the larger size (the outline, the shade tongues and cracks, the bright
+ * core, the accent spots), its motes as twinkles around it, and its face
+ * redrawn. Everything comes from the avatar's traits and its still frame;
+ * the scene comes from a second generator salted `sprite-portrait:`.
+ */
+export function figure(seed: string): Figure {
+  const t = traits(seed);
+  const pal = PALETTES[t.palette] as Palette;
+  const rng = createRng(`sprite-portrait:${seed}`);
+  const { g, at } = frame(t, 0);
+  const role = (r: number, c: number): number => g[r]?.[c] ?? Role.Empty;
+  const solid = (r: number, c: number): boolean => [Role.Body, Role.Shade, Role.Screen].includes(role(r, c) as 1);
+  const touches = (r: number, c: number): boolean =>
+    solid(r - 1, c) || solid(r + 1, c) || solid(r, c - 1) || solid(r, c + 1);
+  const onBody = (r: number, c: number): boolean => role(r, c) === Role.Accent && touches(r, c);
+  const p = createPix();
+  const body = trace(g, (r, c) => solid(r, c) || onBody(r, c), FIT, 0.85);
+  p.fill(body, 'shade');
+  p.fill(
+    and(body, (x, y) => body(x - 2, y) && body(x + 2, y)),
+    'body',
+  );
+  // Shade inside the outline: a flame's tongues, a coal's cracks, a crystal's facets.
+  const inner = (r: number, c: number): boolean =>
+    role(r, c) === Role.Shade && solid(r - 1, c) && solid(r + 1, c) && solid(r, c - 1) && solid(r, c + 1);
+  p.over(trace(g, inner, FIT, 0.42), 'shade', ['body'], -1);
+  p.over(
+    trace(g, (r, c) => role(r, c) === Role.Screen, FIT, 0.45),
+    'screen',
+    ['body', 'shade'],
+  );
+  p.over(trace(g, onBody, FIT, 0.42), 'accent', ['body', 'shade', 'screen']);
+  face(p, g, at, t, FIT);
+  mark(
+    p,
+    [0, 1, 2, 3].map((n) => frame(t, n)),
+    at,
+    t,
+    FIT,
+  );
+  shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
+  ink(p, FEATURES);
+  motes(p, g);
+  const colours: Colours = {
+    body: pal.body,
+    shade: pal.shade,
+    screen: pal.screen,
+    accent: pal.accent,
+    face: pal.glow,
+    shine: mix(pal.glow, '#ffffff', 0.85),
+    blush: pal.accent,
+    mote: pal.accent,
+    mark: pal.accent,
+    ink: '#1a1018',
+  };
+  return { p, colours, rng, bg: pal.bg, scenes: SCENES };
+}
+
+/** The avatar's loose accent cells (embers, sparkles, drops) as small four-point twinkles, unoutlined. */
+function motes(p: Pix, g: RoleGrid): void {
+  const loose = (r: number, c: number): boolean => {
+    if (g[r]?.[c] !== Role.Accent) return false;
+    return ![
+      [r - 1, c],
+      [r + 1, c],
+      [r, c - 1],
+      [r, c + 1],
+    ].some(([rr, cc]) => {
+      const v = g[rr as number]?.[cc as number];
+      return v === Role.Body || v === Role.Shade || v === Role.Screen;
+    });
+  };
+  for (const clump of clumps(g, loose)) {
+    const [x, y] = point(
+      FIT,
+      clump.reduce((a, [, c]) => a + c, 0) / clump.length,
+      clump.reduce((a, [r]) => a + r, 0) / clump.length,
+    );
+    const k = clump.length > 1 ? 1.4 : 1;
+    const star: Shape = or(
+      rect(Math.round(x), Math.round(y - 2 * k), Math.round(x), Math.round(y + 2 * k)),
+      rect(Math.round(x - 2 * k), Math.round(y), Math.round(x + 2 * k), Math.round(y)),
+      ellipse(x, y, 1.2 * k, 1.2 * k),
+    );
+    p.fill(star, 'mote');
+  }
+}
+
+/** A Sprite portrait in its seeded scene, as SVG. */
+export function portrait(seed: string, px = 4): string {
+  return single(figure(seed), px);
+}
+
+/** Two Sprites facing each other in one 128x64 scene. */
+export function duet(left: string, right: string, px = 4): string {
+  return pair(figure(left), figure(right), px);
+}
