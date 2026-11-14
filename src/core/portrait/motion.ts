@@ -4,7 +4,7 @@ import type { Pix } from './canvas.js';
 
 /**
  * How a portrait's part moves: the avatar's four, a tail's wag, wings' flap, a float, a sparkle's
- * twinkle, a rock's drift, an ember's rise, a bubble's squash or a treetop's sway.
+ * twinkle, a rock's drift, an ember's rise, a bubble's squash, a treetop's sway or a leaf's fall.
  */
 export type Move =
   | 'blink'
@@ -18,8 +18,9 @@ export type Move =
   | 'drift'
   | 'rise'
   | 'squash'
-  | 'sway';
-type Extra = 'wag' | 'flap' | 'twinkle' | 'drift' | 'rise' | 'squash' | 'sway';
+  | 'sway'
+  | 'fall';
+type Extra = 'wag' | 'flap' | 'twinkle' | 'drift' | 'rise' | 'squash' | 'sway' | 'fall';
 
 /** One moving part's rule: keyframes, period and start in tenths of a second, and its pivot. */
 export interface Rule {
@@ -72,6 +73,12 @@ const EXTRA: Record<Extra, { keyframes: string; period: [number, number] }> = {
     keyframes: '0%,100%{transform:none}25%{transform:skewX(-4deg)}75%{transform:skewX(4deg)}',
     period: [36, 50],
   },
+  // A leaf drifts down from a treetop, rocking side to side, and shrinks away before it starts again.
+  fall: {
+    keyframes:
+      '0%{transform:none}30%{transform:translate(3px,6px) rotate(25deg)}60%{transform:translate(-1px,12px) rotate(-15deg)}100%{transform:translate(2px,18px) rotate(10deg) scale(0)}',
+    period: [34, 48],
+  },
 };
 
 /** Whether a move is one of the portrait's own, timed apart from the avatar's clock. */
@@ -107,8 +114,8 @@ export function motion(styleSeed: string, parts: Record<string, [Move, string]>,
         period,
         offset: Math.floor(own() * period),
         origin,
-        timing: m === 'rise' ? ' ease-out' : ' ease-in-out',
-        ...(m === 'twinkle' || m === 'drift' || m === 'rise' ? { right: 'half' as const } : {}),
+        timing: m === 'rise' ? ' ease-out' : m === 'fall' ? ' linear' : ' ease-in-out',
+        ...(['twinkle', 'drift', 'rise', 'fall'].includes(m) ? { right: 'half' as const } : {}),
       };
     }
     const c = clock[m];

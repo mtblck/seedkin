@@ -34,20 +34,24 @@ export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>, bu
     );
     const k = clump.length > 1 ? 1.4 : 1;
     if (bubbles) {
-      // A bubble with two little ones trailing below it.
-      // The little ones only out in the air, judged from the still frame, so every frame draws the same.
+      // A bubble with a smaller one beside it, out in the air (judged from the still frame, so every
+      // frame draws the same), and a third, tiny one when there's room.
       const air = (bx: number, by: number): boolean => {
         const [c, r] = [Math.floor((bx - f.ox) / f.s), Math.floor((by - f.oy) / f.s)];
-        return [-1, 0, 1].every((dr) =>
-          [-1, 0, 1].every((dc) => !g[r + dr]?.[c + dc] || g[r + dr]?.[c + dc] === Role.Accent),
+        const inside = bx > 3 && by > 3 && bx < p.w - 3 && by < p.h - 3;
+        return (
+          inside &&
+          [-1, 0, 1].every((dr) =>
+            [-1, 0, 1].every((dc) => !g[r + dr]?.[c + dc] || g[r + dr]?.[c + dc] === Role.Accent),
+          )
         );
       };
       bubble(p, x, y, 3);
-      for (const [bx, by, size] of [
-        [x + 5 * k, y + 6.5 * k, 2],
-        [x + 1 * k, y + 10 * k, 1],
-      ] as const)
-        if (air(bx, by)) bubble(p, bx, by, size);
+      const spots = SIDES.map(([dx, dy]) => [x + dx * k, y + dy * k] as const);
+      const [bx, by] = spots.find(([sx, sy]) => air(sx, sy)) ?? (spots[0] as readonly [number, number]);
+      bubble(p, bx, by, 2);
+      const [tx, ty] = [bx + (bx - x) * 0.6, by + (by - y) * 0.6];
+      if (air(tx, ty)) bubble(p, tx, ty, 1);
       continue;
     }
     const star: Shape = or(
@@ -55,9 +59,20 @@ export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>, bu
       rect(Math.round(x - 2 * k), Math.round(y), Math.round(x + 2 * k), Math.round(y)),
       ellipse(x, y, 1.2 * k, 1.2 * k),
     );
-    p.fill(star, 'mote');
+    // A sparkle takes its cell's colour in the avatar: a planet's are its bright screen colour.
+    p.fill(star, clump.some(([r, c]) => g[r]?.[c] === Role.Screen) ? 'spark' : 'mote');
   }
 }
+
+/** Where a bubble's smaller companion may go, in order: below and to the side first, as if it trailed. */
+const SIDES = [
+  [5, 6.5],
+  [-5, 6.5],
+  [6, -5],
+  [-6, -5],
+  [7, 0],
+  [-7, 0],
+] as const;
 
 /** Floating bubbles, drawn by hand: `o` the pale ring, `-` the see-through middle, `*` the glint. */
 const BUBBLES: Record<number, string[]> = {

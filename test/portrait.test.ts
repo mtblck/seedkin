@@ -205,19 +205,18 @@ describe('portrait motion matches the avatar', () => {
     expect(sprite.portrait('crystal-4', { animate: true })).toMatch(/class="p-motes-/);
   });
 
-  it('squashes a bubble and sways a treetop and a funnel smoothly, rather than swapping traced shapes', () => {
+  it('squashes a bubble and sways a treetop smoothly, rather than swapping traced shapes', () => {
     const bubble = sprite.portrait('bubble-5', { animate: true });
     const tree = sprite.portrait('tree-6', { animate: true });
-    const tornado = sprite.portrait('tornado-100', { animate: true });
-    for (const svg of [bubble, tree, tornado]) expect(svg).not.toMatch(/p-f\d/);
+    for (const svg of [bubble, tree]) expect(svg).not.toMatch(/p-f\d/);
     expect(bubble).toMatch(/class="p-whole-/);
     expect(tree).toMatch(/class="p-crown-/);
-    expect(tornado).toMatch(/class="p-funnel-/);
+    expect(tree).toMatch(/class="p-leaves-/);
   });
 
   it('draws the sparkles round a drop or a bubble as little bubbles, with see-through middles', () => {
-    for (const seed of ['drop-4', 'bubble-5']) expect(sprite.portrait(seed), seed).toMatch(/fill="#[0-9a-f]{6}66"/);
-    expect(sprite.portrait('crystal-4')).not.toMatch(/fill="#[0-9a-f]{6}66"/);
+    for (const seed of ['drop-4', 'bubble-5']) expect(sprite.portrait(seed), seed).toMatch(/fill="#[0-9a-f]{6}55"/);
+    expect(sprite.portrait('crystal-4')).not.toMatch(/fill="#[0-9a-f]{6}55"/);
   });
 
   it("keeps a swaying Sprite's sparkles in place between frames, so they twinkle rather than jump", () => {

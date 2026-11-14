@@ -56,7 +56,7 @@ function figure(seed: string, holiday?: Holiday, animate = true): Figure {
   const colours: Colours = {
     body: pal.body,
     shade: pal.shade,
-    patch: t.form === 'tornado' ? mix(pal.body, pal.shade, 0.45) : pal.shade,
+    patch: pal.shade,
     tentacle: pal.shade,
     pebble: pal.shade,
     facet: mix(pal.body, pal.shade, 0.55),
@@ -70,8 +70,11 @@ function figure(seed: string, holiday?: Holiday, animate = true): Figure {
     mark: pal.accent,
     flare: mix(pal.accent, '#ffffff', 0.55),
     haze: pal.shade,
-    bubble: mix(pal.screen, '#ffffff', 0.35),
-    bubblein: `${mix(pal.screen, '#ffffff', 0.6)}66`,
+    // Bubbles in the avatar's own colour for its loose drops.
+    bubble: pal.accent,
+    bubblein: `${pal.accent}55`,
+    spark: pal.screen,
+    leaf: pal.accent,
     ink: '#1a1018',
   };
   const moves = motion(
@@ -87,7 +90,7 @@ function figure(seed: string, holiday?: Holiday, animate = true): Figure {
       ember1: ['rise', 'center'],
       ember2: ['rise', 'center'],
       crown: ['sway', '50% 100%'],
-      funnel: ['sway', '50% 0%'],
+      leaves: ['fall', 'center'],
     },
     t.form === 'bubble' && animate ? 'squash' : undefined,
   );

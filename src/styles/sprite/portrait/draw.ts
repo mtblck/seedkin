@@ -9,7 +9,7 @@ import { core, streak } from './flame.js';
 import { embers, faces, ring, ringRow, rocks, sparkles } from './fx.js';
 import { barRow, front, haze, plusAt, tongue } from './layers.js';
 import { motes } from './motes.js';
-import { LIFT, shift, sway, trunkRow } from './place.js';
+import { LIFT, leaves, shift, sway, trunkRow } from './place.js';
 import { clumps, type Fit, isolated, trace } from './trace.js';
 
 /**
@@ -22,7 +22,7 @@ export const FIT: Fit = { s: 4, ox: 2, oy: 3 };
  * Forms whose traced body holds still, as Matt asked: only their eyes blink and their sparkles or
  * pebbles move. A bubble squashes and a treetop sways smoothly instead of swapping traced shapes.
  */
-export const STILL = ['boulder', 'crystal', 'bubble', 'tree', 'tornado'];
+export const STILL = ['boulder', 'crystal', 'bubble', 'tree'];
 
 /** One frame of the avatar, with its anchor. */
 export interface Frame {
@@ -125,7 +125,7 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
   if (t.form === 'boulder') tag(p, 'sprout', () => sprout(p, g, FIT));
   // The face and mark keep the still frame's shapes, moved by whole cells with the avatar's.
   const moved: Fit = { ...FIT, ox: FIT.ox + (at.x - still.at.x) * FIT.s, oy: FIT.oy + (at.y - still.at.y) * FIT.s };
-  // A treetop's or a whirlwind's eyes sway with it, so only the other still forms blink.
+  // A treetop's eyes sway with it, so only the other still forms blink.
   const blinks = STILL.includes(t.form) && !SWAYS.includes(t.form) && !['happy', 'sleepy', 'wink'].includes(t.eyes);
   face(p, still.g, still.at, t, moved, blinks);
   const plus = FIRE.includes(t.form) ? plusAt(t, all, still.at, moved) : undefined;
@@ -145,9 +145,11 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
     );
   else tag(p, 'motes', () => motes(p, still.g, FIT, skipped(t.form, still.g), WATERY.includes(t.form)));
   if (t.form === 'crystal') sparkles(p, body);
-  // A treetop sways over its trunk, and a whirlwind's funnel swings from its top.
-  if (t.form === 'tree') sway(p, 'crown', FIT.oy + trunkRow(g) * FIT.s);
-  if (t.form === 'tornado') sway(p, 'funnel', p.h);
+  // A treetop sways over its trunk.
+  if (t.form === 'tree') {
+    leaves(p, g, FIT);
+    sway(p, 'crown', FIT.oy + trunkRow(g) * FIT.s);
+  }
   shift(p, LIFT[t.form] ?? 0);
   return p;
 }
@@ -172,7 +174,7 @@ const PATCHED = ['tornado', 'star'];
 /** Fire forms, whose sparks rise off them as embers. */
 const FIRE = ['flame', 'wisp', 'ember'];
 /** Forms that sway as one part, so their eyes can't blink apart from it. */
-const SWAYS = ['tree', 'tornado'];
+const SWAYS = ['tree'];
 /** Water forms, whose motes are little floating bubbles. */
 export const WATERY = ['drop', 'bubble'];
 /** Forms whose bright cells are a fire's core, never a shine. */
