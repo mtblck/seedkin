@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+export type { PortraitOptions } from '../../core/portrait/options.js';
 export { FRAMES } from '../../core/render/frame.js';
 export { LOOKS } from '../../core/render/look.js';
 export { randomSeed } from '../../core/seed.js';
@@ -11,6 +12,7 @@ export { CENTER, GRID_SIZE, grid, SMALL_GRID_SIZE, smallGrid } from './grid/inde
 export { HOLIDAY_PALETTES, type Holiday } from './holidays.js';
 export { PALETTES } from './palettes.js';
 export { ACCESSORIES, EYES, HEADS, MOUTHS, PATTERNS, QUIRKS, SHAPES, SIDES, TOPS } from './parts.js';
+export { duet, portrait } from './portrait/index.js';
 export { botling, botlingDataUri, resolveTraits } from './svg.js';
 export { traits } from './traits.js';
 export type {
