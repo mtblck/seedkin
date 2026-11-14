@@ -6,6 +6,8 @@ export interface Layer {
   colours: Colours;
   /** Part name to class; parts without one hold still. */
   cls?: Record<string, string>;
+  /** Moving parts drawn beneath the still ones rather than over them. */
+  behind?: readonly string[];
   /** Classes around the whole layer, outermost first, each its own group. */
   wrap?: string[];
   /** Cells to shift right. */
@@ -41,7 +43,7 @@ export function toSvg(layers: Layer[], px = 4, style = '', always = ''): string 
   const w = Math.max(...layers.map((l) => l.p.w + (l.dx ?? 0)));
   const h = layers[0]?.p.h ?? 0;
   let body = '';
-  for (const { p, colours, cls = {}, wrap = [], dx = 0 } of layers) {
+  for (const { p, colours, cls = {}, behind = [], wrap = [], dx = 0 } of layers) {
     const colour = (x: number, y: number): string => {
       const m = p.get(x, y);
       return m === '' ? '' : colourOf(colours[m] ?? '#ff00ff', (p.tone[y] as number[])[x] as number);
@@ -63,12 +65,15 @@ export function toSvg(layers: Layer[], px = 4, style = '', always = ''): string 
         dx,
       );
     let parts = '';
+    let back = '';
     for (const [part, c] of Object.entries(cls)) {
       let rects = '';
       for (let y = 0; y < h; y++) rects += runs(p.w, y, (x) => (moving(x, y) === part ? colour(x, y) : ''), dx);
-      if (rects) parts += `<g class="${c}">${rects}</g>`;
+      if (!rects) continue;
+      if (behind.includes(part)) back += `<g class="${c}">${rects}</g>`;
+      else parts += `<g class="${c}">${rects}</g>`;
     }
-    body += wrap.filter(Boolean).reduceRight((inner, c) => `<g class="${c}">${inner}</g>`, still + parts);
+    body += wrap.filter(Boolean).reduceRight((inner, c) => `<g class="${c}">${inner}</g>`, back + still + parts);
   }
   const motion = style ? `@media (prefers-reduced-motion:no-preference){${style}}` : '';
   const css = motion || always ? `<style>${always}${motion}</style>` : '';

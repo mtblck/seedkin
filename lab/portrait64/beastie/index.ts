@@ -67,7 +67,7 @@ export function figure(seed: string, holiday?: Holiday): Figure {
     // A ghost floats, as the avatar hovers.
     t.body === 'ghost' ? 'hover' : undefined,
   );
-  return { p, colours, rng, bg: pal.bg, scenes: holiday ? [holiday] : SCENES, motion: moves };
+  return { p, colours, rng, bg: pal.bg, scenes: holiday ? [holiday] : SCENES, motion: moves, behind: ['wings'] };
 }
 
 /** A bow tie or a bandana, just under the mouth. */

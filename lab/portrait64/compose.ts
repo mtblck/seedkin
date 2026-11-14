@@ -13,6 +13,8 @@ export interface Figure {
   scenes: readonly Scene[];
   /** What moves, when animated. */
   motion?: Motion;
+  /** Moving parts drawn behind the rest, so they never cross its front (a beastie's wings). */
+  behind?: readonly string[];
   /** Further frames shown in turn with `p` (a Sprite's sway), with each frame's share of the loop. */
   frames?: { ps: Pix[]; beats: number[] };
 }
@@ -42,7 +44,9 @@ function figureLayers(
     return { layers: [{ p: one(f.p), colours: f.colours, dx }], style: '', always: '' };
   }
   const { cls, whole, style } = css(f.motion, id, flip);
-  if (!f.frames) return { layers: [{ p: one(f.p), colours: f.colours, cls, wrap: [whole], dx }], style, always: '' };
+  const behind = f.behind ?? [];
+  if (!f.frames)
+    return { layers: [{ p: one(f.p), colours: f.colours, cls, behind, wrap: [whole], dx }], style, always: '' };
   // Sprites: every frame's layer is hidden but for its own share of the loop, as the avatar's are.
   const ps = [f.p, ...f.frames.ps];
   const total = f.frames.beats.reduce((a, b) => a + b, 0);
@@ -55,7 +59,7 @@ function figureLayers(
     const c = `${id}-f${i}-${a}-${b}-${total}`;
     const show = a === 0 ? '0%{visibility:visible}' : `0%{visibility:hidden}${a}%{visibility:visible}`;
     extra += `@keyframes ${c}{${show}${b === 100 ? '' : `${b}%{visibility:hidden}`}}.${c}{animation:${c} ${total / 1000}s step-end infinite}`;
-    return { p: one(p), colours: f.colours, cls, wrap: [whole, c], dx };
+    return { p: one(p), colours: f.colours, cls, behind, wrap: [whole, c], dx };
   });
   // Without motion, only the first frame shows.
   const always = layers.map((l, i) => (i ? `.${l.wrap?.[1]}{visibility:hidden}` : '')).join('');
