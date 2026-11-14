@@ -40,6 +40,7 @@ function runs(w: number, y: number, colourAt: (x: number) => string, dx: number)
  * @param style - CSS for the classes, wrapped so it only runs when motion is welcome
  * @param always - CSS that applies either way
  * @param title - Accessible name; `null` marks the image decorative
+ * @returns A standalone SVG document
  */
 export function toSvg(layers: Layer[], px = 4, style = '', always = '', title: string | null = null): string {
   const w = Math.max(...layers.map((l) => l.p.w + (l.dx ?? 0)));

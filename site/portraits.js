@@ -6,9 +6,12 @@ if (demo) {
   const seed = demo.dataset.seed ?? 'jolly-sprocket-65';
   const animate = !matchMedia('(prefers-reduced-motion: reduce)').matches;
   for (const name of STYLES) {
-    import(`/lib/styles/${name}/portrait/index.js`).then(({ portraitDataUri }) => {
-      const img = demo.querySelector(`img[data-style="${name}"]`);
-      if (img) img.src = portraitDataUri(seed, { size: 192, animate, title: null });
-    });
+    const img = demo.querySelector(`img[data-style="${name}"]`);
+    import(`/lib/styles/${name}/portrait/index.js`)
+      .then(({ portraitDataUri }) => {
+        if (img) img.src = portraitDataUri(seed, { size: 192, animate, title: null });
+      })
+      // A module that fails to load leaves no broken image behind.
+      .catch(() => img?.remove());
   }
 }
