@@ -4,10 +4,12 @@ import { clumps, type Fit, isolated, point } from './trace.js';
 
 /**
  * The avatar's loose accent cells (embers, sparkles, drops), and a planet's
- * loose screen sparkles, as four-point twinkles, unoutlined. `skip` holds
- * cells drawn as something else, such as a boulder's sprout.
+ * loose screen sparkles, as four-point twinkles, unoutlined; or, around a
+ * drop or a bubble (`bubbles`), as little floating bubbles: a pale ring
+ * with a see-through middle and a white glint. `skip` holds cells drawn as
+ * something else, such as a boulder's sprout.
  */
-export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>): void {
+export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>, bubbles = false): void {
   const loose = (r: number, c: number): boolean => {
     if (skip.has(`${r},${c}`)) return false;
     const v = g[r]?.[c];
@@ -31,6 +33,23 @@ export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>): v
       clump.reduce((a, [r]) => a + r, 0) / clump.length,
     );
     const k = clump.length > 1 ? 1.4 : 1;
+    if (bubbles) {
+      // A bubble with two little ones trailing below it.
+      // The little ones only out in the air, judged from the still frame, so every frame draws the same.
+      const air = (bx: number, by: number): boolean => {
+        const [c, r] = [Math.floor((bx - f.ox) / f.s), Math.floor((by - f.oy) / f.s)];
+        return [-1, 0, 1].every((dr) =>
+          [-1, 0, 1].every((dc) => !g[r + dr]?.[c + dc] || g[r + dr]?.[c + dc] === Role.Accent),
+        );
+      };
+      bubble(p, x, y, 3);
+      for (const [bx, by, size] of [
+        [x + 5 * k, y + 6.5 * k, 2],
+        [x + 1 * k, y + 10 * k, 1],
+      ] as const)
+        if (air(bx, by)) bubble(p, bx, by, size);
+      continue;
+    }
     const star: Shape = or(
       rect(Math.round(x), Math.round(y - 2 * k), Math.round(x), Math.round(y + 2 * k)),
       rect(Math.round(x - 2 * k), Math.round(y), Math.round(x + 2 * k), Math.round(y)),
@@ -38,4 +57,23 @@ export function motes(p: Pix, g: RoleGrid, f: Fit, skip: ReadonlySet<string>): v
     );
     p.fill(star, 'mote');
   }
+}
+
+/** Floating bubbles, drawn by hand: `o` the pale ring, `-` the see-through middle, `*` the glint. */
+const BUBBLES: Record<number, string[]> = {
+  3: ['..ooo..', '.o---o.', 'o-*---o', 'o-----o', 'o-----o', '.o---o.', '..ooo..'],
+  2: ['.ooo.', 'o---o', 'o---o', 'o---o', '.ooo.'],
+  1: ['oo', 'oo'],
+};
+
+/** One floating bubble of size 1 to 3, centred near (x, y). */
+function bubble(p: Pix, x: number, y: number, size: number): void {
+  const rows = BUBBLES[size] as string[];
+  const [x0, y0] = [Math.round(x - rows.length / 2), Math.round(y - rows.length / 2)];
+  const mats: Record<string, string> = { o: 'bubble', '-': 'bubblein', '*': 'shine' };
+  rows.forEach((row, dy) => {
+    [...row].forEach((ch, dx) => {
+      if (mats[ch]) p.set(x0 + dx, y0 + dy, mats[ch] as string);
+    });
+  });
 }

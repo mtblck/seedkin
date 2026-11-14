@@ -5,9 +5,6 @@ import type { SpriteTraits } from '../types.js';
 import { markRow } from './face.js';
 import { type Fit, point } from './trace.js';
 
-/** The haze's three steps, from the bright front up to where it fades away. */
-export const HAZE = ['haze', 'haze2', 'haze3'];
-
 /**
  * The avatar row a fire Sprite's flame divides at, when it has a bar across
  * its brow: an ember's band of shade, or a bar mark on a flame or a wisp.
@@ -40,23 +37,11 @@ export function front(body: Shape, y: number, cx: number): Shape {
 }
 
 /**
- * Paints the flame above the front as haze, darker than the body and
- * fading as it rises: solid, then see-through, then a dither that thins
- * to nothing at the tip. Its outline goes only as far as the solid step, so it trails off into the scene.
+ * Paints the flame above the front as haze: solid, darker than the body,
+ * and outlined, so the bright front stands out over it.
  */
-export function haze(p: Pix, body: Shape, bright: Shape, y: number): void {
-  let top = p.h;
-  for (let py = 0; py < p.h && top === p.h; py++) for (let x = 0; x < p.w; x++) if (body(x, py)) top = py;
-  const rest = and(body, not(bright));
-  const step = (py: number): number => {
-    const k = (y - py) / Math.max(1, y - top);
-    return k < 0.5 ? 0 : k < 0.8 ? 1 : 2;
-  };
-  for (const [i, m] of HAZE.entries())
-    p.fill(
-      and(rest, (x, py) => step(py) === i && (i < 2 || (x + py) % 2 === 0)),
-      m,
-    );
+export function haze(p: Pix, body: Shape, bright: Shape): void {
+  p.fill(and(body, not(bright)), 'haze');
 }
 
 /**

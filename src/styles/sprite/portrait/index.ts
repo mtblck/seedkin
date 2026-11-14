@@ -26,7 +26,7 @@ import { HOLIDAY_PALETTES } from '../holidays.js';
 import { PALETTES } from '../palettes.js';
 import { traits } from '../traits.js';
 import type { Palette, SpriteTraits } from '../types.js';
-import { draw, type Frame, STILL } from './draw.js';
+import { draw, type Frame, STILL, WATERY } from './draw.js';
 
 const FORMS: Record<string, Form> = { ...FIRE, ...WATER, ...EARTH, ...WIND, ...SPACE };
 const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain'];
@@ -56,7 +56,7 @@ function figure(seed: string, holiday?: Holiday, animate = true): Figure {
   const colours: Colours = {
     body: pal.body,
     shade: pal.shade,
-    patch: pal.shade,
+    patch: t.form === 'tornado' ? mix(pal.body, pal.shade, 0.45) : pal.shade,
     tentacle: pal.shade,
     pebble: pal.shade,
     facet: mix(pal.body, pal.shade, 0.55),
@@ -70,15 +70,15 @@ function figure(seed: string, holiday?: Holiday, animate = true): Figure {
     mark: pal.accent,
     flare: mix(pal.accent, '#ffffff', 0.55),
     haze: pal.shade,
-    haze2: `${pal.shade}b0`,
-    haze3: `${pal.shade}70`,
+    bubble: mix(pal.screen, '#ffffff', 0.35),
+    bubblein: `${mix(pal.screen, '#ffffff', 0.6)}66`,
     ink: '#1a1018',
   };
   const moves = motion(
     `sprite:${seed}`,
     {
       eyes: ['blink', 'center'],
-      motes: ['twinkle', 'center'],
+      motes: [WATERY.includes(t.form) ? 'drift' : 'twinkle', 'center'],
       rocks: ['drift', 'center'],
       sprout: ['wobble', '50% 100%'],
       sparkles: ['twinkle', 'center'],
@@ -87,6 +87,7 @@ function figure(seed: string, holiday?: Holiday, animate = true): Figure {
       ember1: ['rise', 'center'],
       ember2: ['rise', 'center'],
       crown: ['sway', '50% 100%'],
+      funnel: ['sway', '50% 0%'],
     },
     t.form === 'bubble' && animate ? 'squash' : undefined,
   );
