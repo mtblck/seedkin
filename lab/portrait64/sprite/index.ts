@@ -112,10 +112,9 @@ function draw(
   p.over(trace(g, onBody, FIT, 0.42), 'accent', ['body', 'shade', 'screen']);
   face(p, g, at, t, FIT);
   mark(p, all, at, t, FIT);
+  if (flare) streak(p, flare.streaks);
   shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
   ink(p, FEATURES);
-  // Streaks go on after the ink, so a thin one stays bright instead of turning to line.
-  if (flare) streak(p, flare.streaks);
   motes(p, g);
   return p;
 }
