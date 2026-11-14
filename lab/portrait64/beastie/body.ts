@@ -1,5 +1,6 @@
 import type { BeastieTraits } from '../../../src/styles/beastie/types.js';
 import { and, ellipse, or, type Pix, rounded, type Shape, tri } from '../canvas.js';
+import { tag } from '../motion.js';
 
 /**
  * Where a Beastie sits on the 64x64 canvas. A Beastie is all head: its body
@@ -141,42 +142,46 @@ export function topPiece(p: Pix, t: BeastieTraits, b: Beast): void {
  * the avatar has them.
  */
 export function limbs(p: Pix, t: BeastieTraits, b: Beast, front: boolean): void {
-  if (!front && t.sides === 'wings') {
-    for (const sd of [-1, 1]) {
-      const x = b.cx + sd * (b.hx - 2);
-      const y = b.top + b.hy * 0.55;
-      const wing: Shape = (cx, cy) => {
-        const dx = (cx + 0.5 - x) * sd;
-        const dy = y - (cy + 0.5);
-        return (
-          dx >= 0 &&
-          dx <= 14 &&
-          dy >= -6 + dx * 0.15 &&
-          dy <= 4 + dx * 0.9 &&
-          !(dx > 5 && (dy + 40) % 5 < 1.2 && dy < dx * 0.9 - 2)
-        );
-      };
-      p.fill(wing, 'accent');
+  tag(p, 'wings', () => {
+    if (!front && t.sides === 'wings') {
+      for (const sd of [-1, 1]) {
+        const x = b.cx + sd * (b.hx - 2);
+        const y = b.top + b.hy * 0.55;
+        const wing: Shape = (cx, cy) => {
+          const dx = (cx + 0.5 - x) * sd;
+          const dy = y - (cy + 0.5);
+          return (
+            dx >= 0 &&
+            dx <= 14 &&
+            dy >= -6 + dx * 0.15 &&
+            dy <= 4 + dx * 0.9 &&
+            !(dx > 5 && (dy + 40) % 5 < 1.2 && dy < dx * 0.9 - 2)
+          );
+        };
+        p.fill(wing, 'accent');
+      }
     }
-  }
+  });
   if (front) return;
-  for (const sd of [-1, 1]) {
-    const x = b.cx + sd * (b.hx - 1);
-    const y = b.top + b.hy * (t.body === 'wide' ? 1.15 : 1.05);
-    if (t.sides === 'arms') {
-      // Raised, as the avatar's arms reach up and out.
-      p.fill((cx, cy) => {
-        const dx = (cx + 0.5 - x) * sd;
-        return dx >= -2 && dx <= 8 && Math.abs(cy + 0.5 - (y - dx * 0.9)) <= 2;
-      }, 'shade');
-      p.fill(ellipse(x + sd * 8.5, y - 8, 2.8, 2.8), 'shade');
-    } else {
-      // Hanging at its sides, angled a little out, with a round hand.
-      p.fill((cx, cy) => {
-        const dy = cy + 0.5 - y;
-        return dy >= -2 && dy <= 8 && Math.abs((cx + 0.5 - x) * sd - (1 + dy * 0.3)) <= 2.1;
-      }, 'shade');
-      p.fill(ellipse(x + sd * 3.6, y + 9, 2.7, 2.5), 'shade');
+  tag(p, 'arms', () => {
+    for (const sd of [-1, 1]) {
+      const x = b.cx + sd * (b.hx - 1);
+      const y = b.top + b.hy * (t.body === 'wide' ? 1.15 : 1.05);
+      if (t.sides === 'arms') {
+        // Raised, as the avatar's arms reach up and out.
+        p.fill((cx, cy) => {
+          const dx = (cx + 0.5 - x) * sd;
+          return dx >= -2 && dx <= 8 && Math.abs(cy + 0.5 - (y - dx * 0.9)) <= 2;
+        }, 'shade');
+        p.fill(ellipse(x + sd * 8.5, y - 8, 2.8, 2.8), 'shade');
+      } else {
+        // Hanging at its sides, angled a little out, with a round hand.
+        p.fill((cx, cy) => {
+          const dy = cy + 0.5 - y;
+          return dy >= -2 && dy <= 8 && Math.abs((cx + 0.5 - x) * sd - (1 + dy * 0.3)) <= 2.1;
+        }, 'shade');
+        p.fill(ellipse(x + sd * 3.6, y + 9, 2.7, 2.5), 'shade');
+      }
     }
-  }
+  });
 }

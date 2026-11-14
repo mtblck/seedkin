@@ -1,4 +1,6 @@
 import { createRng, pick } from '../../src/core/random.js';
+import type { Holiday } from '../../src/core/types.js';
+import { HOLIDAY_PALETTES } from '../../src/styles/noggin/holidays.js';
 import { paletteFor } from '../../src/styles/noggin/palettes.js';
 import { traits } from '../../src/styles/noggin/traits.js';
 import { type Colours, createPix, ink, mix, shadeRuns } from './canvas.js';
@@ -6,6 +8,7 @@ import { body, CLOTHES, collar } from './clothes.js';
 import { type Figure, pair, single } from './compose.js';
 import { eyewear, FEATURES, face, headwear, scarfBack } from './face.js';
 import { backHair, frontHair, head } from './hair.js';
+import { motion } from './motion.js';
 import { HOME_SCENES } from './scene.js';
 
 /**
@@ -14,9 +17,11 @@ import { HOME_SCENES } from './scene.js';
  * clothes and scene come from a second generator salted
  * `noggin-portrait:`, so no avatar changes.
  */
-export function figure(seed: string): Figure {
+export function figure(seed: string, holiday?: Holiday): Figure {
   const t = traits(seed);
-  const pal = paletteFor(t.palette, t.skin, t.hairColour);
+  // A holiday outfit is worn with the seed's own skin and hair, as on the avatar.
+  const base = paletteFor(t.palette, t.skin, t.hairColour);
+  const pal = holiday ? { ...base, ...HOLIDAY_PALETTES[holiday] } : base;
   const rng = createRng(`noggin-portrait:${seed}`);
   const clothes = pick(rng, CLOTHES);
   const h = head(t.halfWidth === 3 ? 12.5 : 14);
@@ -61,7 +66,8 @@ export function figure(seed: string): Figure {
     lens: '#18141c',
     ink: '#1a1018',
   };
-  return { p, colours, rng, bg: pal.bg, scenes: HOME_SCENES };
+  const moves = motion(`noggin:${seed}`, { eyes: ['blink', 'center'], mouth: ['talk', 'center'] });
+  return { p, colours, rng, bg: pal.bg, scenes: holiday ? [holiday] : HOME_SCENES, motion: moves };
 }
 
 /**
@@ -69,12 +75,13 @@ export function figure(seed: string): Figure {
  *
  * @param seed - Any string
  * @param px - Pixels per cell
+ * @param animate - Blink and talk as the avatar does
  */
-export function portrait(seed: string, px = 4): string {
-  return single(figure(seed), px);
+export function portrait(seed: string, px = 4, animate = false, holiday?: Holiday): string {
+  return single(figure(seed, holiday), px, animate);
 }
 
 /** Two Noggins facing each other in one 128x64 scene. */
-export function duet(left: string, right: string, px = 4): string {
-  return pair(figure(left), figure(right), px);
+export function duet(left: string, right: string, px = 4, animate = false, holiday?: Holiday): string {
+  return pair(figure(left, holiday), figure(right, holiday), px, animate);
 }

@@ -1,5 +1,6 @@
 import type { SnootTraits } from '../../../src/styles/snoot/types.js';
 import { and, ellipse, not, or, type Pix, rect, rounded, type Shape, tri } from '../canvas.js';
+import { tag } from '../motion.js';
 
 const CX = 32;
 type Point = readonly [number, number];
@@ -44,7 +45,7 @@ function sitting(p: Pix, t: SnootTraits): void {
   // Haunches are their own material so the ink pass draws the thigh's line where the body overlaps it.
   const limb = 'haunch';
   const bunny = t.species === 'bunny';
-  tail(p, t);
+  tag(p, 'tail', () => tail(p, t));
   p.fill(
     pair((s) => ellipse(CX + s * 8.5, 51, 8, 9.5)),
     limb,
@@ -52,7 +53,11 @@ function sitting(p: Pix, t: SnootTraits): void {
   p.fill(or(ellipse(CX, 42, 9, 15), ellipse(CX, 51, 10.5, 9)), 'body');
   // A pale chest, and the belly in shadow behind the front legs.
   if (t.species !== 'pig' && t.species !== 'panda') p.fill(ellipse(CX, 39, 5, 7.5), 'screen');
-  p.fill(and(ellipse(CX, 56, 3, 7), (_x, y) => y >= 50), 'body', -1);
+  p.fill(
+    and(ellipse(CX, 56, 3, 7), (_x, y) => y >= 50),
+    'body',
+    -1,
+  );
   // Hind paws point forward beside the front legs, set a little back (higher).
   for (const s of [-1, 1]) {
     const x = CX + s * (bunny ? 12.5 : 11.5);
@@ -75,10 +80,19 @@ function forelegs(p: Pix): void {
     // A shoulder that narrows into the leg, then a paw.
     const leg = or(ellipse(x + s * 0.6, 46, 3.8, 4), rounded(x, 53, 3, 8, 2), ellipse(x + s * 0.3, 60.5, 3.6, 2.4));
     p.fill(leg, 'leg');
-    p.fill(and(leg, (cx) => cx + 0.5 - x > 1.4), 'leg', -1);
-    p.fill(and(leg, (cx, cy) => cx + 0.5 - x < -1.2 && cy < 57), 'leg', 1);
+    p.fill(
+      and(leg, (cx) => cx + 0.5 - x > 1.4),
+      'leg',
+      -1,
+    );
+    p.fill(
+      and(leg, (cx, cy) => cx + 0.5 - x < -1.2 && cy < 57),
+      'leg',
+      1,
+    );
     // Toes: two short creases on each paw.
-    for (const dx of [-1, 1]) p.fill(rect(Math.round(x + s * 0.4 + dx), 61, Math.round(x + s * 0.4 + dx), 62), 'leg', -2);
+    for (const dx of [-1, 1])
+      p.fill(rect(Math.round(x + s * 0.4 + dx), 61, Math.round(x + s * 0.4 + dx), 62), 'leg', -2);
   }
 }
 
@@ -94,12 +108,14 @@ function owl(p: Pix): void {
   );
   const wing = (s: number): Shape =>
     and(ellipse(CX + s * 10.5, 45, 4.6, 12.5), (x, y) => y < 57 - Math.abs(x + 0.5 - (CX + s * 10)) * 0.4);
-  p.fill(pair(wing), 'shade');
-  p.fill(
-    and(pair(wing), (_x, y) => y % 4 === 0 && y > 40),
-    'shade',
-    -1,
-  );
+  tag(p, 'wings', () => {
+    p.fill(pair(wing), 'shade');
+    p.fill(
+      and(pair(wing), (_x, y) => y % 4 === 0 && y > 40),
+      'shade',
+      -1,
+    );
+  });
   for (const s of [-1, 1])
     for (const dx of [-1.5, 0, 1.5])
       p.fill(rect(Math.round(CX + s * 4 + dx), 60, Math.round(CX + s * 4 + dx), 62), 'accent');
@@ -116,7 +132,10 @@ function frog(p: Pix): void {
   const fill = (sh: Shape, m: string, tone?: number): void => p.fill((x, y) => sh(x, y + 3), m, tone);
   fill(or(ellipse(CX, 50, 13, 12), ellipse(CX, 55, 15, 7)), 'body');
   fill(ellipse(CX, 50, 6.5, 10), 'screen');
-  fill(pair((s) => ellipse(CX + s * 14, 53, 6, 7)), 'haunch');
+  fill(
+    pair((s) => ellipse(CX + s * 14, 53, 6, 7)),
+    'haunch',
+  );
   for (const s of [-1, 1]) {
     // Hind feet: out to the sides, set back (higher) than the hands, two long toes.
     fill(ellipse(CX + s * 18.5, 59, 4.6, 1.7), 'leg');
@@ -124,7 +143,11 @@ function frog(p: Pix): void {
     // Lit, so the arm stands out from the body behind it; the outer edge in shadow.
     const arm = tube([CX + s * 8, 40], [CX + s * 9.8, 51], [CX + s * 6, 60], 2.1);
     fill(arm, 'leg', 1);
-    fill(and(arm, (x, y) => (x + 0.5 - (CX + s * (y < 50 ? 9 : 7.6))) * s > 0.6), 'leg', -1);
+    fill(
+      and(arm, (x, y) => (x + 0.5 - (CX + s * (y < 50 ? 9 : 7.6))) * s > 0.6),
+      'leg',
+      -1,
+    );
     // Hands planted in front: a palm and three splayed fingers with gaps between.
     fill(ellipse(CX + s * 6, 61.5, 2.6, 1.4), 'leg');
     for (const dx of [-2.6, 0, 2.6]) fill(ellipse(CX + s * 6 + dx * s, 63.2, 0.9, 1.3), 'leg');

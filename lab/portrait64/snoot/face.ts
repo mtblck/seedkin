@@ -1,5 +1,6 @@
 import type { SnootTraits } from '../../../src/styles/snoot/types.js';
 import { and, ellipse, not, or, type Pix, rect, type Shape } from '../canvas.js';
+import { tag } from '../motion.js';
 import type { Head } from './head.js';
 
 const disc = (x: number, y: number, r: number): Shape => ellipse(x, y, r, r);
@@ -69,25 +70,28 @@ function eye(kind: SnootTraits['eyes'], x: number, y: number): Shape {
 /** Eyes (with an owl's discs and a frog's whites), then the muzzle, nose, mouth and cheeks. */
 export function face(p: Pix, t: SnootTraits, h: Head): void {
   const frog = t.species === 'frog';
-  if (t.species === 'owl')
+  // The eyes are one part, so they blink together, as the avatar's do.
+  tag(p, 'eyes', () => {
+    if (t.species === 'owl')
+      p.fill(
+        both((x) => disc(x, h.eyeY, 4.6 * h.k), h),
+        'white',
+      );
+    if (frog)
+      p.fill(
+        both((x) => disc(x, h.eyeY, 4.2 * h.k), h),
+        'white',
+      );
     p.fill(
-      both((x) => disc(x, h.eyeY, 4.6 * h.k), h),
-      'white',
+      both((x) => eye(t.eyes, x, h.eyeY), h),
+      'glow',
     );
-  if (frog)
-    p.fill(
-      both((x) => disc(x, h.eyeY, 4.2 * h.k), h),
-      'white',
-    );
-  p.fill(
-    both((x) => eye(t.eyes, x, h.eyeY), h),
-    'glow',
-  );
-  if (t.eyes === 'shine' || t.eyes === 'dot')
-    p.fill(
-      both((x) => rect(Math.floor(x) - 1, Math.floor(h.eyeY) - 1, Math.floor(x) - 1, Math.floor(h.eyeY) - 1), h),
-      'shine',
-    );
+    if (t.eyes === 'shine' || t.eyes === 'dot')
+      p.fill(
+        both((x) => rect(Math.floor(x) - 1, Math.floor(h.eyeY) - 1, Math.floor(x) - 1, Math.floor(h.eyeY) - 1), h),
+        'shine',
+      );
+  });
   muzzle(p, t, h);
   if (t.hasCheeks && t.species !== 'owl')
     p.fill(

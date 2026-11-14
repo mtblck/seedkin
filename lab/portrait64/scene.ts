@@ -1,10 +1,22 @@
 import type { Rng } from '../../src/core/random.js';
+import type { Holiday } from '../../src/core/types.js';
 import { type Colours, createPix, ellipse, or, type Pix } from './canvas.js';
+import { HOLIDAY_COLOURS, holidayScene } from './holiday.js';
 import { workshop } from './workshop.js';
 
-export type Scene = 'room' | 'shelf' | 'sky' | 'plain' | 'workshop';
+export type Scene = 'room' | 'shelf' | 'sky' | 'plain' | 'workshop' | Holiday;
 /** The scenes a person stands in. */
 export const HOME_SCENES: readonly Scene[] = ['room', 'shelf', 'sky', 'plain'];
+
+/** Every holiday, each with a scene of its own. */
+export const HOLIDAYS: readonly Holiday[] = [
+  'newYear',
+  'valentines',
+  'stPatricks',
+  'fourthOfJuly',
+  'halloween',
+  'christmas',
+];
 
 /** Wall, trim, window sky (top to bottom), a prop colour and a hill colour. */
 const MOODS = [
@@ -65,6 +77,10 @@ export function scene(
     glow: '#fff0c8',
     hand: '#2a1a1a',
   };
+  if (HOLIDAYS.includes(kind as Holiday)) {
+    holidayScene(p, kind as Holiday, rng, w);
+    return { p, colours: { ...colours, ...HOLIDAY_COLOURS } };
+  }
   mood.sky.forEach((c, i) => {
     colours[`sky${i}`] = c;
   });

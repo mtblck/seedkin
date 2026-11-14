@@ -1,4 +1,5 @@
 import { createRng } from '../../../src/core/random.js';
+import type { Holiday } from '../../../src/core/types.js';
 import { Role, type RoleGrid } from '../../../src/core/types.js';
 import type { Anchor, Form } from '../../../src/styles/sprite/grid/draw.js';
 import { EARTH } from '../../../src/styles/sprite/grid/earth.js';
@@ -6,6 +7,7 @@ import { FIRE } from '../../../src/styles/sprite/grid/fire.js';
 import { SPACE } from '../../../src/styles/sprite/grid/space.js';
 import { WATER } from '../../../src/styles/sprite/grid/water.js';
 import { WIND } from '../../../src/styles/sprite/grid/wind.js';
+import { HOLIDAY_PALETTES } from '../../../src/styles/sprite/holidays.js';
 import { PALETTES } from '../../../src/styles/sprite/palettes.js';
 import { traits } from '../../../src/styles/sprite/traits.js';
 import type { Palette } from '../../../src/styles/sprite/types.js';
@@ -47,11 +49,38 @@ function frame(t: ReturnType<typeof traits>, n: number): { g: RoleGrid; at: Anch
  * redrawn. Everything comes from the avatar's traits and its still frame;
  * the scene comes from a second generator salted `sprite-portrait:`.
  */
-export function figure(seed: string): Figure {
+export function figure(seed: string, holiday?: Holiday): Figure {
   const t = traits(seed);
-  const pal = PALETTES[t.palette] as Palette;
+  const pal = holiday ? HOLIDAY_PALETTES[holiday] : (PALETTES[t.palette] as Palette);
   const rng = createRng(`sprite-portrait:${seed}`);
-  const { g, at } = frame(t, 0);
+  const all = [0, 1, 2, 3].map((n) => frame(t, n));
+  const [first, ...rest] = all.map(({ g, at }) => draw(t, g, at, all));
+  const colours: Colours = {
+    body: pal.body,
+    shade: pal.shade,
+    screen: pal.screen,
+    accent: pal.accent,
+    face: pal.glow,
+    shine: mix(pal.glow, '#ffffff', 0.85),
+    blush: pal.accent,
+    mote: pal.accent,
+    mark: pal.accent,
+    ink: '#1a1018',
+  };
+  // Animated, the portrait sways through the avatar's four frames on the avatar's own beats.
+  return {
+    p: first as Pix,
+    colours,
+    rng,
+    bg: pal.bg,
+    scenes: holiday ? [holiday] : SCENES,
+    motion: { parts: {} },
+    frames: { ps: rest, beats: t.beats },
+  };
+}
+
+/** One frame of the portrait, traced from the same frame of the avatar. */
+function draw(t: ReturnType<typeof traits>, g: RoleGrid, at: Anchor, all: { g: RoleGrid; at: Anchor }[]): Pix {
   const role = (r: number, c: number): number => g[r]?.[c] ?? Role.Empty;
   const solid = (r: number, c: number): boolean => [Role.Body, Role.Shade, Role.Screen].includes(role(r, c) as 1);
   const touches = (r: number, c: number): boolean =>
@@ -75,29 +104,11 @@ export function figure(seed: string): Figure {
   );
   p.over(trace(g, onBody, FIT, 0.42), 'accent', ['body', 'shade', 'screen']);
   face(p, g, at, t, FIT);
-  mark(
-    p,
-    [0, 1, 2, 3].map((n) => frame(t, n)),
-    at,
-    t,
-    FIT,
-  );
+  mark(p, all, at, t, FIT);
   shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
   ink(p, FEATURES);
   motes(p, g);
-  const colours: Colours = {
-    body: pal.body,
-    shade: pal.shade,
-    screen: pal.screen,
-    accent: pal.accent,
-    face: pal.glow,
-    shine: mix(pal.glow, '#ffffff', 0.85),
-    blush: pal.accent,
-    mote: pal.accent,
-    mark: pal.accent,
-    ink: '#1a1018',
-  };
-  return { p, colours, rng, bg: pal.bg, scenes: SCENES };
+  return p;
 }
 
 /** The avatar's loose accent cells (embers, sparkles, drops) as small four-point twinkles, unoutlined. */
@@ -131,11 +142,11 @@ function motes(p: Pix, g: RoleGrid): void {
 }
 
 /** A Sprite portrait in its seeded scene, as SVG. */
-export function portrait(seed: string, px = 4): string {
-  return single(figure(seed), px);
+export function portrait(seed: string, px = 4, animate = false, holiday?: Holiday): string {
+  return single(figure(seed, holiday), px, animate);
 }
 
 /** Two Sprites facing each other in one 128x64 scene. */
-export function duet(left: string, right: string, px = 4): string {
-  return pair(figure(left), figure(right), px);
+export function duet(left: string, right: string, px = 4, animate = false, holiday?: Holiday): string {
+  return pair(figure(left, holiday), figure(right, holiday), px, animate);
 }

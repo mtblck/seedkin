@@ -1,6 +1,7 @@
 import type { NogginTraits } from '../../src/styles/noggin/types.js';
 import { and, ellipse, not, or, type Pix, rect, sym } from './canvas.js';
 import type { Head } from './hair.js';
+import { tag } from './motion.js';
 
 /** The left eye's columns and row; the right eye mirrors them. */
 const EX = 25;
@@ -24,19 +25,21 @@ export function face(p: Pix, t: NogginTraits, h: Head): void {
     p.set(side(x), tall ? EY - 2 : EY - 1, 'shine');
   };
   const id = (x: number): number => x;
-  if (t.eyes === 'dot' || t.eyes === 'tall') {
-    open(EX, t.eyes === 'tall', id);
-    open(EX, t.eyes === 'tall', R);
-  } else if (t.eyes === 'happy' || t.eyes === 'closed') {
-    const [mid, ends] = t.eyes === 'happy' ? [EY - 1, EY] : [EY + 1, EY];
-    for (const x of [EX, EX + 1]) both(x, mid);
-    for (const x of [EX - 1, EX + 2]) both(x, ends);
-  } else {
-    open(EX, false, id);
-    for (const x of [EX, EX + 1]) p.set(R(x), EY + 1, 'eye');
-    p.set(R(EX - 1), EY, 'eye');
-    p.set(R(EX + 2), EY, 'eye');
-  }
+  tag(p, 'eyes', () => {
+    if (t.eyes === 'dot' || t.eyes === 'tall') {
+      open(EX, t.eyes === 'tall', id);
+      open(EX, t.eyes === 'tall', R);
+    } else if (t.eyes === 'happy' || t.eyes === 'closed') {
+      const [mid, ends] = t.eyes === 'happy' ? [EY - 1, EY] : [EY + 1, EY];
+      for (const x of [EX, EX + 1]) both(x, mid);
+      for (const x of [EX - 1, EX + 2]) both(x, ends);
+    } else {
+      open(EX, false, id);
+      for (const x of [EX, EX + 1]) p.set(R(x), EY + 1, 'eye');
+      p.set(R(EX - 1), EY, 'eye');
+      p.set(R(EX + 2), EY, 'eye');
+    }
+  });
   if (t.hasBrows && t.eyewear !== 'shades') {
     for (let x = EX - 2; x <= EX + 2; x++) both(x, x === EX - 2 ? EY - 3 : EY - 4, 'brow');
   }
@@ -55,7 +58,7 @@ export function face(p: Pix, t: NogginTraits, h: Head): void {
     p.fill(and(ellipse(h.cx, 41, 8, 6), not(h.shape)), 'hair');
   }
   if (t.facial === 'mustache' || t.facial === 'beard') p.fill(ellipse(h.cx, 35.6, 4.8, 1.4), 'hair');
-  mouth(p, t, h.cx);
+  tag(p, 'mouth', () => mouth(p, t, h.cx));
 }
 
 function mouth(p: Pix, t: NogginTraits, cx: number): void {

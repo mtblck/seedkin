@@ -1,5 +1,6 @@
 import type { BeastieTraits } from '../../../src/styles/beastie/types.js';
 import { and, ellipse, or, type Pix, rect, rounded, tri } from '../canvas.js';
+import { tag } from '../motion.js';
 import type { Beast } from './body.js';
 
 /** The middle of avatar row `r` (counted from the body's top row) and column `c` (from the centre). */
@@ -47,9 +48,12 @@ export function eyes(p: Pix, t: BeastieTraits, b: Beast): void {
     case 'stalks':
       for (const sd of [-1, 1]) {
         const [x, y] = at(b, sd * 2.5, -3.5);
-        p.fill(
-          (cx, cy) => cy >= y && cy <= b.top + 4 && Math.abs(cx + 0.5 - (x - sd * (cy - y) * 0.12)) <= 1.4,
-          'body',
+        // Stalks hold still; only the eyes on them blink.
+        tag(p, '', () =>
+          p.fill(
+            (cx, cy) => cy >= y && cy <= b.top + 4 && Math.abs(cx + 0.5 - (x - sd * (cy - y) * 0.12)) <= 1.4,
+            'body',
+          ),
         );
         eye(p, x, y, b.s * 1.05);
         // The avatar's two small glints low on the face.

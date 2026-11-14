@@ -1,5 +1,7 @@
 import { createRng, pick } from '../../../src/core/random.js';
+import type { Holiday } from '../../../src/core/types.js';
 import { slots } from '../../../src/styles/botling/grid/slots.js';
+import { HOLIDAY_PALETTES } from '../../../src/styles/botling/holidays.js';
 import { PALETTES } from '../../../src/styles/botling/palettes.js';
 import { traits } from '../../../src/styles/botling/traits.js';
 import type { Palette } from '../../../src/styles/botling/types.js';
@@ -18,6 +20,7 @@ import {
   shadeRuns,
 } from '../canvas.js';
 import { type Figure, pair, single } from '../compose.js';
+import { motion, tag } from '../motion.js';
 import type { Scene } from '../scene.js';
 import { drawAccessory, drawQuirk, drawSides, drawTop } from './extras.js';
 import { drawFace } from './face.js';
@@ -35,9 +38,9 @@ const CX = 32;
  * wears and where it stands come from a second generator salted
  * `botling-portrait:`, so no avatar changes.
  */
-export function figure(seed: string): Figure {
+export function figure(seed: string, holiday?: Holiday): Figure {
   const t = traits(seed);
-  const pal = PALETTES[t.palette] as Palette;
+  const pal = holiday ? HOLIDAY_PALETTES[holiday] : (PALETTES[t.palette] as Palette);
   const rng = createRng(`botling-portrait:${seed}`);
   const gear = pick(rng, GEAR);
   const fabric = pick(rng, FABRICS);
@@ -45,8 +48,9 @@ export function figure(seed: string): Figure {
   const s = slots(t);
   const p = createPix();
   // Two in three horned robots get the avatar's ball-tipped stalks; a side generator keeps the rest of the draws put.
-  if (s.hasTop) drawTop(p, t, b, createRng(`botling-portrait:${seed}:horns`)() < 0.67);
-  if (s.hasSides) drawSides(p, t.sides, b);
+  const tips = createRng(`botling-portrait:${seed}:horns`)() < 0.67;
+  if (s.hasTop) tag(p, 'top', () => drawTop(p, t, b, tips));
+  if (s.hasSides) tag(p, 'sides', () => drawSides(p, t.sides, b));
   if (s.hasQuirk) drawQuirk(p, t, b, false);
   body(p, gear, t.hasChestLight, b.bottom);
   drawHead(p, t, b);
@@ -55,7 +59,13 @@ export function figure(seed: string): Figure {
   drawAccessory(p, t, b);
   shadeRuns(p, ['body', 'shade', 'fabric', 'accent'], 0.22, 0.2);
   ink(p, ['glow', 'cheek', 'rivet', 'light']);
-  return { p, colours: colours(pal, fabric), rng, bg: pal.bg, scenes: SCENES };
+  const moves = motion(seed, {
+    eyes: ['blink', 'center'],
+    mouth: ['talk', 'center'],
+    top: ['wobble', '50% 100%'],
+    sides: ['twitch', 'center'],
+  });
+  return { p, colours: colours(pal, fabric), rng, bg: pal.bg, scenes: holiday ? [holiday] : SCENES, motion: moves };
 }
 
 function colours(pal: Palette, fabric: string): Colours {
@@ -144,11 +154,11 @@ function body(p: Pix, gear: Gear, light: boolean, neckTop: number): void {
 }
 
 /** A Botling portrait in its seeded scene, as SVG. */
-export function portrait(seed: string, px = 4): string {
-  return single(figure(seed), px);
+export function portrait(seed: string, px = 4, animate = false, holiday?: Holiday): string {
+  return single(figure(seed, holiday), px, animate);
 }
 
 /** Two Botlings facing each other in one 128x64 scene. */
-export function duet(left: string, right: string, px = 4): string {
-  return pair(figure(left), figure(right), px);
+export function duet(left: string, right: string, px = 4, animate = false, holiday?: Holiday): string {
+  return pair(figure(left, holiday), figure(right, holiday), px, animate);
 }

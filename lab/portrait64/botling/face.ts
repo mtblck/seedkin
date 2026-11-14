@@ -1,5 +1,6 @@
 import type { Traits } from '../../../src/styles/botling/types.js';
 import { and, ellipse, not, or, type Pix, rect, type Shape } from '../canvas.js';
+import { tag } from '../motion.js';
 import type { Bot } from './head.js';
 
 const disc = (x: number, y: number, r: number): Shape => ellipse(x, y, r, r);
@@ -49,12 +50,15 @@ function eye(kind: Traits['eyes'], x: number, y: number, side: number): Shape {
 /** Eyes, mouth and cheeks in the glow colour, from the avatar's own traits. */
 export function drawFace(p: Pix, t: Traits, b: Bot): void {
   const y = b.eyeY;
-  if (t.eyes === 'visor') p.fill(box(b.cx, y, b.ex + 3, 1.5), 'glow');
-  else if (t.eyes === 'cyclops') {
-    p.fill(disc(b.cx, y, 3.8), 'glow');
-    p.fill(disc(b.cx, y, 1.4), t.hasScreen ? 'screen' : 'body', -2);
-  } else p.fill(or(eye(t.eyes, b.cx - b.ex, y, -1), eye(t.eyes, b.cx + b.ex, y, 1)), 'glow');
-  p.fill(mouth(t.mouth, b.cx, b.mouthY), 'glow');
+  // Eyes and mouth are parts of their own, so they blink and talk as the avatar's do.
+  tag(p, 'eyes', () => {
+    if (t.eyes === 'visor') p.fill(box(b.cx, y, b.ex + 3, 1.5), 'glow');
+    else if (t.eyes === 'cyclops') {
+      p.fill(disc(b.cx, y, 3.8), 'glow');
+      p.fill(disc(b.cx, y, 1.4), t.hasScreen ? 'screen' : 'body', -2);
+    } else p.fill(or(eye(t.eyes, b.cx - b.ex, y, -1), eye(t.eyes, b.cx + b.ex, y, 1)), 'glow');
+  });
+  tag(p, 'mouth', () => p.fill(mouth(t.mouth, b.cx, b.mouthY), 'glow'));
   if (t.hasCheeks)
     p.fill(or(ellipse(b.cx - b.ex - 1, y + 4.5, 2, 1), ellipse(b.cx + b.ex + 1, y + 4.5, 2, 1)), 'cheek');
 }

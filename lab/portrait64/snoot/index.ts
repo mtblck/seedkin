@@ -1,4 +1,6 @@
 import { createRng, pick } from '../../../src/core/random.js';
+import type { Holiday } from '../../../src/core/types.js';
+import { HOLIDAY_PALETTES } from '../../../src/styles/snoot/holidays.js';
 import { PALETTES } from '../../../src/styles/snoot/palettes.js';
 import { traits } from '../../../src/styles/snoot/traits.js';
 import type { Palette } from '../../../src/styles/snoot/types.js';
@@ -17,6 +19,7 @@ import {
   shadeRuns,
 } from '../canvas.js';
 import { type Figure, pair, single } from '../compose.js';
+import { motion, tag } from '../motion.js';
 import type { Scene } from '../scene.js';
 import { body, neckY, openShoulders } from './body.js';
 import { extra, face, markings } from './face.js';
@@ -37,16 +40,16 @@ const FEATURES = ['glow', 'shine', 'cheek', 'whisker', 'tongue', 'white'];
  * it wears and where it sits come from a second generator salted
  * `snoot-portrait:`, so no avatar changes.
  */
-export function figure(seed: string): Figure {
+export function figure(seed: string, holiday?: Holiday): Figure {
   const t = traits(seed);
-  const pal = PALETTES[t.palette] as Palette;
+  const pal = holiday ? HOLIDAY_PALETTES[holiday] : (PALETTES[t.palette] as Palette);
   const rng = createRng(`snoot-portrait:${seed}`);
   const gear = pick(rng, GEAR);
   const fabric = pick(rng, FABRICS);
   // A smaller head, so the whole body fits; a frog's is wide and sits low on its body.
   const h = t.species === 'frog' ? layout(t, 0.9, 28) : layout(t, 0.78, 19);
   const p = createPix();
-  ears(p, t, h);
+  tag(p, 'ears', () => ears(p, t, h));
   body(p, t);
   wear(p, gear, neckY(t));
   drawHead(p, t, h);
@@ -76,7 +79,13 @@ export function figure(seed: string): Figure {
     bar: pal.shade,
     ink: '#1a1018',
   };
-  return { p, colours, rng, bg: pal.bg, scenes: SCENES };
+  const moves = motion(`snoot:${seed}`, {
+    eyes: ['blink', 'center'],
+    ears: ['twitch', 'center'],
+    tail: ['wag', '0% 100%'],
+    wings: ['flap', 'center'],
+  });
+  return { p, colours, rng, bg: pal.bg, scenes: holiday ? [holiday] : SCENES, motion: moves };
 }
 
 /** What a Snoot wears at its neck, over its body and under its chin. */
@@ -100,11 +109,11 @@ function wear(p: Pix, gear: Gear, y: number): void {
 }
 
 /** A Snoot portrait in its seeded scene, as SVG. */
-export function portrait(seed: string, px = 4): string {
-  return single(figure(seed), px);
+export function portrait(seed: string, px = 4, animate = false, holiday?: Holiday): string {
+  return single(figure(seed, holiday), px, animate);
 }
 
 /** Two Snoots facing each other in one 128x64 scene. */
-export function duet(left: string, right: string, px = 4): string {
-  return pair(figure(left), figure(right), px);
+export function duet(left: string, right: string, px = 4, animate = false, holiday?: Holiday): string {
+  return pair(figure(left, holiday), figure(right, holiday), px, animate);
 }

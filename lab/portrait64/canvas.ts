@@ -16,6 +16,12 @@ export interface Pix {
   m: string[][];
   tone: number[][];
   z: number[][];
+  /** The moving part each cell belongs to (`''` holds still); see `motion.ts`. */
+  part: string[][];
+  /** What a moving cell covered, `[material, tone]`, shown when it squashes. */
+  lid: ([string, number] | null)[][];
+  /** The part being drawn now. */
+  current: string;
   set: (x: number, y: number, m: string, tone?: number) => void;
   get: (x: number, y: number) => string;
   /** Paints every cell inside `shape` as one new layer. */
@@ -33,8 +39,17 @@ export function createPix(w = 64, h = 64): Pix {
     m: grid(''),
     tone: grid(0),
     z: grid(0),
+    part: grid(''),
+    lid: grid<[string, number] | null>(null),
+    current: '',
     set: (x, y, m, tone = 0) => {
       if (x < 0 || y < 0 || x >= w || y >= h) return;
+      const was = (p.m[y] as string[])[x] as string;
+      const row = p.lid[y] as ([string, number] | null)[];
+      if (p.current === '') row[x] = null;
+      else if ((p.part[y] as string[])[x] !== p.current && was !== '')
+        row[x] = [was, (p.tone[y] as number[])[x] as number];
+      (p.part[y] as string[])[x] = p.current;
       (p.m[y] as string[])[x] = m;
       (p.tone[y] as number[])[x] = tone;
       (p.z[y] as number[])[x] = layer;
@@ -84,88 +99,8 @@ export const sym =
   (x, y) =>
     s(x, y) || s(w - 1 - x, y);
 
-/**
- * Flat two-step shading, lit from the upper left: in each row, the right
- * part of a material's run goes dark, and the left part of its upper rows
- * goes light. Cells already given a tone keep it.
- */
-export function shadeRuns(p: Pix, mats: readonly string[], dark = 0.3, light = 0.22): void {
-  for (const mat of mats) {
-    let top = -1;
-    let bottom = -1;
-    for (let y = 0; y < p.h; y++) {
-      if ((p.m[y] as string[]).includes(mat)) {
-        if (top < 0) top = y;
-        bottom = y;
-      }
-    }
-    for (let y = top; y >= 0 && y <= bottom; y++) {
-      const row = p.m[y] as string[];
-      const x0 = row.indexOf(mat);
-      const x1 = row.lastIndexOf(mat);
-      const upper = (y - top) / Math.max(1, bottom - top) < 0.45;
-      for (let x = x0; x <= x1; x++) {
-        if (row[x] !== mat || (p.tone[y] as number[])[x] !== 0) continue;
-        const t = (x - x0 + 0.5) / (x1 - x0 + 1);
-        if (t > 1 - dark) (p.tone[y] as number[])[x] = -1;
-        else if (upper && t < light) (p.tone[y] as number[])[x] = 1;
-      }
-    }
-  }
-}
-
-/**
- * Inks the edges between parts: a cell painted over a different material
- * (not one of `skip`) turns into a line in its own colour. Then an outer
- * outline goes into the empty cells around the figure.
- */
-export function ink(p: Pix, skip: readonly string[]): void {
-  const lines: [number, number][] = [];
-  for (let y = 0; y < p.h; y++) {
-    for (let x = 0; x < p.w; x++) {
-      const m = p.get(x, y);
-      if (m === '' || skip.includes(m)) continue;
-      const z = (p.z[y] as number[])[x] as number;
-      for (const [nx, ny] of [
-        [x - 1, y],
-        [x + 1, y],
-        [x, y - 1],
-        [x, y + 1],
-      ] as const) {
-        const n = p.get(nx, ny);
-        if (n !== '' && n !== m && !skip.includes(n) && ((p.z[ny] as number[])[nx] as number) < z) {
-          lines.push([x, y]);
-          break;
-        }
-      }
-    }
-  }
-  for (const [x, y] of lines) (p.tone[y] as number[])[x] = -2;
-  const edge: [number, number][] = [];
-  for (let y = 0; y < p.h; y++) {
-    for (let x = 0; x < p.w; x++) {
-      if (p.get(x, y) !== '') continue;
-      if ([p.get(x - 1, y), p.get(x + 1, y), p.get(x, y - 1), p.get(x, y + 1)].some((n) => n !== '' && n !== 'ink'))
-        edge.push([x, y]);
-    }
-  }
-  for (const [x, y] of edge) p.set(x, y, 'ink');
-}
-
-/** Mixes two #rrggbb colours; t=0 is a, t=1 is b. */
-export function mix(a: string, b: string, t: number): string {
-  const ch = (h: string, i: number): number => Number.parseInt(h.slice(i, i + 2), 16);
-  const out = [1, 3, 5].map((i) => Math.round(ch(a, i) * (1 - t) + ch(b, i) * t));
-  return `#${out.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
-}
-
-/** The colour a cell paints with: warm purple shadows and lines, cream light. */
-export function colourOf(base: string, tone: number): string {
-  if (tone <= -2) return mix(base, '#160c18', 0.62);
-  if (tone < 0) return mix(base, '#2a1530', 0.24);
-  if (tone > 0) return mix(base, '#fff2d8', 0.2);
-  return base;
-}
+export { colourOf, mix } from './colour.js';
+export { ink, shadeRuns } from './shading.js';
 
 /** A rectangle of half-size (hx, hy) centred at (cx, cy), with corners rounded to radius r. */
 export const rounded =
