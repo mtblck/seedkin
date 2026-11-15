@@ -2,11 +2,13 @@ import type { Rng } from '../random.js';
 import type { Holiday } from '../types.js';
 import { type Colours, createPix, ellipse, or, type Pix } from './canvas.js';
 import { HOLIDAY_COLOURS, holidayScene } from './holiday.js';
+import { OUTDOOR_COLOURS, OUTDOORS, type Outdoor, outdoor } from './outdoor.js';
 import { workshop } from './workshop.js';
 
-export type Scene = 'room' | 'shelf' | 'sky' | 'plain' | 'workshop' | Holiday;
+export type Scene = 'room' | 'shelf' | 'sky' | 'plain' | 'workshop' | Outdoor | Holiday;
 /** The scenes a person stands in. */
-export const HOME_SCENES: readonly Scene[] = ['room', 'shelf', 'sky', 'plain'];
+export const HOME_SCENES: readonly Scene[] = ['room', 'shelf', 'sky', 'plain', ...OUTDOORS];
+export { OUTDOORS } from './outdoor.js';
 
 /** Every holiday, each with a scene of its own. */
 export const HOLIDAYS: readonly Holiday[] = [
@@ -52,7 +54,8 @@ const MOODS = [
 
 /**
  * A seeded backdrop: a planked room with a window, a shelf of clocks and
- * jars, an open sky over hills, or the outfit's plain colour.
+ * jars, an open sky over hills, a forest, meadow, town or street of houses,
+ * or the outfit's plain colour.
  *
  * @param rng - The portrait's own generator
  * @param bg - The outfit background, for the plain scene
@@ -91,9 +94,13 @@ export function scene(
     p.fill((_x, y) => y >= 52, 'bg', -1);
     return { p, colours };
   }
-  if (kind === 'sky') {
+  if (kind === 'sky' || OUTDOORS.includes(kind as Outdoor)) {
     p.fill(() => true, 'sky0');
     for (let y = 0; y < 64; y++) for (let x = 0; x < w; x++) p.set(x, y, band(y + ((x + y) % 2), 0, 11));
+    if (kind !== 'sky') {
+      outdoor(p, kind as Outdoor, rng, w);
+      return { p, colours: { ...colours, ...OUTDOOR_COLOURS } };
+    }
     p.fill(ellipse(w * (0.2 + rng() * 0.6), 30, 6, 6), 'glow');
     const phase = rng() * 6;
     for (const [base, amp, tone] of [

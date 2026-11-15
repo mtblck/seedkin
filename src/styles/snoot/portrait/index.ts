@@ -25,7 +25,7 @@ import { only, type PortraitOptions } from '../../../core/portrait/options.js';
 export type { PortraitOptions } from '../../../core/portrait/options.js';
 export type { Holiday } from '../../../core/types.js';
 
-import type { Scene } from '../../../core/portrait/scene.js';
+import { OUTDOORS, type Scene } from '../../../core/portrait/scene.js';
 import { createRng, pick } from '../../../core/random.js';
 import type { Holiday } from '../../../core/types.js';
 import { HOLIDAY_PALETTES } from '../holidays.js';
@@ -39,7 +39,7 @@ import { dogEars, drawHead, ears, layout } from './head.js';
 type Gear = 'bare' | 'scarf' | 'bandana' | 'collar';
 const GEAR: readonly Gear[] = ['bare', 'scarf', 'bandana', 'collar'];
 const FABRICS = ['#c84a4a', '#3a6ab0', '#e0a526', '#4f9a4a', '#7c5cd6', '#2bb3a3', '#e07aa0'];
-const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain'];
+const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain', ...OUTDOORS];
 const CX = 32;
 /** Drawn as lines already, or too small to ink: eyes and their whites, cheeks, whiskers. */
 const FEATURES = ['glow', 'shine', 'cheek', 'whisker', 'tongue', 'white'];

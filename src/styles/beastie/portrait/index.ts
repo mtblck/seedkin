@@ -23,7 +23,7 @@ import { only, type PortraitOptions } from '../../../core/portrait/options.js';
 export type { PortraitOptions } from '../../../core/portrait/options.js';
 export type { Holiday } from '../../../core/types.js';
 
-import type { Scene } from '../../../core/portrait/scene.js';
+import { OUTDOORS, type Scene } from '../../../core/portrait/scene.js';
 import { createRng, pick } from '../../../core/random.js';
 import type { Holiday } from '../../../core/types.js';
 import { HOLIDAY_PALETTES } from '../holidays.js';
@@ -36,7 +36,7 @@ import { eyes, mouth } from './face.js';
 type Gear = 'bare' | 'bowtie' | 'bandana';
 const GEAR: readonly Gear[] = ['bare', 'bare', 'bowtie', 'bandana'];
 const FABRICS = ['#c84a4a', '#3a6ab0', '#e0a526', '#4f9a4a', '#7c5cd6', '#2bb3a3', '#e07aa0'];
-const SCENES: readonly Scene[] = ['room', 'shelf', 'sky', 'sky', 'plain'];
+const SCENES: readonly Scene[] = ['room', 'shelf', 'sky', 'sky', 'plain', ...OUTDOORS];
 /** Too small or already dark to ink: eyes, glints, mouth and tongue. */
 const FEATURES = ['white', 'pupil', 'shine', 'mouth', 'tongue'];
 

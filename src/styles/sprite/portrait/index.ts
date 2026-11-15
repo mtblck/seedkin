@@ -14,7 +14,7 @@ export type { PortraitOptions } from '../../../core/portrait/options.js';
 export type { Holiday } from '../../../core/types.js';
 export type { Element } from '../types.js';
 
-import type { Scene } from '../../../core/portrait/scene.js';
+import { OUTDOORS, type Scene } from '../../../core/portrait/scene.js';
 import { createRng } from '../../../core/random.js';
 import type { Holiday } from '../../../core/types.js';
 import type { Form } from '../grid/draw.js';
@@ -38,7 +38,7 @@ export interface SpritePortraitOptions extends PortraitOptions {
 const FORMS: Record<string, Form> = { ...FIRE, ...WATER, ...EARTH, ...WIND, ...SPACE };
 /** Forms that move as a whole. */
 const WHOLE: Record<string, 'squash' | 'hover'> = { bubble: 'squash', planet: 'hover' };
-const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain'];
+const SCENES: readonly Scene[] = ['sky', 'sky', 'room', 'shelf', 'plain', ...OUTDOORS];
 
 /** Frame `n` of the seed's form, before its face, flipped when the Sprite is mirrored. */
 function frame(t: SpriteTraits, n: number): Frame {
