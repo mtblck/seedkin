@@ -5,9 +5,9 @@
  *
  * @packageDocumentation
  */
-import { type Colours, createPix, ink, mix, shadeRuns } from '../../../core/portrait/canvas.js';
+import { type Colours, createPix, ink, mix, type Pix, shadeRuns } from '../../../core/portrait/canvas.js';
 import { duetOf, type Figure, portraitOf } from '../../../core/portrait/compose.js';
-import { motion, tag } from '../../../core/portrait/motion.js';
+import { type Motion, motion, type Rule, tag } from '../../../core/portrait/motion.js';
 import { only, type PortraitOptions } from '../../../core/portrait/options.js';
 
 export type { PortraitOptions } from '../../../core/portrait/options.js';
@@ -66,8 +66,35 @@ function figure(seed: string, holiday: Holiday | undefined, _animate: boolean, o
     mouth: ['talk', 'center'],
     top: ['wobble', '50% 100%'],
     sides: ['twitch', 'center'],
+    ...(t.hasScreen ? { scan: ['scan', 'center'] as const } : {}),
   });
-  return { p, colours: colours(pal, fabric), rng, bg: pal.bg, scenes: holiday ? [holiday] : SCENES, motion: moves };
+  const overlay = t.hasScreen ? scanline(p, moves) : undefined;
+  const figure: Figure = { p, colours: colours(pal, fabric), rng, bg: pal.bg, scenes: holiday ? [holiday] : SCENES };
+  return { ...figure, motion: moves, ...(overlay ? { overlay } : {}) };
+}
+
+/** Rows of the screen per band of the scanline, about one avatar cell. */
+const BAND = 3;
+
+/**
+ * The avatar's scanline: a faint glowing copy of the screen, a band at a
+ * time, each band a tenth of a second behind the one above, so it sweeps down.
+ */
+function scanline(p: Pix, moves: Motion): Pix {
+  const base = moves.parts.scan as Rule;
+  delete moves.parts.scan;
+  const q = createPix(p.w, p.h);
+  const rows = [...Array(p.h).keys()].filter((y) => (p.m[y] as string[]).includes('screen'));
+  const top = rows[0] ?? 0;
+  for (const y of rows) {
+    const band = Math.floor((y - top) / BAND);
+    const name = `scan${band}`;
+    moves.parts[name] ??= { ...base, offset: (base.offset - band + base.period) % base.period };
+    tag(q, name, () => {
+      for (let x = 0; x < p.w; x++) if (p.get(x, y) === 'screen') q.set(x, y, 'glow');
+    });
+  }
+  return q;
 }
 
 function colours(pal: Palette, fabric: string): Colours {

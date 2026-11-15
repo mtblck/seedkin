@@ -2,10 +2,10 @@
 
 exports[`portrait corpus > draws what it drew 1`] = `
 {
-  "beastie": "c601cd93c9414768",
-  "botling": "f3744deab74e13f6",
-  "noggin": "ac6000c48e094ba2",
-  "snoot": "3a5dc677a3919deb",
-  "sprite": "e96bf9b82fa046c9",
+  "beastie": "94eda64ee25f1ee3",
+  "botling": "fa21560bf17cd489",
+  "noggin": "fae7ac9a7ae67517",
+  "snoot": "7b615d989848e8b1",
+  "sprite": "1c235badc696f909",
 }
 `;

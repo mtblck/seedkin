@@ -111,4 +111,27 @@ describe('portrait motion matches the avatar', () => {
       '30%{transform:translate(-3px,6px) rotate(-25deg)}100%{transform:translate(2px,-20px)}',
     );
   });
+
+  it("sweeps a scanline down a Botling's screen, as its avatar does, and hides it at rest", () => {
+    const seeds = Array.from({ length: 40 }, (_, i) => `scan-${i}`);
+    for (const seed of seeds) {
+      const screen = botlingTraits(seed).hasScreen;
+      const svg = botling.portrait(seed, { animate: true });
+      expect(svg.includes('class="p-scan0-'), seed).toBe(screen);
+      expect(svg.includes('-scan'), seed).toBe(screen);
+      expect(botling.portrait(seed)).not.toContain('scan');
+      if (!screen) continue;
+      // Each band starts a tenth of a second after the one above, and every band is hidden without motion.
+      const starts = [...svg.matchAll(/\.p-scan(\d+)-[a-z0-9]+-(\d+)-(\d+)\{opacity:0\}/g)].map((m) => [
+        Number(m[1]),
+        Number(m[2]),
+        Number(m[3]),
+      ]);
+      expect(starts.length).toBeGreaterThan(2);
+      for (const [band, period, start] of starts)
+        expect(start).toBe(
+          ((starts[0]?.[2] as number) - (band as number) + (period as number) * 2) % (period as number),
+        );
+    }
+  });
 });

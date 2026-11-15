@@ -3,7 +3,7 @@ import { clocks, SPECS } from '../render/motion.js';
 import type { Pix } from './canvas.js';
 
 /**
- * How a portrait's part moves: the avatar's four, a tail's wag, wings' flap, a float, a sparkle's
+ * How a portrait's part moves: the avatar's five (a screen's scanline among them), a tail's wag, wings' flap, a float, a sparkle's
  * twinkle, a rock's drift, an ember's rise, a bubble's squash, a treetop's sway or a leaf's fall.
  */
 export type Move =
@@ -11,6 +11,7 @@ export type Move =
   | 'talk'
   | 'wobble'
   | 'twitch'
+  | 'scan'
   | 'wag'
   | 'flap'
   | 'hover'

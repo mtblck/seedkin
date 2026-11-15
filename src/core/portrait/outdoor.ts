@@ -2,9 +2,9 @@ import type { Rng } from '../random.js';
 import { ellipse, type Pix, rect, tri } from './canvas.js';
 
 /** Scenes outdoors, under the mood's sky. */
-export type Outdoor = 'forest' | 'pines' | 'meadow' | 'town' | 'houses';
+export type Outdoor = 'forest' | 'pines' | 'meadow' | 'town' | 'houses' | 'space';
 /** Every outdoor scene. */
-export const OUTDOORS: readonly Outdoor[] = ['forest', 'pines', 'meadow', 'town', 'houses'];
+export const OUTDOORS: readonly Outdoor[] = ['forest', 'pines', 'meadow', 'town', 'houses', 'space'];
 
 /** Colours the outdoor scenes add to the mood's: leaves, bark, petals, walls and roofs. */
 export const OUTDOOR_COLOURS: Record<string, string> = {
@@ -25,12 +25,18 @@ export const OUTDOOR_COLOURS: Record<string, string> = {
   roof2: '#4a5a7a',
   window: '#f6dc8c',
   door: '#5a3a3a',
+  space0: '#0c0a24',
+  space1: '#161441',
+  space2: '#24195a',
+  space3: '#3a2170',
+  star: '#fff6dc',
+  starDim: '#9aa4e0',
 };
 
 /**
  * Draws an outdoor scene over a sky already filled in: two kinds of
- * forest, a meadow of flowers, a town of tall buildings, or a street of
- * houses. Things sit mostly at the sides and the back, so the character in
+ * forest, a meadow of flowers, a town of tall buildings, a street of
+ * houses, or deep space. Things sit mostly at the sides and the back, so the character in
  * front stays clear.
  *
  * @param p - The scene's canvas, its sky drawn
@@ -39,6 +45,10 @@ export const OUTDOOR_COLOURS: Record<string, string> = {
  * @param w - Width in cells
  */
 export function outdoor(p: Pix, kind: Outdoor, rng: Rng, w: number): void {
+  if (kind === 'space') {
+    space(p, rng, w);
+    return;
+  }
   const phase = rng() * 6;
   const ground = (y0: number, m: string): void => p.fill((x, y) => y >= y0 + Math.round(Math.sin(x / 9 + phase)), m);
   if (kind === 'forest') {
@@ -138,4 +148,19 @@ export function outdoor(p: Pix, kind: Outdoor, rng: Rng, w: number): void {
   ground(47, 'grass');
   p.fill((x, y) => y >= 43 && y <= 48 && (x % 4 === 0 || y === 44 || y === 47), 'plaster', -1);
   p.fill((x, y) => y >= 49 && (x * 5 + y * 3) % 11 === 0, 'grass', -1);
+}
+
+/** Deep space: dark blue fading down to purple, dithered between bands, full of stars. */
+function space(p: Pix, rng: Rng, w: number): void {
+  for (let y = 0; y < 64; y++)
+    for (let x = 0; x < w; x++)
+      p.set(x, y, `space${Math.max(0, Math.min(3, Math.floor((y + ((x + y) % 2) * 2) / 16)))}`);
+  // Faint far stars, a few bright ones, and some that shine with a cross.
+  for (let i = 0; i < w * 0.7; i++) p.set(Math.floor(rng() * w), Math.floor(rng() * 64), 'starDim');
+  for (let i = 0; i < w * 0.2; i++) p.set(Math.floor(rng() * w), Math.floor(rng() * 64), 'star');
+  for (let i = 0; i < w / 16; i++) {
+    const [x, y] = [Math.floor(rng() * w), 2 + Math.floor(rng() * 56)];
+    p.fill((cx, cy) => (cx === x && Math.abs(cy - y) <= 2) || (cy === y && Math.abs(cx - x) <= 2), 'starDim');
+    p.set(x, y, 'star');
+  }
 }
