@@ -7,9 +7,11 @@ any change to the avatar a seed draws is a major version.
 
 ## [Unreleased]
 
+## [2.7.1] - 2026-11-15
+
 ### Changed
 
-- Portraits (Preview): a new space scene, a dark blue fading to purple full of stars, joins the backgrounds, and an animated Botling portrait with a screen now has its avatar's scanline sweeping down it. Portraits that land on the new scene change background.
+- Portraits (Preview): a new space scene, a dark blue fading to purple full of stars, joins the backgrounds, and an animated Botling portrait with a screen now has its avatar's scanline sweeping down it. With one more scene to pick from, many portraits get a different background.
 
 ## [2.7.0] - 2026-11-15
 
@@ -219,7 +221,8 @@ First release.
 
 The playground site (`site/`, not part of the npm package) lets you try seeds, shapes and palettes and copy the code.
 
-[Unreleased]: https://github.com/mtblck/seedkin/compare/v2.7.0...HEAD
+[Unreleased]: https://github.com/mtblck/seedkin/compare/v2.7.1...HEAD
+[2.7.1]: https://github.com/mtblck/seedkin/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/mtblck/seedkin/compare/v2.6.1...v2.7.0
 [2.6.1]: https://github.com/mtblck/seedkin/compare/v2.6.0...v2.6.1
 [2.6.0]: https://github.com/mtblck/seedkin/compare/v2.5.0...v2.6.0
