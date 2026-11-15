@@ -6,7 +6,7 @@ import type { SpriteTraits } from '../types.js';
 import { sprout, sproutCells, tentacles } from './extras.js';
 import { face, mark } from './face.js';
 import { core, streak } from './flame.js';
-import { embers, faces, ring, ringRow, rocks, sparkles } from './fx.js';
+import { embers, faces, ring, ringLine, ringRow, rocks, sparkles } from './fx.js';
 import { barRow, front, haze, plusAt, tongue } from './layers.js';
 import { motes } from './motes.js';
 import { LIFT, leaves, shift, sway, trunkRow } from './place.js';
@@ -131,6 +131,7 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
   if (t.form === 'boulder') rocks(p, FIT);
   shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
   ink(p, FEATURES);
+  if (t.form === 'planet') ringLine(p);
   // A comet's sparks stream down its tail frame by frame, as the avatar's do; fire Sprites throw off
   // rising embers; other sparkles stay put and twinkle, and a still crystal gets more of them.
   if (t.form === 'comet') motes(p, g, FIT, new Set());

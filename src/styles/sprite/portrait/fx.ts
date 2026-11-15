@@ -21,6 +21,21 @@ export function ring(p: Pix, g: RoleGrid, f: Fit): void {
 }
 
 /**
+ * Carries the line along the ring's top edge under the eyes, where it meets
+ * the face rather than the body and so gets no edge of its own.
+ */
+export function ringLine(p: Pix): void {
+  for (let y = 1; y < p.h; y++) {
+    const lined = (x: number): boolean => p.get(x, y) === 'accent' && p.tone[y]?.[x] === -2;
+    const xs = [...Array(p.w).keys()].filter(lined);
+    if (xs.length < 2) continue;
+    for (let x = (xs[0] as number) + 1; x < (xs[xs.length - 1] as number); x++) {
+      if (p.get(x, y) === 'accent' && p.get(x, y - 1) !== 'accent') p.set(x, y, 'accent', -2);
+    }
+  }
+}
+
+/**
  * A crystal's two faces, split down the middle of each row: the light face
  * keeps its highlight and shine, the dark face takes the light face's
  * darkest tone with a deeper band at its edge, and the outline runs all round.
