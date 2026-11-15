@@ -31,5 +31,5 @@ export interface PortraitState {
 export function portraitOptions(
   state: PortraitState,
   extra?: Record<string, unknown>,
-): { animate?: boolean; holiday?: Holiday; palette?: number };
+): { animate?: boolean; holiday?: Holiday; palette?: number; element?: string; skin?: number };
 export function portraitSnippet(state: PortraitState & { seed: string }, name?: string): string;

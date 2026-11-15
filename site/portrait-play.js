@@ -13,7 +13,7 @@ const $ = (id) => document.getElementById(id);
  * Starts the portrait card for a style.
  *
  * @param {string} name - The style's name, such as snoot
- * @param {() => { seed: string, palette: string, motion?: string }} state - The playground's current state
+ * @param {() => { seed: string, palette: string, motion?: string, element?: string, skin?: string }} state - The playground's current state
  * @returns {() => void} Redraws the card, a moment after the last call, as a portrait can take 100ms
  */
 export function portraitPlay(name, state) {
@@ -30,7 +30,7 @@ export function portraitPlay(name, state) {
     timer = setTimeout(async () => {
       const s = state();
       const code = portraitSnippet(s, name);
-      // Only the seed, holiday and motion reach the portrait; other options leave it as it is.
+      // Only what the snippet shows (seed, palette, holiday, motion, element, skin) reaches the portrait.
       if (code === drawn) return;
       try {
         const { portraitDataUri } = await load();

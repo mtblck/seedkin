@@ -10,8 +10,8 @@ import { embers, faces, ring, ringLine, ringRow, rocks, sparkles } from './fx.js
 import { barRow, front, haze, plusAt, tongue } from './layers.js';
 import { motes } from './motes.js';
 import { LIFT, leaves, shift, sway, trunkRow } from './place.js';
-import { shines } from './shine.js';
-import { type Fit, isolated, trace } from './trace.js';
+import { shines, solidIn } from './shine.js';
+import { type Fit, trace } from './trace.js';
 
 /**
  * Where the 15x15 avatar sits: four portrait pixels to an avatar cell, so a part that
@@ -36,21 +36,8 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
   const { g, at } = fr;
   const still = all[0] as Frame;
   const role = (r: number, c: number): number => g[r]?.[c] ?? Role.Empty;
-  const filled = (r: number, c: number): boolean => [Role.Body, Role.Shade, Role.Screen].includes(role(r, c) as 1);
   const tentacle = t.form === 'jelly' ? tentacles(g, FIT) : undefined;
-  // Loose bits are drawn apart: a planet's sparkles, a boulder's grit, a jellyfish's tentacles.
-  const loose = (r: number, c: number): boolean =>
-    (role(r, c) === Role.Screen &&
-      ![
-        [r - 1, c],
-        [r + 1, c],
-        [r, c - 1],
-        [r, c + 1],
-      ].some(([rr, cc]) => [Role.Body, Role.Shade].includes(role(rr as number, cc as number) as 1)) &&
-      isolated(g, r, c)) ||
-    (t.form === 'boulder' && !touching(g, r, c)) ||
-    (tentacle?.below(r) ?? false);
-  const solid = (r: number, c: number): boolean => filled(r, c) && !loose(r, c);
+  const solid = solidIn(g, t.form, tentacle?.below);
   const touches = (r: number, c: number): boolean =>
     solid(r - 1, c) || solid(r + 1, c) || solid(r, c - 1) || solid(r, c + 1);
   const open = (r: number, c: number): boolean =>
@@ -70,7 +57,8 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
 
   // The face, mark and shines keep the still frame's shapes, moved by whole cells with the avatar's.
   const moved: Fit = { ...FIT, ox: FIT.ox + (at.x - still.at.x) * FIT.s, oy: FIT.oy + (at.y - still.at.y) * FIT.s };
-  const stills = shines(still.g, t.form);
+  const stillJelly = t.form === 'jelly' ? tentacles(still.g, FIT).below : undefined;
+  const stills = shines(still.g, t.form, solidIn(still.g, t.form, stillJelly));
   const p = createPix();
   const trunk = trace(g, (r, c) => t.form === 'tree' && role(r, c) === Role.Screen && solid(r, c), FIT, 0.45);
   // A tree's leaves stop where its trunk starts, rather than filling in behind it.
@@ -113,7 +101,7 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
     p.over(flare?.glow ?? trace(g, (r, c) => glow(r, c) && !shiny(r, c), FIT, 0.45), 'screen', ['body', 'shade']);
     // Shines come from the still frame too, so a squashing body never slides one over an eye.
     const lit = (r: number, c: number): boolean => stills.has(`${r},${c}`) && (bar === undefined || r > bar);
-    p.over(trace(still.g, lit, moved, 0.45), 'shine', ['body', 'shade']);
+    p.over(trace(still.g, lit, moved, 0.45), 'shine', ['body', 'shade', 'screen']);
   }
   p.over(trace(g, onBody, FIT, 0.42), 'accent', ['body', 'shade', 'screen']);
   if (t.form === 'planet') ring(p, g, FIT);
@@ -128,7 +116,7 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
   if (t.form === 'boulder') rocks(p, FIT);
   shadeRuns(p, ['body', 'screen'], 0.22, 0.2);
   ink(p, FEATURES);
-  if (t.form === 'planet') ringLine(p);
+  if (t.form === 'planet') ringLine(p, g, FIT);
   // A comet's sparks stream down its tail frame by frame, as the avatar's do; fire Sprites throw off
   // rising embers; other sparkles stay put and twinkle, and a still crystal gets more of them.
   if (t.form === 'comet') motes(p, g, FIT, new Set());
@@ -179,14 +167,4 @@ function skipped(form: string, g: RoleGrid): Set<string> {
   const out = new Set<string>();
   if (at) for (let c = at.c0; c <= at.c1; c++) out.add(`${at.r},${c}`);
   return out;
-}
-
-/** Whether a cell has a filled neighbour, so it's part of a body rather than a loose grain. */
-function touching(g: RoleGrid, r: number, c: number): boolean {
-  return [
-    [r - 1, c],
-    [r + 1, c],
-    [r, c - 1],
-    [r, c + 1],
-  ].some(([rr, cc]) => [Role.Body, Role.Shade, Role.Screen].includes(g[rr as number]?.[cc as number] as 1));
 }

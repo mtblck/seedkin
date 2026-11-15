@@ -76,7 +76,7 @@ export function portraitOptions(state, extra = {}) {
 /**
  * The call a developer would write for the portrait on screen.
  *
- * @param {{ seed: string, palette: string, motion?: string }} state - The playground's choices
+ * @param {{ seed: string, palette: string, motion?: string, element?: string, skin?: string }} state - The playground's choices
  * @param {string} [name] - The style's name, such as snoot
  * @returns {string} An import and a portrait(...) call, in single-quoted JavaScript
  */

@@ -24,8 +24,12 @@ export function ring(p: Pix, g: RoleGrid, f: Fit): void {
  * Carries the line along the ring's top edge under the eyes, where it meets
  * the face rather than the body and so gets no edge of its own.
  */
-export function ringLine(p: Pix): void {
-  for (let y = 1; y < p.h; y++) {
+export function ringLine(p: Pix, g: RoleGrid, f: Fit): void {
+  const at = ringRow(g);
+  if (!at) return;
+  // Only the ring's own rows, so spots and sparkles elsewhere keep their edges.
+  const cy = f.oy + (at.r + 0.5) * f.s;
+  for (let y = Math.max(1, Math.floor(cy - 2)); y <= Math.min(p.h - 1, Math.ceil(cy + 2)); y++) {
     const lined = (x: number): boolean => p.get(x, y) === 'accent' && p.tone[y]?.[x] === -2;
     const xs = [...Array(p.w).keys()].filter(lined);
     if (xs.length < 2) continue;
