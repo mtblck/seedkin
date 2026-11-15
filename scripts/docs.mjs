@@ -25,6 +25,7 @@ export const DOCS = [
       ['noggin', 'Noggin'],
       ['beastie', 'Beastie'],
       ['sprite', 'Sprite'],
+      ['portraits', 'Portraits'],
     ],
   },
   {

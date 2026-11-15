@@ -17,7 +17,8 @@ export interface Picture {
   title: string | null;
 }
 
-const escapeXml = (s: string): string => s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
+/** Escapes text for an XML attribute or text node. */
+export const escapeXml = (s: string): string => s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
 
 /**
  * Maps each role to its palette colour.

@@ -1,15 +1,36 @@
 import { spawnSync } from 'node:child_process';
 import { describe, expect, it, vi } from 'vitest';
 import { pickAcross } from '../site/pick.js';
-import { options, type PlaygroundState, snippet } from '../site/snippet.js';
+import { options, type PlaygroundState, portraitOptions, portraitSnippet, snippet } from '../site/snippet.js';
 import { arrival, body, HOST, track } from '../site/track.js';
 import { botling, HOLIDAY_PALETTES } from '../src/styles/botling/index.js';
+import { portrait } from '../src/styles/snoot/portrait/index.js';
 
 const auto = { shape: 'auto', palette: 'auto', grid: 'auto' };
 
 /** Runs a copied snippet the way a developer would paste it. */
 const run = (code: string): string =>
   new Function('botling', 'HOLIDAY_PALETTES', `return ${code}`)(botling, HOLIDAY_PALETTES);
+
+describe('playground portrait snippet', () => {
+  it('carries over motion, the palette and the character, not the shape', () => {
+    expect(portraitSnippet({ seed: 'abc', ...auto }, 'snoot')).toBe(
+      "import { portrait } from 'seedkin/snoot/portrait';\n\nportrait('abc')",
+    );
+    const state = { seed: "it's", ...auto, shape: 'diamond', palette: 'halloween', motion: 'on' };
+    expect(portraitOptions(state)).toEqual({ holiday: 'halloween', animate: true });
+    expect(portraitSnippet(state, 'snoot')).toContain("portrait('it\\'s', { holiday: 'halloween', animate: true })");
+    expect(portraitOptions({ ...auto, palette: '3' })).toEqual({ palette: 3 });
+    expect(portraitOptions({ ...auto, element: 'fire', skin: '2' })).toEqual({ element: 'fire', skin: 2 });
+    expect(portraitOptions({ ...auto, element: 'auto', look: 'flat' })).toEqual({});
+  });
+
+  it('draws the portrait on screen when pasted', () => {
+    const state = { seed: 'abc', ...auto, palette: 'christmas' };
+    const call = (portraitSnippet(state, 'snoot').split('\n').at(-1) as string).trim();
+    expect(new Function('portrait', `return ${call}`)(portrait)).toBe(portrait('abc', portraitOptions(state)));
+  });
+});
 
 describe('playground snippet', () => {
   it('leaves out options on auto', () => {

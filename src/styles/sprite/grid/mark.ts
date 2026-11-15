@@ -11,8 +11,8 @@ const BAR: Cell[] = [
   [1, 0],
 ];
 
-/** Each mark's cells, centred two rows above the eyes. */
-const CELLS: Record<Mark, Cell[]> = {
+/** Each mark's cells, centred two rows above the eyes. The portrait draws them too. */
+export const CELLS: Record<Mark, Cell[]> = {
   none: [],
   dot: DOT,
   bar: BAR,
