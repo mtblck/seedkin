@@ -59,9 +59,9 @@ export function eyes(p: Pix, t: BeastieTraits, b: Beast): void {
           ),
         );
         eye(p, x, y, b.s * 1.05);
-        // The avatar's two small glints low on the face.
+        // The avatar's two small glints low on the face hold still too, so the blink closes on the eyes alone.
         const [gx, gy] = at(b, sd, 3);
-        p.fill(ellipse(gx, gy, 1.3, 1.3), 'white');
+        tag(p, '', () => p.fill(ellipse(gx, gy, 1.3, 1.3), 'white'));
       }
       return;
   }
