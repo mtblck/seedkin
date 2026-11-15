@@ -17,6 +17,8 @@ export interface Figure {
   motion?: Motion;
   /** Moving parts drawn behind the rest, so they never cross its front (a beastie's wings). */
   behind?: readonly string[];
+  /** Cells drawn over the figure only while it moves, all in moving parts (a screen's scanline). */
+  overlay?: Pix;
   /** Further frames shown in turn with `p` (a Sprite's sway), with each frame's share of the loop. */
   frames?: { ps: Pix[]; beats: number[] };
 }
@@ -49,12 +51,15 @@ function figureLayers(
   const behind = f.behind ?? [];
   // Paired pieces move each on their own base, so two antennae stay on the head.
   const sides = { cls: right, flipped: flip };
-  if (!f.frames)
-    return {
-      layers: [{ p: one(f.p), colours: f.colours, cls, behind, right: sides, wrap: [whole], dx }],
-      style,
-      always: '',
-    };
+  if (!f.frames) {
+    const layers: Layer[] = [{ p: one(f.p), colours: f.colours, cls, behind, right: sides, wrap: [whole], dx }];
+    if (!f.overlay) return { layers, style, always: '' };
+    // An overlay is hidden at rest, so it shows only as its animation lights it.
+    layers.push({ p: one(f.overlay), colours: f.colours, cls, wrap: [whole], dx });
+    const hidden = new Set(f.overlay.part.flat().filter(Boolean));
+    const always = [...hidden].map((part) => (cls[part] ? `.${cls[part]}{opacity:0}` : '')).join('');
+    return { layers, style, always };
+  }
   // Sprites: every frame's layer is hidden but for its own share of the loop, as the avatar's are.
   const ps = [f.p, ...f.frames.ps];
   const total = f.frames.beats.reduce((a, b) => a + b, 0);

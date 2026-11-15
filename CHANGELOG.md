@@ -7,6 +7,10 @@ any change to the avatar a seed draws is a major version.
 
 ## [Unreleased]
 
+### Changed
+
+- Portraits (Preview): a new space scene, a dark blue fading to purple full of stars, joins the backgrounds, and an animated Botling portrait with a screen now has its avatar's scanline sweeping down it. Portraits that land on the new scene change background.
+
 ## [2.7.0] - 2026-11-15
 
 ### Added
