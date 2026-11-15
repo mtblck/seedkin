@@ -66,7 +66,7 @@ function figure(seed: string, holiday: Holiday | undefined, _animate: boolean, o
     mouth: ['talk', 'center'],
     top: ['wobble', '50% 100%'],
     sides: ['twitch', 'center'],
-    scan: ['scan', 'center'],
+    ...(t.hasScreen ? { scan: ['scan', 'center'] as const } : {}),
   });
   const overlay = t.hasScreen ? scanline(p, moves) : undefined;
   const figure: Figure = { p, colours: colours(pal, fabric), rng, bg: pal.bg, scenes: holiday ? [holiday] : SCENES };

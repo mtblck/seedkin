@@ -118,6 +118,7 @@ describe('portrait motion matches the avatar', () => {
       const screen = botlingTraits(seed).hasScreen;
       const svg = botling.portrait(seed, { animate: true });
       expect(svg.includes('class="p-scan0-'), seed).toBe(screen);
+      expect(svg.includes('-scan'), seed).toBe(screen);
       expect(botling.portrait(seed)).not.toContain('scan');
       if (!screen) continue;
       // Each band starts a tenth of a second after the one above, and every band is hidden without motion.
