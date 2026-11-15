@@ -10,7 +10,8 @@ import { embers, faces, ring, ringLine, ringRow, rocks, sparkles } from './fx.js
 import { barRow, front, haze, plusAt, tongue } from './layers.js';
 import { motes } from './motes.js';
 import { LIFT, leaves, shift, sway, trunkRow } from './place.js';
-import { clumps, type Fit, isolated, trace } from './trace.js';
+import { shines } from './shine.js';
+import { type Fit, isolated, trace } from './trace.js';
 
 /**
  * Where the 15x15 avatar sits: four portrait pixels to an avatar cell, so a part that
@@ -65,15 +66,11 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
   const onBody = (r: number, c: number): boolean =>
     role(r, c) === Role.Accent && touches(r, c) && !open(r, c) && kept(r, c);
   const flame = t.form === 'flame';
-  // Small bright spots on the body are shines, flat white; a fire's core and a tree's trunk aren't.
-  const spots = new Set(
-    FIRE_CORE.includes(t.form)
-      ? []
-      : clumps(g, (r, c) => role(r, c) === Role.Screen && solid(r, c))
-          .filter((k) => k.length <= 4)
-          .flatMap((k) => k.map(([r, c]) => `${r},${c}`)),
-  );
+  const spots = shines(g, t.form, solid);
 
+  // The face, mark and shines keep the still frame's shapes, moved by whole cells with the avatar's.
+  const moved: Fit = { ...FIT, ox: FIT.ox + (at.x - still.at.x) * FIT.s, oy: FIT.oy + (at.y - still.at.y) * FIT.s };
+  const stills = shines(still.g, t.form);
   const p = createPix();
   const trunk = trace(g, (r, c) => t.form === 'tree' && role(r, c) === Role.Screen && solid(r, c), FIT, 0.45);
   // A tree's leaves stop where its trunk starts, rather than filling in behind it.
@@ -114,13 +111,13 @@ export function draw(t: SpriteTraits, fr: Frame, all: Frame[], n: number): Pix {
     const glow = (r: number, c: number): boolean =>
       role(r, c) === Role.Screen && solid(r, c) && (bar === undefined || r > bar);
     p.over(flare?.glow ?? trace(g, (r, c) => glow(r, c) && !shiny(r, c), FIT, 0.45), 'screen', ['body', 'shade']);
-    p.over(trace(g, shiny, FIT, 0.45), 'shine', ['body', 'shade']);
+    // Shines come from the still frame too, so a squashing body never slides one over an eye.
+    const lit = (r: number, c: number): boolean => stills.has(`${r},${c}`) && (bar === undefined || r > bar);
+    p.over(trace(still.g, lit, moved, 0.45), 'shine', ['body', 'shade']);
   }
   p.over(trace(g, onBody, FIT, 0.42), 'accent', ['body', 'shade', 'screen']);
   if (t.form === 'planet') ring(p, g, FIT);
   if (t.form === 'boulder') tag(p, 'sprout', () => sprout(p, g, FIT));
-  // The face and mark keep the still frame's shapes, moved by whole cells with the avatar's.
-  const moved: Fit = { ...FIT, ox: FIT.ox + (at.x - still.at.x) * FIT.s, oy: FIT.oy + (at.y - still.at.y) * FIT.s };
   // A treetop's eyes sway with it, so only the other still forms blink.
   const blinks = STILL.includes(t.form) && !SWAYS.includes(t.form) && !['happy', 'sleepy', 'wink'].includes(t.eyes);
   face(p, still.g, still.at, t, moved, blinks);
@@ -174,8 +171,6 @@ const FIRE = ['flame', 'wisp', 'ember'];
 const SWAYS = ['tree'];
 /** Water forms, whose motes are little floating bubbles. */
 export const WATERY = ['drop', 'bubble'];
-/** Forms whose bright cells are a fire's core, never a shine. */
-const FIRE_CORE = ['flame', 'wisp'];
 
 /** Accent cells drawn as something other than sparkles: a boulder's sprout, a planet's ring. */
 function skipped(form: string, g: RoleGrid): Set<string> {
