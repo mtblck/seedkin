@@ -7,6 +7,8 @@ any change to the avatar a seed draws is a major version.
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-11-15
+
 ### Added
 
 - Portraits (Preview): a new entry point per style, `seedkin/<style>/portrait`, exports `portrait()`, `portraitDataUri()` and `duet()`, which draw a seed as a 64x64 game-style portrait in a seeded scene (a room, a shelf, open sky, two kinds of forest, a flower meadow, a town or a street of houses), or two seeds face to face in a 128x64 one. A portrait is the seed's own avatar drawn fuller: Botlings and Noggins from the shoulders up with arms and clothes, Snoots as whole animals sitting, Beasties with arms (and wings when they have them), and Sprites traced smooth from their avatar. Options are `size`, `animate` (moving in step with the avatar), `holiday` (a holiday palette and scene), `title`, and the avatar's `palette` index, Sprite `element` and Noggin `skin`. The home page shows the seed's portraits, and every playground has an "As a portrait" card with its code and downloads. A Preview may change in a minor release; no avatar changes (ADR 0018).
@@ -213,7 +215,8 @@ First release.
 
 The playground site (`site/`, not part of the npm package) lets you try seeds, shapes and palettes and copy the code.
 
-[Unreleased]: https://github.com/mtblck/seedkin/compare/v2.6.1...HEAD
+[Unreleased]: https://github.com/mtblck/seedkin/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/mtblck/seedkin/compare/v2.6.1...v2.7.0
 [2.6.1]: https://github.com/mtblck/seedkin/compare/v2.6.0...v2.6.1
 [2.6.0]: https://github.com/mtblck/seedkin/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/mtblck/seedkin/compare/v2.4.3...v2.5.0
