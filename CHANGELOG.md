@@ -7,6 +7,10 @@ any change to the avatar a seed draws is a major version.
 
 ## [Unreleased]
 
+### Fixed
+
+- Portraits (Preview): a talking or blinking Beastie no longer flashes a spot, or a patch of bare hide over its bandana, from under its mouth or eyes. A spot the face or bandana mostly covers is left off rather than leaving a sliver beside it, and the smallest spots show their colour instead of inking to a dark smudge. Avatars are unchanged.
+
 ## [2.7.1] - 2026-11-15
 
 ### Changed
