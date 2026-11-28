@@ -56,9 +56,16 @@ const styleLibs = Object.fromEntries(
   await Promise.all(STYLES.map(async ({ name }) => [name, await import(path.join(dist, `styles/${name}/index.js`))])),
 );
 
-// The floating Support button (the tipjar package), bottom right on every page. The footer
-// keeps its own Support link; site/chrome.js tucks the button away while the footer shows.
-const tip = tipjar({ href: 'https://ko-fi.com/mtblck', description: 'future projects on Ko-fi', iconStyle: 'pixel' });
+// The floating Support button (the tipjar package), bottom right on every page. It opens tipjar's
+// own popover menu of ways to support, so it needs no script. The footer keeps its own Support
+// link; site/chrome.js tucks the button away while the footer shows.
+const tip = tipjar({
+  iconStyle: 'pixel',
+  links: [
+    { href: 'https://ko-fi.com/mtblck', label: 'Buy me a coffee', icon: 'coffee', description: 'on Ko-fi' },
+    { href: 'https://github.com/mtblck/seedkin', label: 'Star on GitHub', icon: 'star' },
+  ],
+});
 
 const partials = Object.fromEntries(
   ['head', 'header', 'footer', 'playground'].map((name) => [

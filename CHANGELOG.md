@@ -7,6 +7,10 @@ any change to the avatar a seed draws is a major version.
 
 ## [Unreleased]
 
+### Site
+
+- The floating Support button opens a small menu with two ways to support: Buy me a coffee (on Ko-fi) and Star on GitHub.
+
 ## [2.7.1] - 2026-11-15
 
 ### Changed
