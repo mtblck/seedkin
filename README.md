@@ -124,4 +124,4 @@ Seedkin is free and MIT licensed. If it's useful to you, you can [buy me a coffe
 
 ## License
 
-[MIT](LICENSE), art included.
+[MIT](LICENSE), art included: every avatar the package draws is yours to use under it. The Seedkin name and logos, and everything in `brand/`, are not; see [`brand/LICENSE`](brand/LICENSE) and [`brand/TRADEMARKS.md`](brand/TRADEMARKS.md).

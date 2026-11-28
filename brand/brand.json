@@ -1,0 +1,110 @@
+{
+  "name": "Seedkin",
+  "tagline": "One seed. A whole family.",
+  "about": "Seedkin turns any string into a pixel avatar, the same one every time, on any machine, with nothing stored: a robot, an animal, a person, a monster or a sprite. It is a zero-dependency TypeScript package that returns an SVG string.\n\nThe mark is the first Seedkin ever drawn: Botling jolly-sprocket-65, the robot from the site header, in its 9x9 small drawing so it keeps a face at 16 px.",
+  "construction": "A 10 × 10 unit tile with corner radius 2.2 units; the robot is the package’s own 9x9 small Botling drawing, one unit a cell, drawn by the library and never by hand.",
+  "website": "seedkin.dev",
+  "colors": [
+    {
+      "name": "Indigo",
+      "hex": "#3a26c9",
+      "role": "primary",
+      "usage": "Buttons, links and the brand field: anything you can press."
+    },
+    {
+      "name": "Seafoam",
+      "hex": "#7ee8d0",
+      "role": "accent",
+      "usage": "What glows: the frame round a featured avatar, one highlight per layout."
+    },
+    {
+      "name": "Paper",
+      "hex": "#f6f3ec",
+      "role": "paper",
+      "usage": "The light page, under a faint dot grid."
+    },
+    {
+      "name": "Night",
+      "hex": "#14121c",
+      "role": "dark",
+      "usage": "The dark page, the wordmark on paper, and the cover’s ground."
+    },
+    {
+      "name": "Lilac",
+      "hex": "#a99cff",
+      "role": "support",
+      "usage": "Indigo’s stand-in on the dark page."
+    }
+  ],
+  "type": {
+    "display": {
+      "family": "Silkscreen",
+      "weight": 400
+    },
+    "text": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
+  "logos": {
+    "mark": {
+      "file": "mark.svg",
+      "dark": "mark.svg",
+      "black": "mark-black.svg",
+      "minWidth": 16
+    },
+    "horizontal": {
+      "file": "logo-horizontal.svg",
+      "dark": "logo-horizontal-dark.svg",
+      "black": "logo-horizontal-black.svg",
+      "minWidth": 96
+    },
+    "stacked": {
+      "file": "logo-stacked.svg",
+      "dark": "logo-stacked-dark.svg",
+      "black": "logo-stacked-black.svg",
+      "minWidth": 64
+    }
+  },
+  "icon": {
+    "file": "robot.svg",
+    "background": "#0f1824",
+    "scale": 0.78,
+    "maskableScale": 0.6,
+    "favicon": "mark.svg",
+    "themeColor": "#14121c"
+  },
+  "social": {
+    "background": "#f6f3ec"
+  },
+  "templates": {
+    "background": "#14121c"
+  },
+  "direction": {
+    "words": [
+      "playful",
+      "pixel",
+      "friendly"
+    ],
+    "pairs": {
+      "tone": "playful",
+      "era": "retro",
+      "volume": "between",
+      "finish": "flat"
+    },
+    "lives": "web",
+    "weirdness": 3
+  },
+  "legal": {
+    "owner": "Matt Black",
+    "codeLicense": "MIT"
+  },
+  "exports": "all",
+  "portfolio": {
+    "cover": "portfolio/cover.svg",
+    "mobile": "portfolio/cover-mobile.svg",
+    "alt": "A wall of pixel avatars from all five styles, robots, animals, people, monsters and elemental sprites, dimmed on a dark dot grid, with one flame sprite lit up large in a seafoam frame in the middle.",
+    "background": "#14121c"
+  },
+  "out": "dist"
+}

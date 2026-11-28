@@ -4,3 +4,4 @@ coverage/
 preview.html
 *.tgz
 dist-site/
+brand/dist/
