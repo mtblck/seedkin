@@ -30,8 +30,9 @@ import { HOLIDAY_PALETTES } from '../holidays.js';
 import { PALETTES } from '../palettes.js';
 import { resolveTraits } from '../svg.js';
 import type { Palette } from '../types.js';
-import { type Beast, drawBody, feet, layout, limbs, spots, topPiece } from './body.js';
+import { type Beast, drawBody, feet, layout, limbs, spotShapes, spots, topPiece } from './body.js';
 import { eyes, mouth } from './face.js';
+import { coverLids, settleSpots, spotCells } from './hide.js';
 
 type Gear = 'bare' | 'bowtie' | 'bandana';
 const GEAR: readonly Gear[] = ['bare', 'bare', 'bowtie', 'bandana'];
@@ -59,10 +60,12 @@ function figure(seed: string, holiday: Holiday | undefined, _animate: boolean, o
   tag(p, 'top', () => topPiece(p, t, b));
   feet(p, t, b);
   drawBody(p, b);
+  const marks = t.hasSpots ? spotCells(p, spotShapes(b)) : [];
   if (t.hasSpots) spots(p, b);
   tag(p, 'eyes', () => eyes(p, t, b));
   tag(p, 'mouth', () => mouth(p, t, b));
   wear(p, gear, b);
+  settleSpots(p, marks);
   shadeRuns(p, ['body', 'shade', 'accent', 'fabric'], 0.22, 0.2);
   ink(p, FEATURES);
   const colours: Colours = {
@@ -102,7 +105,9 @@ function wear(p: Pix, gear: Gear, b: Beast): void {
     );
     p.fill(ellipse(b.cx, y, 1.8, 1.8), 'fabric', -1);
   } else if (gear === 'bandana') {
-    p.over(rounded(b.cx, y - 1, b.hx, 1.6, 1), 'fabric', ['body', 'shade', 'accent']);
+    const band = rounded(b.cx, y - 1, b.hx, 1.6, 1);
+    p.over(band, 'fabric', ['body', 'shade', 'accent']);
+    coverLids(p, band, 'fabric', ['body', 'shade', 'accent']);
     p.fill(tri(b.cx - 8, y - 1, b.cx + 8, y - 1, b.cx, y + 8), 'fabric');
   }
 }
