@@ -71,15 +71,22 @@ export function drawBody(p: Pix, b: Beast): void {
   );
 }
 
-/** Spots in the accent colour, where the avatar puts its three, plus a few smaller ones. */
-export function spots(p: Pix, b: Beast): void {
+/** Where the spots go: the avatar's three, plus a few smaller ones. */
+export function spotShapes(b: Beast): Shape[] {
   const at = (dx: number, dy: number, r: number): Shape => ellipse(b.cx + dx * b.s, b.top + dy * b.s, r, r * 0.85);
   const w = b.hx / b.s;
-  p.over(
-    or(at(-w + 1.6, 4.4, 2.6), at(w - 1.8, 2.4, 2.2), at(-0.8, 6.6, 2.4), at(w - 2.4, 6, 1.4), at(-w + 2.6, 2.2, 1.2)),
-    'accent',
-    ['body'],
-  );
+  return [
+    at(-w + 1.6, 4.4, 2.6),
+    at(w - 1.8, 2.4, 2.2),
+    at(-0.8, 6.6, 2.4),
+    at(w - 2.4, 6, 1.4),
+    at(-w + 2.6, 2.2, 1.2),
+  ];
+}
+
+/** Spots in the accent colour, on the body only. */
+export function spots(p: Pix, b: Beast): void {
+  p.over(or(...spotShapes(b)), 'accent', ['body']);
 }
 
 /** Horns, antennae, spikes or a tuft on top, drawn behind the body. */
