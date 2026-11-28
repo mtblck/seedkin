@@ -7,6 +7,8 @@ any change to the avatar a seed draws is a major version.
 
 ## [Unreleased]
 
+## [2.7.2] - 2026-11-28
+
 ### Fixed
 
 - Portraits (Preview): a talking or blinking Beastie no longer flashes a spot, or a patch of bare hide over its bandana, from under its mouth or eyes. A spot the face or bandana mostly covers is left off rather than leaving a sliver beside it, and the smallest spots show their colour instead of inking to a dark smudge. Avatars are unchanged.
@@ -229,7 +231,8 @@ First release.
 
 The playground site (`site/`, not part of the npm package) lets you try seeds, shapes and palettes and copy the code.
 
-[Unreleased]: https://github.com/mtblck/seedkin/compare/v2.7.1...HEAD
+[Unreleased]: https://github.com/mtblck/seedkin/compare/v2.7.2...HEAD
+[2.7.2]: https://github.com/mtblck/seedkin/compare/v2.7.1...v2.7.2
 [2.7.1]: https://github.com/mtblck/seedkin/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/mtblck/seedkin/compare/v2.6.1...v2.7.0
 [2.6.1]: https://github.com/mtblck/seedkin/compare/v2.6.0...v2.6.1
